@@ -1,3 +1,5 @@
+import { PopColor } from "@/lib/colors";
+
 export interface TraitStat {
   trait: string;
   pct: number;
@@ -10,6 +12,7 @@ export interface InsightCard {
 
 export interface CategoryInsight {
   label: string;
+  color: PopColor;
   mostValued: string[];
   mostCommonChallenges: string[];
 }
@@ -60,6 +63,7 @@ export const INSIGHT_CARDS: InsightCard[] = [
 export const CATEGORY_INSIGHTS: Record<string, CategoryInsight> = {
   relationships: {
     label: "Relationships",
+    color: "pink",
     mostValued: ["Communication", "Emotional availability", "Reliability"],
     mostCommonChallenges: [
       "Inconsistency",
@@ -69,6 +73,7 @@ export const CATEGORY_INSIGHTS: Record<string, CategoryInsight> = {
   },
   work: {
     label: "Work",
+    color: "blue",
     mostValued: ["Reliability", "Communication", "Collaboration"],
     mostCommonChallenges: [
       "Unclear feedback",
@@ -78,6 +83,7 @@ export const CATEGORY_INSIGHTS: Record<string, CategoryInsight> = {
   },
   friendship: {
     label: "Friendship",
+    color: "lime",
     mostValued: ["Showing up", "Honesty", "Reliability"],
     mostCommonChallenges: [
       "Flaky plans",
@@ -87,6 +93,7 @@ export const CATEGORY_INSIGHTS: Record<string, CategoryInsight> = {
   },
   livingTogether: {
     label: "Living together",
+    color: "gold",
     mostValued: ["Respect for space", "Reliability", "Communication"],
     mostCommonChallenges: [
       "Chores left undone",

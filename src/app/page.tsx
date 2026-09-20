@@ -2,8 +2,10 @@ import { LinkButton } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { BarMeter } from "@/components/ui/BarMeter";
+import { Marquee } from "@/components/ui/Marquee";
 import { WHAT_PEOPLE_VALUE } from "@/lib/mockData/insights";
 import { CATEGORY_META } from "@/lib/types";
+import { POP_COLOR_STYLES } from "@/lib/colors";
 
 const previewStats = [
   WHAT_PEOPLE_VALUE[0], // Communication
@@ -11,15 +13,28 @@ const previewStats = [
   WHAT_PEOPLE_VALUE[4], // Emotional availability
 ];
 
+const TICKER = [
+  "NO NAMES",
+  "NO PROFILES",
+  "NO DOXXING",
+  "ONE STORY IS A STORY",
+  "THOUSANDS BECOME A PATTERN",
+  "ANONYMOUS BY DESIGN",
+];
+
+const rotations = ["-rotate-2", "rotate-1", "rotate-2", "-rotate-1", "rotate-1", "-rotate-2"];
+
 export default function Home() {
   return (
     <div>
+      <Marquee items={TICKER} />
+
       <section className="mx-auto max-w-6xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
         <div className="animate-rise-in flex items-baseline gap-3">
           <h1 className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
             GATHER
           </h1>
-          <span className="font-display text-xl italic text-muted sm:text-2xl">
+          <span className="font-display text-xl italic text-pink sm:text-2xl">
             Human Insights
           </span>
         </div>
@@ -27,7 +42,7 @@ export default function Home() {
         <h2 className="animate-rise-in mt-8 max-w-3xl font-display text-[2.6rem] font-medium leading-[1.05] tracking-tight sm:text-6xl sm:leading-[1.02]">
           You&rsquo;ve experienced people.
           <br />
-          Now let&rsquo;s learn from it.
+          Now let&rsquo;s <span className="mark-highlight">learn from it</span>.
         </h2>
 
         <p className="animate-rise-in mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
@@ -74,18 +89,23 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 self-start sm:grid-cols-3 lg:grid-cols-2">
-              {Object.entries(CATEGORY_META).map(([key, meta]) => (
-                <div
-                  key={key}
-                  className="rounded-2xl border border-line px-4 py-5 text-center"
-                >
-                  <div className="text-2xl">{meta.emoji}</div>
-                  <div className="mt-2 text-sm font-medium text-ink-soft">
-                    {meta.short}
+            <div className="grid grid-cols-2 gap-4 self-start sm:grid-cols-3 lg:grid-cols-2">
+              {Object.entries(CATEGORY_META).map(([key, meta], i) => {
+                const styles = POP_COLOR_STYLES[meta.color];
+                return (
+                  <div
+                    key={key}
+                    className={`group rounded-2xl border-2 bg-paper-raised px-4 py-5 text-center transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0 ${styles.border} ${styles.shadow} ${rotations[i % rotations.length]}`}
+                  >
+                    <div className="text-2xl transition-transform duration-200 group-hover:scale-110">
+                      {meta.emoji}
+                    </div>
+                    <div className="mt-2 text-sm font-medium text-ink-soft">
+                      {meta.short}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

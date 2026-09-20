@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { POP_COLOR_STYLES, popColorForIndex } from "@/lib/colors";
 
 const STEPS = ["Who", "About you", "The survey", "The story"];
 
@@ -22,7 +23,7 @@ export function WizardShell({
           <div
             key={s}
             className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-              i + 1 <= step ? "bg-coral" : "bg-line"
+              i + 1 <= step ? POP_COLOR_STYLES[popColorForIndex(i)].bgSolid : "bg-line"
             }`}
             title={s}
           />

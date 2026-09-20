@@ -26,21 +26,24 @@ export default function InsightsPage() {
         What are people experiencing right now?
       </p>
 
-      <section className="mt-14 rounded-3xl border border-line bg-paper-raised p-8 sm:p-10">
+      <section className="mt-14 rounded-3xl bg-ink p-8 text-paper sm:p-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
+          <span className="font-mono text-xs uppercase tracking-[0.18em] text-paper/60">
             This year
           </span>
-          <SampleBadge>Illustrative, not live data</SampleBadge>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-paper/20 px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-paper/70">
+            <span className="h-1 w-1 rounded-full bg-lime" />
+            Illustrative, not live data
+          </span>
         </div>
         <div className="mt-6 flex flex-wrap items-end gap-x-8 gap-y-4">
           <span className="font-display text-6xl font-semibold tracking-tight sm:text-7xl">
             {CURRENT_YEAR}
           </span>
-          <span className="font-mono text-2xl text-coral sm:text-3xl">
+          <span className="font-mono text-2xl text-lime sm:text-3xl">
             {total.toLocaleString()}
           </span>
-          <span className="pb-2 text-sm text-muted">experiences shared</span>
+          <span className="pb-2 text-sm text-paper/60">experiences shared</span>
         </div>
       </section>
 

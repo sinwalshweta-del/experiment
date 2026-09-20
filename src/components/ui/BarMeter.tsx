@@ -1,20 +1,17 @@
+import { PopColor, POP_COLOR_STYLES, popColorForIndex } from "@/lib/colors";
+
 export function BarMeter({
   label,
   pct,
   index = 0,
-  color = "coral",
+  color,
 }: {
   label: string;
   pct: number;
   index?: number;
-  color?: "coral" | "moss" | "gold";
+  color?: PopColor;
 }) {
-  const fill =
-    color === "moss"
-      ? "bg-moss"
-      : color === "gold"
-      ? "bg-gold"
-      : "bg-coral";
+  const fill = POP_COLOR_STYLES[color ?? popColorForIndex(index)].bgSolid;
 
   return (
     <div className="group">

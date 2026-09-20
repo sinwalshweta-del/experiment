@@ -1,12 +1,16 @@
+import { PopColor, POP_COLOR_STYLES } from "@/lib/colors";
+
 export function RankedList({
   title,
   items,
-  accent = "coral",
+  color,
 }: {
   title: string;
   items: string[];
-  accent?: "coral" | "moss";
+  color: PopColor;
 }) {
+  const styles = POP_COLOR_STYLES[color];
+
   return (
     <div>
       <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-muted">
@@ -14,11 +18,9 @@ export function RankedList({
       </h3>
       <ol className="mt-4 space-y-3">
         {items.map((item, i) => (
-          <li key={item} className="flex items-baseline gap-3">
+          <li key={item} className="flex items-center gap-3">
             <span
-              className={`font-display text-2xl font-medium leading-none ${
-                accent === "moss" ? "text-moss" : "text-coral"
-              }`}
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-display text-base font-semibold ${styles.bgSolid} ${styles.onSolid}`}
             >
               {i + 1}
             </span>

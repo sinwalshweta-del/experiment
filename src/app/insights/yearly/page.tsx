@@ -5,18 +5,22 @@ import { SectionLabel } from "@/components/ui/SectionLabel";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { BarMeter } from "@/components/ui/BarMeter";
 import { AVAILABLE_YEARS, YEAR_SNAPSHOTS } from "@/lib/mockData/insights";
+import { POP_COLOR_STYLES, popColorForIndex } from "@/lib/colors";
 
 function TagList({ items }: { items: string[] }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <span
-          key={item}
-          className="rounded-full border border-line px-3.5 py-1.5 text-sm text-ink-soft"
-        >
-          {item}
-        </span>
-      ))}
+      {items.map((item, i) => {
+        const styles = POP_COLOR_STYLES[popColorForIndex(i)];
+        return (
+          <span
+            key={item}
+            className={`rounded-full border-2 px-3.5 py-1.5 text-sm font-medium text-ink ${styles.border} ${styles.bgSoft}`}
+          >
+            {item}
+          </span>
+        );
+      })}
     </div>
   );
 }
@@ -40,9 +44,9 @@ export default function YearlyInsightsPage() {
           <button
             key={y}
             onClick={() => setYear(y)}
-            className={`rounded-full border px-5 py-2.5 font-mono text-sm font-medium transition-all duration-150 ${
+            className={`rounded-full border-2 px-5 py-2.5 font-mono text-sm font-medium transition-all duration-150 ${
               year === y
-                ? "border-ink bg-ink text-paper"
+                ? "border-pink bg-pink text-paper"
                 : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"
             }`}
           >
@@ -66,11 +70,11 @@ export default function YearlyInsightsPage() {
             <SampleBadge>Sample / demo data</SampleBadge>
           </div>
 
-          <section className="rounded-3xl border border-line bg-paper-raised p-8 sm:p-10">
-            <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
+          <section className="rounded-3xl bg-ink p-8 text-paper sm:p-10">
+            <span className="font-mono text-xs uppercase tracking-[0.18em] text-paper/60">
               Total experiences
             </span>
-            <div className="mt-3 font-display text-6xl font-semibold tracking-tight sm:text-7xl">
+            <div className="mt-3 font-display text-6xl font-semibold tracking-tight text-lime sm:text-7xl">
               {snapshot.totalExperiences.toLocaleString()}
             </div>
           </section>
@@ -81,13 +85,7 @@ export default function YearlyInsightsPage() {
             </h2>
             <div className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
               {snapshot.mostCommonRelationshipTypes.map((item, i) => (
-                <BarMeter
-                  key={item.label}
-                  label={item.label}
-                  pct={item.pct}
-                  index={i}
-                  color={i % 2 === 0 ? "coral" : "moss"}
-                />
+                <BarMeter key={item.label} label={item.label} pct={item.pct} index={i} />
               ))}
             </div>
           </section>
@@ -125,12 +123,14 @@ export default function YearlyInsightsPage() {
               Interesting patterns
             </h2>
             <ul className="mt-5 space-y-4">
-              {snapshot.patterns.map((pattern) => (
+              {snapshot.patterns.map((pattern, i) => (
                 <li
                   key={pattern}
                   className="flex gap-3 rounded-2xl border border-line bg-paper-raised p-5 text-sm leading-relaxed text-ink-soft"
                 >
-                  <span className="text-coral">&bull;</span>
+                  <span className={POP_COLOR_STYLES[popColorForIndex(i)].text}>
+                    &bull;
+                  </span>
                   {pattern}
                 </li>
               ))}

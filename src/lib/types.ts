@@ -1,3 +1,5 @@
+import { PopColor } from "./colors";
+
 export const EXPERIENCE_CATEGORIES = [
   "dating",
   "colleague",
@@ -11,14 +13,14 @@ export type ExperienceCategory = (typeof EXPERIENCE_CATEGORIES)[number];
 
 export const CATEGORY_META: Record<
   ExperienceCategory,
-  { label: string; emoji: string; short: string }
+  { label: string; emoji: string; short: string; color: PopColor }
 > = {
-  dating: { label: "Someone you dated", emoji: "❤️", short: "Dating" },
-  colleague: { label: "A colleague", emoji: "💼", short: "Colleague" },
-  friend: { label: "A friend", emoji: "🤝", short: "Friend" },
-  manager: { label: "A manager", emoji: "👔", short: "Manager" },
-  roommate: { label: "A roommate", emoji: "🏠", short: "Roommate" },
-  other: { label: "Someone else", emoji: "✨", short: "Other" },
+  dating: { label: "Someone you dated", emoji: "❤️", short: "Dating", color: "pink" },
+  colleague: { label: "A colleague", emoji: "💼", short: "Colleague", color: "blue" },
+  friend: { label: "A friend", emoji: "🤝", short: "Friend", color: "lime" },
+  manager: { label: "A manager", emoji: "👔", short: "Manager", color: "coral" },
+  roommate: { label: "A roommate", emoji: "🏠", short: "Roommate", color: "gold" },
+  other: { label: "Someone else", emoji: "✨", short: "Other", color: "moss" },
 };
 
 export const AGE_GROUPS = ["18-24", "25-34", "35-44", "45+"] as const;
