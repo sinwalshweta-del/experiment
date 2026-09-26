@@ -22,8 +22,6 @@ const TICKER = [
   "ANONYMOUS BY DESIGN",
 ];
 
-const rotations = ["-rotate-2", "rotate-1", "rotate-2", "-rotate-1", "rotate-1", "-rotate-2"];
-
 export default function Home() {
   return (
     <div>
@@ -34,7 +32,7 @@ export default function Home() {
           <h1 className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
             GATHER
           </h1>
-          <span className="font-display text-xl italic text-pink sm:text-2xl">
+          <span className="font-display text-xl italic text-coral sm:text-2xl">
             Human Insights
           </span>
         </div>
@@ -89,13 +87,13 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 self-start sm:grid-cols-3 lg:grid-cols-2">
-              {Object.entries(CATEGORY_META).map(([key, meta], i) => {
+            <div className="grid grid-cols-2 gap-3 self-start sm:grid-cols-3 lg:grid-cols-2">
+              {Object.entries(CATEGORY_META).map(([key, meta]) => {
                 const styles = POP_COLOR_STYLES[meta.color];
                 return (
                   <div
                     key={key}
-                    className={`group rounded-2xl border-2 bg-paper-raised px-4 py-5 text-center transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0 ${styles.border} ${styles.shadow} ${rotations[i % rotations.length]}`}
+                    className={`group rounded-2xl border px-4 py-5 text-center transition-all duration-200 hover:-translate-y-0.5 ${styles.border} ${styles.bgSoft} ${styles.shadowHover}`}
                   >
                     <div className="text-2xl transition-transform duration-200 group-hover:scale-110">
                       {meta.emoji}

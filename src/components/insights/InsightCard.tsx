@@ -12,9 +12,8 @@ export function InsightCard({
   const styles = POP_COLOR_STYLES[popColorForIndex(index)];
 
   return (
-    <div
-      className={`animate-rise-in rounded-3xl border-2 border-line bg-paper-raised p-6 transition-colors duration-150 hover:border-ink`}
-    >
+    <div className="animate-rise-in rounded-3xl border border-line bg-paper-raised p-6 transition-colors duration-150 hover:border-line-strong">
+
       <span
         className={`inline-flex h-8 w-8 items-center justify-center rounded-full font-mono text-[0.65rem] font-bold ${styles.bgSolid} ${styles.onSolid}`}
       >

@@ -6,12 +6,10 @@ import { useSurvey } from "@/lib/store/surveyStore";
 import { POP_COLOR_STYLES, POP_COLORS } from "@/lib/colors";
 
 const CONFETTI = [
-  { top: "8%", left: "12%", rotate: "-rotate-12" },
-  { top: "18%", left: "82%", rotate: "rotate-12" },
-  { top: "68%", left: "8%", rotate: "rotate-6" },
-  { top: "74%", left: "88%", rotate: "-rotate-6" },
-  { top: "4%", left: "48%", rotate: "rotate-3" },
-  { top: "80%", left: "50%", rotate: "-rotate-3" },
+  { top: "10%", left: "14%" },
+  { top: "20%", left: "84%" },
+  { top: "72%", left: "10%" },
+  { top: "76%", left: "86%" },
 ];
 
 export default function DonePage() {
@@ -30,7 +28,7 @@ export default function DonePage() {
         <span
           key={i}
           aria-hidden
-          className={`animate-rise-in absolute hidden h-4 w-4 rounded-md sm:block ${c.rotate} ${POP_COLOR_STYLES[POP_COLORS[i % POP_COLORS.length]].bgSolid}`}
+          className={`animate-rise-in absolute hidden h-3 w-3 rounded-full sm:block ${POP_COLOR_STYLES[POP_COLORS[i % POP_COLORS.length]].bgSolid}`}
           style={{ top: c.top, left: c.left, animationDelay: `${i * 80}ms` }}
         />
       ))}

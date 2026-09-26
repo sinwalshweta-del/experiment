@@ -33,7 +33,7 @@ export default function ExplorePage() {
             <button
               key={key}
               onClick={() => setActive(key)}
-              className={`rounded-full border-2 px-5 py-2.5 text-sm font-medium transition-all duration-150 ${
+              className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-150 ${
                 isActive
                   ? `${tabStyles.border} ${tabStyles.bgSolid} ${tabStyles.onSolid}`
                   : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"
@@ -51,7 +51,7 @@ export default function ExplorePage() {
 
       <div
         key={active}
-        className={`animate-rise-in mt-8 grid gap-10 rounded-3xl border-2 bg-paper-raised p-8 sm:grid-cols-2 sm:p-12 ${styles.border}`}
+        className={`animate-rise-in mt-8 grid gap-10 rounded-3xl border bg-paper-raised p-8 sm:grid-cols-2 sm:p-12 ${styles.border}`}
       >
         <RankedList title="Most valued" items={data.mostValued} color="moss" />
         <RankedList

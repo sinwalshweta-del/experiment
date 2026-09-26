@@ -9,18 +9,19 @@
   --color-line: rgba(22, 20, 15, 0.12);
   --color-line-strong: rgba(22, 20, 15, 0.22);
 
-  --color-coral: #ff4d2e;
-  --color-coral-soft: #ffe4da;
-  --color-moss: #1c8a52;
-  --color-moss-soft: #d6f5e3;
-  --color-gold: #f5b942;
-  --color-gold-soft: #fbeecb;
-  --color-pink: #ff2e93;
-  --color-pink-soft: #ffdcef;
-  --color-blue: #3654ff;
-  --color-blue-soft: #dde3ff;
-  --color-lime: #aef72a;
-  --color-lime-soft: #eefdc9;
+  --color-coral: #d97e63;
+  --color-coral-soft: #f7e5de;
+  --color-moss: #7fa88f;
+  --color-moss-soft: #e5f0e8;
+  --color-gold: #d3a94f;
+  --color-gold-soft: #f6ecd8;
+  --color-pink: #d99bb0;
+  --color-pink-soft: #f8e9ef;
+  --color-blue: #92a0d9;
+  --color-blue-soft: #e9ecf8;
+  --color-lime: #b3a0d4;
+  --color-lime-soft: #f0eaf7;
+  --color-highlight: #f3cd9a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,18 +34,19 @@
     --color-line: rgba(244, 239, 227, 0.14);
     --color-line-strong: rgba(244, 239, 227, 0.26);
 
-    --color-coral: #ff6b4a;
-    --color-coral-soft: #3a2019;
-    --color-moss: #3ecb85;
-    --color-moss-soft: #103622;
-    --color-gold: #f5c05e;
-    --color-gold-soft: #332a15;
-    --color-pink: #ff5cae;
-    --color-pink-soft: #3a1830;
-    --color-blue: #7086ff;
-    --color-blue-soft: #1a2040;
-    --color-lime: #c8ff5c;
-    --color-lime-soft: #263312;
+    --color-coral: #e0a088;
+    --color-coral-soft: #3a2a22;
+    --color-moss: #9cc4ab;
+    --color-moss-soft: #1e2e24;
+    --color-gold: #e0c07c;
+    --color-gold-soft: #332b18;
+    --color-pink: #e0b5c6;
+    --color-pink-soft: #332027;
+    --color-blue: #b0bce0;
+    --color-blue-soft: #232a3f;
+    --color-lime: #cabce0;
+    --color-lime-soft: #2a2438;
+    --color-highlight: #caa262;
   }
 }
 
@@ -68,6 +70,7 @@
   --color-blue-soft: var(--color-blue-soft);
   --color-lime: var(--color-lime);
   --color-lime-soft: var(--color-lime-soft);
+  --color-highlight: var(--color-highlight);
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
@@ -196,9 +199,10 @@ body {
   position: absolute;
   left: -0.1em;
   right: -0.1em;
-  bottom: 0.06em;
-  height: 0.34em;
-  background: var(--color-lime);
+  bottom: 0.08em;
+  height: 0.3em;
+  background: var(--color-highlight);
+  opacity: 0.7;
   z-index: -1;
-  transform: rotate(-1deg);
+  transform: rotate(-0.6deg);
 }

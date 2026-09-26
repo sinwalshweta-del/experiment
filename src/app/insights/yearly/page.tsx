@@ -15,7 +15,7 @@ function TagList({ items }: { items: string[] }) {
         return (
           <span
             key={item}
-            className={`rounded-full border-2 px-3.5 py-1.5 text-sm font-medium text-ink ${styles.border} ${styles.bgSoft}`}
+            className={`rounded-full border px-3.5 py-1.5 text-sm font-medium text-ink ${styles.border} ${styles.bgSoft}`}
           >
             {item}
           </span>
@@ -44,9 +44,9 @@ export default function YearlyInsightsPage() {
           <button
             key={y}
             onClick={() => setYear(y)}
-            className={`rounded-full border-2 px-5 py-2.5 font-mono text-sm font-medium transition-all duration-150 ${
+            className={`rounded-full border px-5 py-2.5 font-mono text-sm font-medium transition-all duration-150 ${
               year === y
-                ? "border-pink bg-pink text-paper"
+                ? "border-coral bg-coral text-ink"
                 : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"
             }`}
           >
@@ -74,7 +74,7 @@ export default function YearlyInsightsPage() {
             <span className="font-mono text-xs uppercase tracking-[0.18em] text-paper/60">
               Total experiences
             </span>
-            <div className="mt-3 font-display text-6xl font-semibold tracking-tight text-lime sm:text-7xl">
+            <div className="mt-3 font-display text-6xl font-semibold tracking-tight text-highlight sm:text-7xl">
               {snapshot.totalExperiences.toLocaleString()}
             </div>
           </section>

@@ -32,7 +32,7 @@ export default function InsightsPage() {
             This year
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-paper/20 px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-paper/70">
-            <span className="h-1 w-1 rounded-full bg-lime" />
+            <span className="h-1 w-1 rounded-full bg-highlight" />
             Illustrative, not live data
           </span>
         </div>
@@ -40,7 +40,7 @@ export default function InsightsPage() {
           <span className="font-display text-6xl font-semibold tracking-tight sm:text-7xl">
             {CURRENT_YEAR}
           </span>
-          <span className="font-mono text-2xl text-lime sm:text-3xl">
+          <span className="font-mono text-2xl text-highlight sm:text-3xl">
             {total.toLocaleString()}
           </span>
           <span className="pb-2 text-sm text-paper/60">experiences shared</span>
