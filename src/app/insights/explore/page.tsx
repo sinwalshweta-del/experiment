@@ -52,8 +52,12 @@ export default function ExplorePage() {
         key={active}
         className="animate-rise-in mt-10 grid gap-10 border-t border-line pt-10 sm:grid-cols-2"
       >
-        <RankedList title="Most valued" items={data.mostValued} />
-        <RankedList title="Most common challenges" items={data.mostCommonChallenges} />
+        <RankedList title="Most valued" items={data.mostValued} color={data.color} />
+        <RankedList
+          title="Most common challenges"
+          items={data.mostCommonChallenges}
+          color={data.color}
+        />
       </div>
     </div>
   );

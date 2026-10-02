@@ -73,7 +73,7 @@ export const CATEGORY_INSIGHTS: Record<string, CategoryInsight> = {
   },
   work: {
     label: "Work",
-    color: "blue",
+    color: "purple",
     mostValued: ["Reliability", "Communication", "Collaboration"],
     mostCommonChallenges: [
       "Unclear feedback",
@@ -93,7 +93,7 @@ export const CATEGORY_INSIGHTS: Record<string, CategoryInsight> = {
   },
   livingTogether: {
     label: "Living together",
-    color: "gold",
+    color: "tangerine",
     mostValued: ["Respect for space", "Reliability", "Communication"],
     mostCommonChallenges: [
       "Chores left undone",

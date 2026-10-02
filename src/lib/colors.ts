@@ -1,17 +1,14 @@
-export const POP_COLORS = ["pink", "blue", "lime", "coral", "gold", "moss"] as const;
+export const POP_COLORS = ["pink", "purple", "lime", "tangerine", "ink"] as const;
 export type PopColor = (typeof POP_COLORS)[number];
 
 interface PopColorStyle {
-  /** Whisper-soft tint, used as a card/chip background. */
-  bgSoft: string;
-  /** Thin border in the hue's own (still muted) tone. */
-  border: string;
-  /** Muted text/dot color — decorative accents only, not body copy. */
-  text: string;
+  /** Full-strength fill, for a full-bleed section or a solid chip. */
   bgSolid: string;
-  /** Gentle blurred glow shadow on hover — no hard offset. */
-  shadowHover: string;
-  /** Text color to use on top of bgSolid — ink works on every pastel here. */
+  /** The hue used as text/accent on a paper or ink background. */
+  text: string;
+  /** Border in the hue's own color — tabs, underlines, active states. */
+  border: string;
+  /** Text color to use on top of bgSolid, chosen for contrast. */
   onSolid: string;
 }
 
@@ -20,52 +17,36 @@ interface PopColorStyle {
 // out in full even though the shape repeats.
 export const POP_COLOR_STYLES: Record<PopColor, PopColorStyle> = {
   pink: {
-    bgSoft: "bg-pink-soft",
-    border: "border-pink",
-    text: "text-pink",
     bgSolid: "bg-pink",
-    shadowHover: "hover:shadow-[0_14px_28px_-16px_var(--color-pink)]",
-    onSolid: "text-ink",
+    text: "text-pink",
+    border: "border-pink",
+    onSolid: "text-paper",
   },
-  blue: {
-    bgSoft: "bg-blue-soft",
-    border: "border-blue",
-    text: "text-blue",
-    bgSolid: "bg-blue",
-    shadowHover: "hover:shadow-[0_14px_28px_-16px_var(--color-blue)]",
-    onSolid: "text-ink",
+  purple: {
+    bgSolid: "bg-purple",
+    text: "text-purple",
+    border: "border-purple",
+    onSolid: "text-paper",
   },
   lime: {
-    bgSoft: "bg-lime-soft",
-    border: "border-lime",
-    text: "text-lime",
     bgSolid: "bg-lime",
-    shadowHover: "hover:shadow-[0_14px_28px_-16px_var(--color-lime)]",
+    text: "text-lime",
+    border: "border-lime",
     onSolid: "text-ink",
   },
-  coral: {
-    bgSoft: "bg-coral-soft",
-    border: "border-coral",
-    text: "text-coral",
-    bgSolid: "bg-coral",
-    shadowHover: "hover:shadow-[0_14px_28px_-16px_var(--color-coral)]",
+  tangerine: {
+    bgSolid: "bg-tangerine",
+    text: "text-tangerine",
+    border: "border-tangerine",
     onSolid: "text-ink",
   },
-  gold: {
-    bgSoft: "bg-gold-soft",
-    border: "border-gold",
-    text: "text-gold",
-    bgSolid: "bg-gold",
-    shadowHover: "hover:shadow-[0_14px_28px_-16px_var(--color-gold)]",
-    onSolid: "text-ink",
-  },
-  moss: {
-    bgSoft: "bg-moss-soft",
-    border: "border-moss",
-    text: "text-moss",
-    bgSolid: "bg-moss",
-    shadowHover: "hover:shadow-[0_14px_28px_-16px_var(--color-moss)]",
-    onSolid: "text-ink",
+  // The deliberately uncolored option — "Other" doesn't get a loud accent,
+  // which is what makes the other four read as a system rather than decoration.
+  ink: {
+    bgSolid: "bg-ink",
+    text: "text-ink",
+    border: "border-line-strong",
+    onSolid: "text-paper",
   },
 };
 

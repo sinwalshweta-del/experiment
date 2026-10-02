@@ -21,7 +21,7 @@ export function CategoryCard({
       onClick={onClick}
       className="group flex w-full items-center gap-5 border-b border-line py-5 text-left transition-colors first:border-t hover:bg-paper-raised sm:py-6"
     >
-      <span className="font-mono text-sm text-muted">
+      <span className={`font-mono text-sm ${styles.text}`}>
         {String(index + 1).padStart(2, "0")}
       </span>
       <span className="text-2xl">{emoji}</span>

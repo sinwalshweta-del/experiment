@@ -1,58 +1,42 @@
 @import "tailwindcss";
 
 :root {
-  --color-paper: #faf6ee;
+  --color-paper: #f7f3ea;
   --color-paper-raised: #ffffff;
-  --color-ink: #16140f;
-  --color-ink-soft: #4a4539;
-  --color-muted: #837b6a;
-  --color-line: rgba(22, 20, 15, 0.12);
-  --color-line-strong: rgba(22, 20, 15, 0.22);
+  --color-ink: #11110f;
+  --color-ink-soft: #3d3a33;
+  --color-muted: #83806f;
+  --color-line: rgba(17, 17, 15, 0.12);
+  --color-line-strong: rgba(17, 17, 15, 0.22);
 
-  --color-coral: #d97e63;
-  --color-coral-soft: #f7e5de;
-  --color-moss: #7fa88f;
-  --color-moss-soft: #e5f0e8;
-  --color-gold: #d3a94f;
-  --color-gold-soft: #f6ecd8;
-  --color-pink: #d99bb0;
-  --color-pink-soft: #f8e9ef;
-  --color-blue: #92a0d9;
-  --color-blue-soft: #e9ecf8;
-  --color-lime: #b3a0d4;
-  --color-lime-soft: #f0eaf7;
-  --color-highlight: #f3cd9a;
+  /* Four loud accents, used as intentional, meaningful color — never all
+     at once. Each maps to one relationship category (see CATEGORY_META). */
+  --color-pink: #ff4f8b;
+  --color-purple: #7c3cff;
+  --color-lime: #c8ff38;
+  --color-tangerine: #ff6b35;
 
-  --color-pen: #9e1b3a;
-  --color-pen-soft: #f6dee4;
+  --color-pen: #ff4f8b;
+  --color-pen-soft: #ffe1ec;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #131210;
-    --color-paper-raised: #1b1917;
-    --color-ink: #f4efe3;
-    --color-ink-soft: #cfc8b7;
-    --color-muted: #948c78;
-    --color-line: rgba(244, 239, 227, 0.14);
-    --color-line-strong: rgba(244, 239, 227, 0.26);
+    --color-paper: #11110f;
+    --color-paper-raised: #1b1a17;
+    --color-ink: #f7f3ea;
+    --color-ink-soft: #cfcabb;
+    --color-muted: #938d7a;
+    --color-line: rgba(247, 243, 234, 0.14);
+    --color-line-strong: rgba(247, 243, 234, 0.26);
 
-    --color-coral: #e0a088;
-    --color-coral-soft: #3a2a22;
-    --color-moss: #9cc4ab;
-    --color-moss-soft: #1e2e24;
-    --color-gold: #e0c07c;
-    --color-gold-soft: #332b18;
-    --color-pink: #e0b5c6;
-    --color-pink-soft: #332027;
-    --color-blue: #b0bce0;
-    --color-blue-soft: #232a3f;
-    --color-lime: #cabce0;
-    --color-lime-soft: #2a2438;
-    --color-highlight: #caa262;
+    --color-pink: #ff6a9c;
+    --color-purple: #9166ff;
+    --color-lime: #c8ff38;
+    --color-tangerine: #ff8255;
 
-    --color-pen: #e8577a;
-    --color-pen-soft: #3a1620;
+    --color-pen: #ff6a9c;
+    --color-pen-soft: #3a1b26;
   }
 }
 
@@ -64,19 +48,10 @@
   --color-muted: var(--color-muted);
   --color-line: var(--color-line);
   --color-line-strong: var(--color-line-strong);
-  --color-coral: var(--color-coral);
-  --color-coral-soft: var(--color-coral-soft);
-  --color-moss: var(--color-moss);
-  --color-moss-soft: var(--color-moss-soft);
-  --color-gold: var(--color-gold);
-  --color-gold-soft: var(--color-gold-soft);
   --color-pink: var(--color-pink);
-  --color-pink-soft: var(--color-pink-soft);
-  --color-blue: var(--color-blue);
-  --color-blue-soft: var(--color-blue-soft);
+  --color-purple: var(--color-purple);
   --color-lime: var(--color-lime);
-  --color-lime-soft: var(--color-lime-soft);
-  --color-highlight: var(--color-highlight);
+  --color-tangerine: var(--color-tangerine);
   --color-pen: var(--color-pen);
   --color-pen-soft: var(--color-pen-soft);
 
@@ -189,34 +164,3 @@ body {
   background: var(--color-line);
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 26s linear infinite;
-}
-
-.mark-highlight {
-  position: relative;
-  white-space: nowrap;
-  z-index: 0;
-}
-
-.mark-highlight::after {
-  content: "";
-  position: absolute;
-  left: -0.1em;
-  right: -0.1em;
-  bottom: 0.08em;
-  height: 0.3em;
-  background: var(--color-highlight);
-  opacity: 0.7;
-  z-index: -1;
-  transform: rotate(-0.6deg);
-}

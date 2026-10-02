@@ -6,6 +6,14 @@ import { SampleBadge } from "@/components/ui/SampleBadge";
 import { BarMeter } from "@/components/ui/BarMeter";
 import { TallyMarks } from "@/components/ui/TallyMarks";
 import { AVAILABLE_YEARS, YEAR_SNAPSHOTS } from "@/lib/mockData/insights";
+import { CATEGORY_META, ExperienceCategory } from "@/lib/types";
+
+const COLOR_BY_SHORT_LABEL = Object.fromEntries(
+  (Object.keys(CATEGORY_META) as ExperienceCategory[]).map((key) => [
+    CATEGORY_META[key].short,
+    CATEGORY_META[key].color,
+  ])
+);
 
 function TextList({ items }: { items: string[] }) {
   return (
@@ -63,14 +71,14 @@ export default function YearlyInsightsPage() {
         <div key={year} className="animate-rise-in mt-14 space-y-16">
           <SampleBadge>Sample / demo data</SampleBadge>
 
-          <section>
-            <span className="font-mono text-xs uppercase tracking-[0.1em] text-muted">
+          <section className="-mx-5 bg-ink px-5 py-14 text-paper sm:-mx-8 sm:px-8 sm:py-20">
+            <span className="font-mono text-xs uppercase tracking-[0.1em] text-paper/60">
               Total experiences
             </span>
-            <TallyMarks count={60} size="md" className="mt-6 text-ink" />
-            <div className="mt-3 font-display text-5xl font-bold tracking-tight text-pen sm:text-6xl">
+            <div className="mt-3 font-display text-[clamp(3.5rem,12vw,7rem)] font-bold leading-[0.85] tracking-tight text-purple">
               {snapshot.totalExperiences.toLocaleString()}
             </div>
+            <TallyMarks count={60} size="md" className="mt-6 text-purple" />
           </section>
 
           <section>
@@ -79,7 +87,13 @@ export default function YearlyInsightsPage() {
             </h2>
             <div className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
               {snapshot.mostCommonRelationshipTypes.map((item, i) => (
-                <BarMeter key={item.label} label={item.label} pct={item.pct} index={i} />
+                <BarMeter
+                  key={item.label}
+                  label={item.label}
+                  pct={item.pct}
+                  index={i}
+                  color={COLOR_BY_SHORT_LABEL[item.label]}
+                />
               ))}
             </div>
           </section>

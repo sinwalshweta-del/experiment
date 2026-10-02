@@ -16,11 +16,11 @@ export const CATEGORY_META: Record<
   { label: string; emoji: string; short: string; color: PopColor }
 > = {
   dating: { label: "Someone you dated", emoji: "❤️", short: "Dating", color: "pink" },
-  colleague: { label: "A colleague", emoji: "💼", short: "Colleague", color: "blue" },
+  colleague: { label: "A colleague", emoji: "💼", short: "Colleague", color: "purple" },
   friend: { label: "A friend", emoji: "🤝", short: "Friend", color: "lime" },
-  manager: { label: "A manager", emoji: "👔", short: "Manager", color: "coral" },
-  roommate: { label: "A roommate", emoji: "🏠", short: "Roommate", color: "gold" },
-  other: { label: "Someone else", emoji: "✨", short: "Other", color: "moss" },
+  manager: { label: "A manager", emoji: "👔", short: "Manager", color: "purple" },
+  roommate: { label: "A roommate", emoji: "🏠", short: "Roommate", color: "tangerine" },
+  other: { label: "Someone else", emoji: "✨", short: "Other", color: "ink" },
 };
 
 export const AGE_GROUPS = ["18-24", "25-34", "35-44", "45+"] as const;
