@@ -33,11 +33,13 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* This year, as a number that takes over the screen */}
-      <section className="bg-ink px-5 py-16 text-paper sm:px-8 sm:py-24">
+      {/* This year, as a number that takes over the screen.
+          Fixed colors — this block stays black-with-cream-text regardless
+          of system theme, matching the landing page's brand blocks. */}
+      <section className="bg-black px-5 py-16 text-cream sm:px-8 sm:py-24">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
-            <span className="font-display text-3xl font-bold tracking-tight text-paper/60 sm:text-4xl">
+            <span className="font-display text-3xl font-bold tracking-tight text-cream/60 sm:text-4xl">
               {CURRENT_YEAR}
             </span>
             <SampleBadge>Illustrative, not live data</SampleBadge>
@@ -45,7 +47,7 @@ export default function InsightsPage() {
           <div className="mt-4 font-display text-[clamp(4.5rem,15vw,9rem)] font-bold leading-[0.8] tracking-tight text-lime">
             {total.toLocaleString()}
           </div>
-          <p className="mt-4 font-mono text-xs uppercase tracking-[0.1em] text-paper/55">
+          <p className="mt-4 font-mono text-xs uppercase tracking-[0.1em] text-cream/55">
             experiences shared
           </p>
         </div>
@@ -54,21 +56,21 @@ export default function InsightsPage() {
       {/* The claim — full-bleed purple, proof as an oversized mark */}
       <section className="bg-purple px-5 py-20 sm:px-8 sm:py-28">
         <div className="mx-auto max-w-6xl">
-          <p className="font-display text-2xl font-bold leading-[1.1] tracking-tight text-paper sm:text-4xl">
+          <p className="font-display text-2xl font-bold leading-[1.1] tracking-tight text-cream sm:text-4xl">
             {headlineStat.trait} keeps coming up.
           </p>
           <div className="relative mt-2">
-            <div className="font-display text-[clamp(7rem,18vw,13rem)] font-bold leading-[0.82] text-paper">
+            <div className="font-display text-[clamp(7rem,18vw,13rem)] font-bold leading-[0.82] text-cream">
               {headlineStat.pct}
               <span className="text-[0.35em] align-top">%</span>
             </div>
             <TallyMarks
               count={headlineStat.pct}
               size="md"
-              className="mt-2 text-paper sm:-mt-10"
+              className="mt-2 text-cream sm:-mt-10"
             />
           </div>
-          <p className="mt-6 max-w-sm text-sm leading-relaxed text-paper/70">
+          <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/70">
             of experiences mentioned {headlineStat.trait.toLowerCase()} as an
             important factor. Sample data — not live.
           </p>

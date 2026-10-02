@@ -18,6 +18,13 @@
 
   --color-pen: #ff4f8b;
   --color-pen-soft: #ffe1ec;
+
+  /* Fixed — do NOT flip with prefers-color-scheme. The full-bleed brand
+     blocks (hero, stat bleed, claim sections) are a deliberate, always-lit
+     composition: lime/pink/ink always need black text, the ink block
+     always needs cream text, regardless of the visitor's system theme. */
+  --color-black: #11110f;
+  --color-cream: #f7f3ea;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -54,6 +61,8 @@
   --color-tangerine: var(--color-tangerine);
   --color-pen: var(--color-pen);
   --color-pen-soft: var(--color-pen-soft);
+  --color-black: var(--color-black);
+  --color-cream: var(--color-cream);
 
   --font-display: var(--font-display);
   --font-editorial: var(--font-editorial);

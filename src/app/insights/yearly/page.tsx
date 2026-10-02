@@ -71,8 +71,8 @@ export default function YearlyInsightsPage() {
         <div key={year} className="animate-rise-in mt-14 space-y-16">
           <SampleBadge>Sample / demo data</SampleBadge>
 
-          <section className="-mx-5 bg-ink px-5 py-14 text-paper sm:-mx-8 sm:px-8 sm:py-20">
-            <span className="font-mono text-xs uppercase tracking-[0.1em] text-paper/60">
+          <section className="-mx-5 bg-black px-5 py-14 text-cream sm:-mx-8 sm:px-8 sm:py-20">
+            <span className="font-mono text-xs uppercase tracking-[0.1em] text-cream/60">
               Total experiences
             </span>
             <div className="mt-3 font-display text-[clamp(3.5rem,12vw,7rem)] font-bold leading-[0.85] tracking-tight text-purple">
