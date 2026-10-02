@@ -23,8 +23,8 @@
   --color-lime-soft: #f0eaf7;
   --color-highlight: #f3cd9a;
 
-  --color-signature: #c1502e;
-  --color-signature-soft: #f4ddd0;
+  --color-pen: #9e1b3a;
+  --color-pen-soft: #f6dee4;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -51,8 +51,8 @@
     --color-lime-soft: #2a2438;
     --color-highlight: #caa262;
 
-    --color-signature: #e0794f;
-    --color-signature-soft: #3a2015;
+    --color-pen: #e8577a;
+    --color-pen-soft: #3a1620;
   }
 }
 
@@ -77,10 +77,11 @@
   --color-lime: var(--color-lime);
   --color-lime-soft: var(--color-lime-soft);
   --color-highlight: var(--color-highlight);
-  --color-signature: var(--color-signature);
-  --color-signature-soft: var(--color-signature-soft);
+  --color-pen: var(--color-pen);
+  --color-pen-soft: var(--color-pen-soft);
 
   --font-display: var(--font-display);
+  --font-editorial: var(--font-editorial);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
 }
@@ -92,12 +93,17 @@ body {
 }
 
 ::selection {
-  background: var(--color-signature);
+  background: var(--color-pen);
   color: #fff7f2;
 }
 
 .font-display {
-  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-editorial {
+  font-family: var(--font-editorial), ui-serif, Georgia, serif;
+  font-style: italic;
 }
 
 .font-mono {
@@ -140,7 +146,7 @@ body {
   height: 10px;
   border-radius: 999px;
   background: var(--color-line);
-  accent-color: var(--color-signature);
+  accent-color: var(--color-pen);
   cursor: pointer;
 }
 
@@ -150,7 +156,7 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-signature);
+  background: var(--color-pen);
   border: 5px solid var(--color-paper-raised);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   cursor: grab;
@@ -166,7 +172,7 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-signature);
+  background: var(--color-pen);
   border: 5px solid var(--color-paper-raised);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   cursor: grab;

@@ -21,10 +21,11 @@ export default function ChooseExperiencePage() {
       title="Okay, who are we talking about?"
       subtitle="You know them. We don't. That's the point. Pick the kind of relationship this experience was."
     >
-      <div className="flex flex-col gap-3">
-        {(Object.keys(CATEGORY_META) as ExperienceCategory[]).map((key) => (
+      <div>
+        {(Object.keys(CATEGORY_META) as ExperienceCategory[]).map((key, i) => (
           <CategoryCard
             key={key}
+            index={i}
             emoji={CATEGORY_META[key].emoji}
             label={CATEGORY_META[key].label}
             color={CATEGORY_META[key].color}

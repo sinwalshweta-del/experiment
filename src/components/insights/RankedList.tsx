@@ -1,30 +1,18 @@
-import { PopColor, POP_COLOR_STYLES } from "@/lib/colors";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 
-export function RankedList({
-  title,
-  items,
-  color,
-}: {
-  title: string;
-  items: string[];
-  color: PopColor;
-}) {
-  const styles = POP_COLOR_STYLES[color];
-
+export function RankedList({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
-      <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-muted">
-        {title}
-      </h3>
-      <ol className="mt-4 space-y-3">
+      <SectionLabel>{title}</SectionLabel>
+      <ol className="mt-6 space-y-5">
         {items.map((item, i) => (
-          <li key={item} className="flex items-center gap-3">
-            <span
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-display text-base font-semibold ${styles.bgSolid} ${styles.onSolid}`}
-            >
-              {i + 1}
+          <li key={item} className="flex items-baseline gap-4">
+            <span className="font-display text-3xl font-bold leading-none text-line sm:text-4xl">
+              {String(i + 1).padStart(2, "0")}
             </span>
-            <span className="text-base text-ink">{item}</span>
+            <span className="font-display text-xl font-bold sm:text-2xl">
+              {item}
+            </span>
           </li>
         ))}
       </ol>

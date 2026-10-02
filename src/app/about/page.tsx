@@ -5,7 +5,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 py-14 sm:px-8 sm:py-20">
       <SectionLabel>About</SectionLabel>
-      <h1 className="mt-4 font-display text-4xl font-medium tracking-tight sm:text-5xl">
+      <h1 className="mt-4 font-display text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl">
         What GATHER actually is.
       </h1>
       <div className="mt-8 space-y-5 text-lg leading-relaxed text-ink-soft">

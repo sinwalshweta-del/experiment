@@ -13,16 +13,16 @@ export default function Footer() {
           </p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft">
-          <Link href="/share" className="hover:text-signature">
+          <Link href="/share" className="hover:text-pen">
             Share an experience
           </Link>
-          <Link href="/insights" className="hover:text-signature">
+          <Link href="/insights" className="hover:text-pen">
             Insights
           </Link>
-          <Link href="/insights/explore" className="hover:text-signature">
+          <Link href="/insights/explore" className="hover:text-pen">
             Explore
           </Link>
-          <Link href="/about" className="hover:text-signature">
+          <Link href="/about" className="hover:text-pen">
             About
           </Link>
         </div>

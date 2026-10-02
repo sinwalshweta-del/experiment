@@ -1,11 +1,13 @@
 import { PopColor, POP_COLOR_STYLES } from "@/lib/colors";
 
 export function CategoryCard({
+  index,
   emoji,
   label,
   color,
   onClick,
 }: {
+  index: number;
   emoji: string;
   label: string;
   color: PopColor;
@@ -17,15 +19,14 @@ export function CategoryCard({
     <button
       type="button"
       onClick={onClick}
-      className={`group flex w-full items-center justify-between gap-4 rounded-2xl border px-5 py-5 text-left transition-all duration-200 hover:translate-x-1 sm:px-6 sm:py-6 ${styles.border} ${styles.bgSoft} ${styles.shadowHover}`}
+      className="group flex w-full items-center gap-5 border-b border-line py-5 text-left transition-colors first:border-t hover:bg-paper-raised sm:py-6"
     >
-      <span className="flex items-center gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-paper-raised text-2xl">
-          {emoji}
-        </span>
-        <span className="font-display text-xl font-medium leading-tight sm:text-2xl">
-          {label}
-        </span>
+      <span className="font-mono text-sm text-muted">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <span className="text-2xl">{emoji}</span>
+      <span className="flex-1 font-display text-xl font-bold sm:text-2xl">
+        {label}
       </span>
       <span
         className={`text-xl transition-transform duration-200 group-hover:translate-x-1 ${styles.text}`}

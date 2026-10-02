@@ -1,3 +1,5 @@
+import { TallyMarks } from "@/components/ui/TallyMarks";
+
 export function ProgressBar({
   step,
   total,
@@ -7,22 +9,16 @@ export function ProgressBar({
   total: number;
   label?: string;
 }) {
-  const pct = Math.round((step / total) * 100);
   return (
-    <div className="mb-10">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-          {label ?? "Progress"}
-        </span>
+    <div className="mb-10 flex items-center justify-between gap-4">
+      <span className="font-mono text-xs uppercase tracking-[0.1em] text-muted">
+        {label ?? "Progress"}
+      </span>
+      <div className="flex items-center gap-3">
+        <TallyMarks count={step} size="sm" animate={false} className="text-pen" />
         <span className="font-mono text-xs text-muted">
           {String(step).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
-      </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-line">
-        <div
-          className="h-full rounded-full bg-signature transition-all duration-500 ease-out"
-          style={{ width: `${pct}%` }}
-        />
       </div>
     </div>
   );

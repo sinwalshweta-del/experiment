@@ -8,11 +8,7 @@ import { isDemographicsComplete, useSurvey } from "@/lib/store/surveyStore";
 import { addSubmission } from "@/lib/submissions";
 import { ExperienceSubmission } from "@/lib/types";
 
-const PROMPTS = [
-  "What did they do well?",
-  "What was difficult?",
-  "What did you learn?",
-];
+const PROMPTS = ["What did they do well?", "What was difficult?", "What did you learn?"];
 
 export default function StoryPage() {
   const router = useRouter();
@@ -53,8 +49,8 @@ export default function StoryPage() {
   return (
     <WizardShell
       step={4}
-      title="Okay, now spill."
-      subtitle="This part is optional, but it's where the real texture comes from."
+      title="Okay, tell us what happened."
+      subtitle="Be honest. This part is optional, but it's where the real texture comes from."
       backHref="/share/survey"
     >
       <label htmlFor="story" className="sr-only">
@@ -66,22 +62,15 @@ export default function StoryPage() {
         onChange={(e) => setStory(e.target.value)}
         rows={7}
         maxLength={1500}
-        placeholder="The good, the weird, the unexpectedly wholesome, the 🚩 — whatever stood out."
-        className="w-full rounded-2xl border border-line-strong bg-paper-raised p-5 text-base leading-relaxed text-ink placeholder:text-muted focus:border-signature focus:outline-none"
+        placeholder="The good, the weird, the unexpectedly wholesome — whatever stood out."
+        className="w-full border border-line-strong bg-paper-raised p-5 text-base leading-relaxed text-ink placeholder:text-muted focus:border-pen focus:outline-none"
       />
-      <div className="mt-3 flex flex-wrap gap-2">
-        {PROMPTS.map((p) => (
-          <span
-            key={p}
-            className="rounded-full border border-line px-3 py-1.5 text-xs text-muted"
-          >
-            {p}
-          </span>
-        ))}
-      </div>
+      <p className="mt-3 text-xs text-muted">
+        {PROMPTS.join("   /   ")}
+      </p>
 
-      <div className="mt-8 rounded-2xl border border-line-strong bg-gold-soft p-5">
-        <p className="text-sm font-medium text-ink">Keep it anonymous.</p>
+      <div className="mt-8 border-l-2 border-pen pl-5">
+        <p className="text-sm font-bold text-ink">Keep it anonymous.</p>
         <p className="mt-1 text-sm leading-relaxed text-ink-soft">
           Don&rsquo;t include names, locations, workplaces, usernames or
           other identifying details. GATHER is about patterns, not publicly

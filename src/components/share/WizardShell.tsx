@@ -1,6 +1,5 @@
 import Link from "next/link";
-
-const STEPS = ["Who", "About you", "The survey", "The story"];
+import { TallyMarks } from "@/components/ui/TallyMarks";
 
 export function WizardShell({
   step,
@@ -17,16 +16,9 @@ export function WizardShell({
 }) {
   return (
     <div className="mx-auto w-full max-w-2xl px-5 py-12 sm:px-8 sm:py-16">
-      <div className="mb-8 flex items-center gap-2">
-        {STEPS.map((s, i) => (
-          <div
-            key={s}
-            className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-              i + 1 <= step ? "bg-signature" : "bg-line"
-            }`}
-            title={s}
-          />
-        ))}
+      <div className="mb-8 flex items-center gap-3">
+        <TallyMarks count={step} size="sm" animate={false} className="text-muted" />
+        <span className="font-mono text-xs text-muted">step {step} of 4</span>
       </div>
 
       {backHref && (
@@ -38,7 +30,7 @@ export function WizardShell({
         </Link>
       )}
 
-      <h1 className="animate-rise-in font-display text-[clamp(1.75rem,5vw,2.75rem)] font-medium leading-[1.05] tracking-tight">
+      <h1 className="animate-rise-in font-display text-[clamp(1.75rem,5vw,2.75rem)] font-bold leading-[1.05] tracking-tight">
         {title}
       </h1>
       {subtitle && (

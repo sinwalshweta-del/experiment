@@ -12,12 +12,11 @@ const KEYS = Object.keys(CATEGORY_INSIGHTS);
 export default function ExplorePage() {
   const [active, setActive] = useState(KEYS[0]);
   const data = CATEGORY_INSIGHTS[active];
-  const styles = POP_COLOR_STYLES[data.color];
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
       <SectionLabel>Explore</SectionLabel>
-      <h1 className="mt-4 font-display text-[clamp(2.25rem,6vw,3.75rem)] font-medium leading-[1.02] tracking-tight">
+      <h1 className="mt-4 font-display text-[clamp(2.25rem,6vw,3.75rem)] font-bold leading-[0.98] tracking-tight">
         Explore by experience
       </h1>
       <p className="mt-3 max-w-xl text-lg text-ink-soft">
@@ -25,7 +24,7 @@ export default function ExplorePage() {
         what people are noticing.
       </p>
 
-      <div className="mt-10 flex flex-wrap gap-2">
+      <div className="mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-2">
         {KEYS.map((key) => {
           const isActive = active === key;
           const tabStyles = POP_COLOR_STYLES[CATEGORY_INSIGHTS[key].color];
@@ -33,10 +32,10 @@ export default function ExplorePage() {
             <button
               key={key}
               onClick={() => setActive(key)}
-              className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-150 ${
+              className={`pb-0.5 text-lg font-medium transition-colors ${
                 isActive
-                  ? `${tabStyles.border} ${tabStyles.bgSolid} ${tabStyles.onSolid}`
-                  : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"
+                  ? `border-b-2 ${tabStyles.border} text-ink`
+                  : "text-muted hover:text-ink"
               }`}
             >
               {CATEGORY_INSIGHTS[key].label}
@@ -51,14 +50,10 @@ export default function ExplorePage() {
 
       <div
         key={active}
-        className={`animate-rise-in mt-8 grid gap-10 rounded-3xl border bg-paper-raised p-8 sm:grid-cols-2 sm:p-12 ${styles.border}`}
+        className="animate-rise-in mt-10 grid gap-10 border-t border-line pt-10 sm:grid-cols-2"
       >
-        <RankedList title="Most valued" items={data.mostValued} color="moss" />
-        <RankedList
-          title="Most common challenges"
-          items={data.mostCommonChallenges}
-          color="pink"
-        />
+        <RankedList title="Most valued" items={data.mostValued} />
+        <RankedList title="Most common challenges" items={data.mostCommonChallenges} />
       </div>
     </div>
   );

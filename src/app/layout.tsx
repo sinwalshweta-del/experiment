@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, Space_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Fraunces, Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
 import { SurveyProvider } from "@/lib/store/surveyStore";
 
-const fraunces = Fraunces({
+const bricolage = Bricolage_Grotesque({
   variable: "--font-display",
   subsets: ["latin"],
   weight: "variable",
+});
+
+const fraunces = Fraunces({
+  variable: "--font-editorial",
+  subsets: ["latin"],
+  weight: "variable",
   axes: ["opsz", "SOFT", "WONK"],
-  style: ["normal", "italic"],
+  style: ["italic"],
 });
 
 const inter = Inter({
@@ -34,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${spaceMono.variable} h-full antialiased`}
+      className={`${bricolage.variable} ${fraunces.variable} ${inter.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
         <SurveyProvider>

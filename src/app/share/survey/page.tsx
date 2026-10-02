@@ -64,36 +64,26 @@ export default function SurveyPage() {
   }
 
   return (
-    <WizardShell step={3} title="Let's get into it.">
-      <ProgressBar
-        step={index + 1}
-        total={questions.length}
-        label="The survey"
-      />
+    <WizardShell key={question.id} step={3} title={question.prompt}>
+      <ProgressBar step={index + 1} total={questions.length} label="The survey" />
 
-      <div key={question.id} className="animate-rise-in min-h-[220px]">
-        <h2 className="font-display text-[clamp(1.6rem,5vw,2.5rem)] font-medium leading-[1.1]">
-          {question.prompt}
-        </h2>
-
-        {question.type === "slider" ? (
-          <SliderQuestion
-            value={typeof currentValue === "number" ? currentValue : 50}
+      {question.type === "slider" ? (
+        <SliderQuestion
+          value={typeof currentValue === "number" ? currentValue : 50}
+          onChange={(v) => setAnswer(question.id, v)}
+          lowLabel={question.lowLabel}
+          highLabel={question.highLabel}
+        />
+      ) : (
+        <div className="mt-2">
+          <ChipGroup
+            columns={1}
+            options={question.options}
+            value={typeof currentValue === "string" ? currentValue : null}
             onChange={(v) => setAnswer(question.id, v)}
-            lowLabel={question.lowLabel}
-            highLabel={question.highLabel}
           />
-        ) : (
-          <div className="mt-8">
-            <ChipGroup
-              columns={1}
-              options={question.options}
-              value={typeof currentValue === "string" ? currentValue : null}
-              onChange={(v) => setAnswer(question.id, v)}
-            />
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="mt-10 flex items-center justify-between">
         <Button variant="ghost" onClick={handleBack}>
