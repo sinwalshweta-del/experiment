@@ -4,7 +4,7 @@ import { useState } from "react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { SampleBadge } from "@/components/ui/SampleBadge";
 import { BarMeter } from "@/components/ui/BarMeter";
-import { TallyMarks } from "@/components/ui/TallyMarks";
+import { MarkField } from "@/components/ui/MarkField";
 import { AVAILABLE_YEARS, YEAR_SNAPSHOTS } from "@/lib/mockData/insights";
 import { CATEGORY_META, ExperienceCategory } from "@/lib/types";
 
@@ -64,21 +64,25 @@ export default function YearlyInsightsPage() {
             {year} is still being written.
           </p>
           <p className="mt-2 text-ink-soft">
-            Come back once the year wraps — this space is ready for it.
+            Come back once the year wraps. This space is ready for it.
           </p>
         </div>
       ) : (
         <div key={year} className="animate-rise-in mt-14 space-y-16">
           <SampleBadge>Sample / demo data</SampleBadge>
 
-          <section className="-mx-5 bg-black px-5 py-14 text-cream sm:-mx-8 sm:px-8 sm:py-20">
-            <span className="font-mono text-xs uppercase tracking-[0.1em] text-cream/60">
-              Total experiences
-            </span>
-            <div className="mt-3 font-display text-[clamp(3.5rem,12vw,7rem)] font-bold leading-[0.85] tracking-tight text-purple">
-              {snapshot.totalExperiences.toLocaleString()}
+          <section className="grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:items-center lg:gap-16">
+            <div>
+              <span className="font-mono text-xs uppercase tracking-[0.1em] text-muted">
+                Total experiences
+              </span>
+              <div className="mt-2 text-3xl font-bold tracking-tight text-ink">
+                {snapshot.totalExperiences.toLocaleString()}
+              </div>
             </div>
-            <TallyMarks count={60} size="md" className="mt-6 text-purple" />
+            <div className="h-56 sm:h-72">
+              <MarkField seed={21 + year} count={90} />
+            </div>
           </section>
 
           <section>

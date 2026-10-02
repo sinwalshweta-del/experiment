@@ -44,7 +44,7 @@ export const WHAT_PEOPLE_VALUE: TraitStat[] = [
 export const INSIGHT_CARDS: InsightCard[] = [
   {
     title: "Communication is still everything.",
-    body: "Across relationship experiences, communication continues to be one of the most frequently mentioned themes — good or bad.",
+    body: "Across relationship experiences, communication continues to be one of the most frequently mentioned themes, good or bad.",
   },
   {
     title: "Consistency > grand gestures.",

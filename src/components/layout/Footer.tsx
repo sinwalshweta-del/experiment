@@ -28,8 +28,8 @@ export default function Footer() {
         </div>
       </div>
       <p className="mx-auto mt-8 max-w-6xl text-xs text-muted">
-        GATHER is anonymous by design. No names, no profiles, no doxxing —
-        just patterns.
+        GATHER is anonymous by design. No names, no profiles, no doxxing.
+        Just patterns.
       </p>
     </footer>
   );

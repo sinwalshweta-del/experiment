@@ -62,7 +62,7 @@ export default function StoryPage() {
         onChange={(e) => setStory(e.target.value)}
         rows={7}
         maxLength={1500}
-        placeholder="The good, the weird, the unexpectedly wholesome — whatever stood out."
+        placeholder="The good, the weird, the unexpectedly wholesome, whatever stood out."
         className="w-full border border-line-strong bg-paper-raised p-5 text-base leading-relaxed text-ink placeholder:text-muted focus:border-pen focus:outline-none"
       />
       <p className="mt-3 text-xs text-muted">

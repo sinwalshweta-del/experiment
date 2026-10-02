@@ -11,17 +11,17 @@ export default function AboutPage() {
       <div className="mt-8 space-y-5 text-lg leading-relaxed text-ink-soft">
         <p>
           GATHER is an anonymous place to share experiences you&rsquo;ve had
-          with other people — partners, exes, friends, colleagues, managers,
+          with other people: partners, exes, friends, colleagues, managers,
           roommates, mentors, all of it.
         </p>
         <p>
           We&rsquo;re not here to rate people or expose anyone. One story is
-          just a story. But thousands of stories start to form a pattern —
+          just a story, but thousands of stories start to form a pattern,
           and those patterns are what we call Human Insights.
         </p>
         <p>
           Your experience stays anonymous. The insight doesn&rsquo;t. No
-          names, no profiles, no doxxing — just what people are actually
+          names, no profiles, no doxxing, just what people are actually
           experiencing, in aggregate.
         </p>
       </div>

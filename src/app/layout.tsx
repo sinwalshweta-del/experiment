@@ -31,7 +31,7 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GATHER — Human Insights",
+  title: "GATHER · Human Insights",
   description:
     "Share an anonymous experience about someone you've known, and see what thousands of experiences reveal about people.",
 };

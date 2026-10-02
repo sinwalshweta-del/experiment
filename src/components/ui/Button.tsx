@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ButtonHTMLAttributes } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "onLight";
+type Variant = "primary" | "secondary" | "ghost";
 type Size = "md" | "lg";
 
 const base =
@@ -11,10 +11,6 @@ const variants: Record<Variant, string> = {
   primary: "bg-pen text-paper",
   secondary: "bg-ink text-paper",
   ghost: "text-ink hover:text-pen",
-  // Fixed colors, not theme-adaptive — for CTAs placed on top of a
-  // full-bleed brand color block (lime/pink), which stays the same in
-  // light and dark mode, so its buttons can't flip with the system theme.
-  onLight: "bg-black text-cream",
 };
 
 const sizes: Record<Size, string> = {
