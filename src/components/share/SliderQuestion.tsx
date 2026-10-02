@@ -22,16 +22,14 @@ export function SliderQuestion({
   const clamped = Math.min(96, Math.max(4, value));
 
   return (
-    <div className="pt-10">
-      <div className="relative mb-3 h-10">
+    <div className="pt-12">
+      <div className="relative mb-4 h-12">
         <div
           className="absolute -top-1 flex -translate-x-1/2 flex-col items-center transition-[left] duration-100"
           style={{ left: `${clamped}%` }}
         >
-          <span className="text-2xl leading-none">{reaction(value)}</span>
-          <span className="mt-1 font-mono text-[0.65rem] text-muted">
-            {value}
-          </span>
+          <span className="text-3xl leading-none">{reaction(value)}</span>
+          <span className="mt-1.5 font-mono text-xs text-muted">{value}</span>
         </div>
       </div>
       <input
@@ -43,7 +41,7 @@ export function SliderQuestion({
         className="gather-slider"
         aria-label={`${lowLabel} to ${highLabel}`}
       />
-      <div className="mt-3 flex items-center justify-between text-sm text-ink-soft">
+      <div className="mt-4 flex items-center justify-between text-base font-medium text-ink-soft">
         <span>{lowLabel}</span>
         <span>{highLabel}</span>
       </div>

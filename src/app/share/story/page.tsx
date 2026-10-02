@@ -67,7 +67,7 @@ export default function StoryPage() {
         rows={7}
         maxLength={1500}
         placeholder="The good, the weird, the unexpectedly wholesome, the 🚩 — whatever stood out."
-        className="w-full rounded-2xl border border-line-strong bg-paper-raised p-5 text-base leading-relaxed text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+        className="w-full rounded-2xl border border-line-strong bg-paper-raised p-5 text-base leading-relaxed text-ink placeholder:text-muted focus:border-signature focus:outline-none"
       />
       <div className="mt-3 flex flex-wrap gap-2">
         {PROMPTS.map((p) => (

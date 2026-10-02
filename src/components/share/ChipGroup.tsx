@@ -22,7 +22,7 @@ export function ChipGroup({
             key={option}
             type="button"
             onClick={() => onChange(option)}
-            className={`rounded-2xl border px-4 py-3.5 text-left text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
+            className={`rounded-2xl border px-5 py-4 text-left text-base font-medium transition-all duration-150 active:scale-[0.98] ${
               active
                 ? "border-ink bg-ink text-paper"
                 : "border-line-strong text-ink hover:border-ink"

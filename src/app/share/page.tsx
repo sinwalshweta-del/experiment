@@ -21,7 +21,7 @@ export default function ChooseExperiencePage() {
       title="Okay, who are we talking about?"
       subtitle="You know them. We don't. That's the point. Pick the kind of relationship this experience was."
     >
-      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-6">
+      <div className="flex flex-col gap-3">
         {(Object.keys(CATEGORY_META) as ExperienceCategory[]).map((key) => (
           <CategoryCard
             key={key}

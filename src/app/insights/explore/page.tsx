@@ -17,7 +17,7 @@ export default function ExplorePage() {
   return (
     <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
       <SectionLabel>Explore</SectionLabel>
-      <h1 className="mt-4 font-display text-4xl font-medium tracking-tight sm:text-5xl">
+      <h1 className="mt-4 font-display text-[clamp(2.25rem,6vw,3.75rem)] font-medium leading-[1.02] tracking-tight">
         Explore by experience
       </h1>
       <p className="mt-3 max-w-xl text-lg text-ink-soft">

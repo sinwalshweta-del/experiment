@@ -17,13 +17,21 @@ export function CategoryCard({
     <button
       type="button"
       onClick={onClick}
-      className={`group flex flex-col items-start gap-4 rounded-3xl border p-6 text-left transition-all duration-200 hover:-translate-y-1 ${styles.border} ${styles.bgSoft} ${styles.shadowHover}`}
+      className={`group flex w-full items-center justify-between gap-4 rounded-2xl border px-5 py-5 text-left transition-all duration-200 hover:translate-x-1 sm:px-6 sm:py-6 ${styles.border} ${styles.bgSoft} ${styles.shadowHover}`}
     >
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-paper-raised text-2xl transition-transform duration-200 group-hover:scale-110">
-        {emoji}
+      <span className="flex items-center gap-4">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-paper-raised text-2xl">
+          {emoji}
+        </span>
+        <span className="font-display text-xl font-medium leading-tight sm:text-2xl">
+          {label}
+        </span>
       </span>
-      <span className="font-display text-xl font-medium leading-tight">
-        {label}
+      <span
+        className={`text-xl transition-transform duration-200 group-hover:translate-x-1 ${styles.text}`}
+        aria-hidden
+      >
+        &rarr;
       </span>
     </button>
   );

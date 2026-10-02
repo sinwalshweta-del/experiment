@@ -72,7 +72,7 @@ export default function SurveyPage() {
       />
 
       <div key={question.id} className="animate-rise-in min-h-[220px]">
-        <h2 className="font-display text-2xl font-medium leading-snug sm:text-3xl">
+        <h2 className="font-display text-[clamp(1.6rem,5vw,2.5rem)] font-medium leading-[1.1]">
           {question.prompt}
         </h2>
 

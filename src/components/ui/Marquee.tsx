@@ -9,7 +9,7 @@ export function Marquee({ items }: { items: string[] }) {
             key={i}
             className="flex items-center gap-8 font-mono text-xs uppercase tracking-[0.14em] text-muted"
           >
-            <span className="text-coral">&bull;</span>
+            <span className="text-signature">&bull;</span>
             {item}
           </span>
         ))}

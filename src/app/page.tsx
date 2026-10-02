@@ -1,17 +1,11 @@
 import { LinkButton } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { SampleBadge } from "@/components/ui/SampleBadge";
-import { BarMeter } from "@/components/ui/BarMeter";
 import { Marquee } from "@/components/ui/Marquee";
 import { WHAT_PEOPLE_VALUE } from "@/lib/mockData/insights";
 import { CATEGORY_META } from "@/lib/types";
 import { POP_COLOR_STYLES } from "@/lib/colors";
 
-const previewStats = [
-  WHAT_PEOPLE_VALUE[0], // Communication
-  WHAT_PEOPLE_VALUE[1], // Reliability
-  WHAT_PEOPLE_VALUE[4], // Emotional availability
-];
+const headlineStat = WHAT_PEOPLE_VALUE[0]; // Communication, 82%
 
 const TICKER = [
   "NO NAMES",
@@ -27,84 +21,106 @@ export default function Home() {
     <div>
       <Marquee items={TICKER} />
 
-      <section className="mx-auto max-w-6xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
-        <div className="animate-rise-in flex items-baseline gap-3">
-          <h1 className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-            GATHER
-          </h1>
-          <span className="font-display text-xl italic text-coral sm:text-2xl">
-            Human Insights
-          </span>
-        </div>
-
-        <h2 className="animate-rise-in mt-8 max-w-3xl font-display text-[2.6rem] font-medium leading-[1.05] tracking-tight sm:text-6xl sm:leading-[1.02]">
-          You&rsquo;ve experienced people.
-          <br />
-          Now let&rsquo;s <span className="mark-highlight">learn from it</span>.
-        </h2>
-
-        <p className="animate-rise-in mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
-          Share an anonymous experience about someone you&rsquo;ve known —
-          and see what thousands of experiences can reveal about people.
-        </p>
-
-        <div className="animate-rise-in mt-9 flex flex-col gap-3 sm:flex-row">
-          <LinkButton href="/share" size="lg">
-            Share an experience
-          </LinkButton>
-          <LinkButton href="/insights" variant="secondary" size="lg">
-            Explore Insights
-          </LinkButton>
-        </div>
-
-        <p className="animate-rise-in mt-8 font-mono text-xs uppercase tracking-[0.14em] text-muted">
-          No names. No profiles. No doxxing.
-        </p>
-      </section>
-
-      <section className="border-t border-line bg-paper-raised px-5 py-16 sm:px-8">
+      {/* Chapter 1 — hero: the headline IS the visual */}
+      <section className="px-5 pb-20 pt-16 sm:px-8 sm:pt-24">
         <div className="mx-auto max-w-6xl">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <SectionLabel>What we&rsquo;re seeing</SectionLabel>
-            <SampleBadge>Sample / demo data</SampleBadge>
+          <div className="animate-rise-in flex items-baseline gap-3">
+            <span className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              GATHER
+            </span>
+            <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
+              Human Insights
+            </span>
           </div>
 
-          <div className="mt-8 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-            <div>
-              <p className="font-display text-2xl font-medium leading-snug sm:text-3xl">
-                One experience is a story. Thousands become a pattern —
-                here&rsquo;s a glimpse of what people keep telling us.
-              </p>
-              <div className="mt-10 space-y-6">
-                {previewStats.map((stat, i) => (
-                  <BarMeter
-                    key={stat.trait}
-                    label={stat.trait}
-                    pct={stat.pct}
-                    index={i}
-                  />
-                ))}
-              </div>
-            </div>
+          <h1 className="animate-rise-in mt-6 font-display text-[clamp(2.75rem,9vw,7rem)] font-medium leading-[0.96] tracking-tight sm:mt-8">
+            You&rsquo;ve experienced
+            <br />
+            people. Now let&rsquo;s
+            <br />
+            learn from it.
+          </h1>
 
-            <div className="grid grid-cols-2 gap-3 self-start sm:grid-cols-3 lg:grid-cols-2">
-              {Object.entries(CATEGORY_META).map(([key, meta]) => {
-                const styles = POP_COLOR_STYLES[meta.color];
-                return (
-                  <div
-                    key={key}
-                    className={`group rounded-2xl border px-4 py-5 text-center transition-all duration-200 hover:-translate-y-0.5 ${styles.border} ${styles.bgSoft} ${styles.shadowHover}`}
-                  >
-                    <div className="text-2xl transition-transform duration-200 group-hover:scale-110">
-                      {meta.emoji}
-                    </div>
-                    <div className="mt-2 text-sm font-medium text-ink-soft">
-                      {meta.short}
-                    </div>
-                  </div>
-                );
-              })}
+          <div className="animate-rise-in mt-10 flex flex-col gap-8 sm:mt-12 sm:flex-row sm:items-end sm:justify-between">
+            <p className="max-w-md text-lg leading-relaxed text-ink-soft">
+              Share an anonymous experience. See what thousands of
+              experiences reveal about people.
+            </p>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <LinkButton href="/share" size="lg">
+                Share an experience
+              </LinkButton>
+              <LinkButton href="/insights" variant="secondary" size="lg">
+                Explore insights
+              </LinkButton>
             </div>
+          </div>
+
+          <p className="animate-rise-in mt-10 font-mono text-xs uppercase tracking-[0.14em] text-muted">
+            No names. No profiles. No doxxing.
+          </p>
+        </div>
+      </section>
+
+      {/* Chapter 2 — the claim, full-bleed dark */}
+      <section className="bg-ink px-5 py-20 text-paper sm:px-8 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <span className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-paper/60">
+              <span className="h-1.5 w-1.5 rounded-full bg-signature" />
+              What we&rsquo;re hearing
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-paper/20 px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-paper/70">
+              <span className="h-1 w-1 rounded-full bg-highlight" />
+              Sample / demo data
+            </span>
+          </div>
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-end lg:gap-16">
+            <p className="font-display text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl">
+              {headlineStat.trait} keeps coming up.
+            </p>
+            <div>
+              <div className="font-display text-[clamp(5rem,13vw,9rem)] font-semibold leading-none text-highlight">
+                {headlineStat.pct}
+                <span className="text-[0.4em] align-top">%</span>
+              </div>
+              <p className="mt-2 max-w-xs text-sm leading-relaxed text-paper/60">
+                of experiences mentioned {headlineStat.trait.toLowerCase()}{" "}
+                as an important factor.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Chapter 3 — who this is about */}
+      <section className="bg-paper-raised px-5 py-20 sm:px-8 sm:py-24">
+        <div className="mx-auto max-w-6xl">
+          <SectionLabel>Who are we talking about</SectionLabel>
+          <p className="mt-4 max-w-xl font-display text-2xl font-medium leading-snug sm:text-3xl">
+            Romantic partners. Exes. Friends. Managers. Roommates. Anyone
+            whose presence left a mark.
+          </p>
+
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {Object.entries(CATEGORY_META).map(([key, meta]) => {
+              const styles = POP_COLOR_STYLES[meta.color];
+              return (
+                <div
+                  key={key}
+                  className={`group rounded-2xl border px-4 py-5 text-center transition-all duration-200 hover:-translate-y-0.5 ${styles.border} ${styles.bgSoft} ${styles.shadowHover}`}
+                >
+                  <div className="text-2xl transition-transform duration-200 group-hover:scale-110">
+                    {meta.emoji}
+                  </div>
+                  <div className="mt-2 text-sm font-medium text-ink-soft">
+                    {meta.short}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
