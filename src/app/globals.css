@@ -18,6 +18,18 @@
 
   --color-pen: #ff4f8b;
   --color-pen-soft: #ffe1ec;
+
+  /* ── GATHER_BUILD_BRIEF design system (additive, namespaced "brief-*") ──
+     Stage 2 only: tokens, fonts, base components, /styleguide. Everything
+     above this point keeps powering the current app pages unchanged;
+     nothing below is wired into them yet. */
+  --color-brief-ink: #17121c;
+  --color-brief-paper: #f3eee4;
+  --color-brief-rani: #ff3e9a;
+  --color-brief-marigold: #ffb627;
+  --color-brief-peacock: #006b5b;
+  --color-brief-lilac: #bdb2ff;
+  --color-brief-white: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,6 +71,16 @@
   --font-editorial: var(--font-editorial);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
+
+  --color-brief-ink: var(--color-brief-ink);
+  --color-brief-paper: var(--color-brief-paper);
+  --color-brief-rani: var(--color-brief-rani);
+  --color-brief-marigold: var(--color-brief-marigold);
+  --color-brief-peacock: var(--color-brief-peacock);
+  --color-brief-lilac: var(--color-brief-lilac);
+  --color-brief-white: var(--color-brief-white);
+  --font-archivo: var(--font-archivo);
+  --font-martian-mono: var(--font-martian-mono);
 }
 
 body {
@@ -162,5 +184,112 @@ body {
   height: 10px;
   border-radius: 999px;
   background: var(--color-line);
+}
+
+/* ── Brief design system continued ── */
+
+.font-archivo {
+  font-family: var(--font-archivo), Arial, sans-serif;
+}
+
+.font-martian-mono {
+  font-family: var(--font-martian-mono), ui-monospace, monospace;
+}
+
+/* Worlds: Q1's answer picks one per review. Components read --world-*
+   custom properties rather than fixed colors, so one component set works
+   in all three without variants. */
+.world-basics {
+  --world-bg: var(--color-brief-paper);
+  --world-surface: var(--color-brief-white);
+  --world-text: var(--color-brief-ink);
+  --world-accent: var(--color-brief-peacock);
+  --world-accent-text: var(--color-brief-paper);
+  --world-muted: #5f5866;
+  --world-shadow: var(--color-brief-ink);
+}
+
+.world-rant {
+  --world-bg: var(--color-brief-ink);
+  --world-surface: #241d2b;
+  --world-text: var(--color-brief-paper);
+  --world-accent: var(--color-brief-rani);
+  --world-accent-text: var(--color-brief-ink);
+  --world-muted: #b4acba;
+  --world-shadow: var(--color-brief-paper);
+}
+
+.world-grateful {
+  --world-bg: var(--color-brief-marigold);
+  --world-surface: #fff8e8;
+  --world-text: var(--color-brief-ink);
+  --world-accent: var(--color-brief-ink);
+  --world-accent-text: var(--color-brief-marigold);
+  --world-muted: #4a3a10;
+  --world-shadow: var(--color-brief-ink);
+}
+
+/* Shape: 4px radius everywhere (Tailwind's default `rounded`), 2px
+   outlines, hard offset shadows that never blur and flip to paper on the
+   rant world via --world-shadow. */
+.brief-shadow-control {
+  box-shadow: 4px 4px 0 var(--world-shadow, var(--color-brief-ink));
+}
+
+.brief-shadow-card {
+  box-shadow: 6px 6px 0 var(--world-shadow, var(--color-brief-ink));
+}
+
+.brief-press {
+  transition: transform 90ms ease-out, box-shadow 90ms ease-out;
+}
+
+.brief-press:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--world-shadow, var(--color-brief-ink));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brief-press,
+  .brief-press:active {
+    transition: none;
+  }
+}
+
+/* Gather Point mark: four quarter-discs fly in and snap into the closed
+   mark, then squeeze once. Each quadrant sets --gp-x/--gp-y/--gp-r for
+   its own starting offset. */
+@keyframes gather-point-snap {
+  0% {
+    transform: translate(var(--gp-x, 0), var(--gp-y, 0)) rotate(var(--gp-r, 0deg));
+  }
+  70% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  85% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes gather-point-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gather-point-quadrant {
+  animation: gather-point-snap 2.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gather-point-quadrant {
+    animation: gather-point-fade 200ms ease-out both;
+  }
 }
 
