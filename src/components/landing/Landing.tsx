@@ -88,7 +88,7 @@ function Hero() {
   return (
     <section className="relative grid gap-12 px-4 pb-20 pt-14 sm:px-8 lg:grid-cols-12 lg:items-center lg:gap-6 lg:px-20 lg:pb-[110px] lg:pt-24">
       <div className="flex flex-col gap-7 lg:col-span-7">
-        <h1 className={`${display} text-[48px] leading-[0.92] sm:text-[68px] lg:w-[759px] lg:text-[88px]`}>
+        <h1 className={`${display} text-[48px] leading-[0.92] sm:text-[68px] lg:text-[clamp(60px,6.1vw,88px)] xl:w-[759px]`}>
           People are an experience. Rate yours.
         </h1>
         <p className="max-w-[600px] font-archivo text-[19px] leading-[29px] text-brief-ink lg:text-[21px] lg:leading-[32px]">
