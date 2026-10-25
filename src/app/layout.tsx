@@ -10,6 +10,7 @@ import {
 import "./globals.css";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
+import { HideOnHome } from "@/components/layout/HideOnHome";
 import { SurveyProvider } from "@/lib/store/surveyStore";
 
 const bricolage = Bricolage_Grotesque({
@@ -37,9 +38,9 @@ const spaceMono = Space_Mono({
   weight: ["400", "700"],
 });
 
-// GATHER_BUILD_BRIEF design system (Stage 2). Not used by any existing
-// page yet, only by /styleguide — loaded alongside the current fonts
-// above, which still power the rest of the app.
+// GATHER_BUILD_BRIEF design system. Powers /styleguide and the landing
+// page at "/"; loaded alongside the current fonts above, which still power
+// the rest of the app.
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
@@ -67,9 +68,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
         <SurveyProvider>
-          <Nav />
+          <HideOnHome>
+            <Nav />
+          </HideOnHome>
           <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
+          <HideOnHome>
+            <Footer />
+          </HideOnHome>
         </SurveyProvider>
       </body>
     </html>
