@@ -21,6 +21,8 @@ interface WizardState {
   demographics: Demographics;
   answers: SurveyAnswers;
   story: string;
+  /** when the draft was last changed (ms), for "saved 2 days ago" */
+  updatedAt?: number;
 }
 
 const initialState: WizardState = {
@@ -53,7 +55,9 @@ export function SurveyProvider({ children }: { children: React.ReactNode }) {
     // be computed as part of the initial render without a hydration
     // mismatch.
     try {
-      const raw = window.sessionStorage.getItem(STORAGE_KEY);
+      // Drafts are kept on this device (localStorage) so people can pick up
+      // where they left off; older drafts lived in sessionStorage.
+      const raw = window.localStorage.getItem(STORAGE_KEY) ?? window.sessionStorage.getItem(STORAGE_KEY);
       // eslint-disable-next-line react-hooks/set-state-in-effect
       if (raw) setState(JSON.parse(raw));
     } catch {
@@ -64,31 +68,39 @@ export function SurveyProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    try {
+      if (state === initialState) window.localStorage.removeItem(STORAGE_KEY);
+      else window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      window.sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // storage unavailable (private mode): the draft just isn't kept
+    }
   }, [state, hydrated]);
 
   const setCategory = useCallback((category: ExperienceCategory) => {
-    setState((s) => ({ ...s, category }));
+    setState((s) => ({ ...s, category, updatedAt: Date.now() }));
   }, []);
 
   const setDemographics = useCallback((demographics: Partial<Demographics>) => {
     setState((s) => ({
       ...s,
       demographics: { ...s.demographics, ...demographics },
+      updatedAt: Date.now(),
     }));
   }, []);
 
   const setAnswer = useCallback((id: string, value: number | string) => {
-    setState((s) => ({ ...s, answers: { ...s.answers, [id]: value } }));
+    setState((s) => ({ ...s, answers: { ...s.answers, [id]: value }, updatedAt: Date.now() }));
   }, []);
 
   const setStory = useCallback((story: string) => {
-    setState((s) => ({ ...s, story }));
+    setState((s) => ({ ...s, story, updatedAt: Date.now() }));
   }, []);
 
   const reset = useCallback(() => {
     setState(initialState);
     try {
+      window.localStorage.removeItem(STORAGE_KEY);
       window.sessionStorage.removeItem(STORAGE_KEY);
     } catch {
       // ignore
@@ -113,4 +125,19 @@ export function useSurvey() {
 
 export function isDemographicsComplete(d: Demographics) {
   return Boolean(d.ageGroup && d.gender && d.duration);
+}
+
+export type { WizardState };
+
+/** Where a saved draft should reopen, and how far along it is. */
+export function draftProgress(state: WizardState, questionCount: number) {
+  const demo = [state.demographics.ageGroup, state.demographics.gender, state.demographics.duration].filter(Boolean).length;
+  const answered = demo + Object.keys(state.answers).length + (state.story.trim() ? 1 : 0);
+  const total = 3 + questionCount + 1;
+  const hasDraft = Boolean(state.category) && answered > 0;
+  let href = "/share";
+  if (state.category) href = "/share/about";
+  if (state.category && demo === 3) href = "/share/survey";
+  if (state.category && demo === 3 && Object.keys(state.answers).length >= questionCount) href = "/share/story";
+  return { hasDraft, answered, total, href };
 }

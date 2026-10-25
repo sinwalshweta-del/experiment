@@ -4,6 +4,9 @@ import { StoryTiles } from "./StoryTiles";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { Parallax } from "./Parallax";
 import { HeaderNav } from "./HeaderNav";
+import { Mark } from "@/components/site/Mark";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { ResumeBar } from "./ResumeBar";
 
 /**
  * First-timer landing page, implemented from the approved Claude Design
@@ -36,33 +39,6 @@ function Tag({ children, tone = "plain", className = "", style }: { children: Re
     >
       <span aria-hidden className={`h-4 w-4 shrink-0 border-2 border-current ${filled ? "rounded-tl-full bg-current" : ""}`} />
       {children}
-    </span>
-  );
-}
-
-/**
- * Static Gather Point for the landing page: four quarter-discs touching,
- * exactly as on the board. (The brief GatherPoint animates its quadrants
- * in from apart, which reads as a broken logo in the header.)
- */
-const QUARTERS = ["rounded-br-full", "rounded-bl-full", "rounded-tr-full", "rounded-tl-full"];
-// where each quarter starts when the mark builds itself on load
-const BUILD_FROM = [
-  ["-35%", "-35%"],
-  ["35%", "-35%"],
-  ["-35%", "35%"],
-  ["35%", "35%"],
-];
-function Mark({ size, className = "", build = false }: { size: number; className?: string; build?: boolean }) {
-  return (
-    <span aria-hidden className={`grid shrink-0 grid-cols-2 grid-rows-2 ${className}`} style={{ width: size, height: size }}>
-      {QUARTERS.map((q, i) => (
-        <span
-          key={q}
-          className={`bg-current ${q} ${build ? "landing-mark-build" : ""}`}
-          style={build ? ({ "--mx": BUILD_FROM[i][0], "--my": BUILD_FROM[i][1] } as React.CSSProperties) : undefined}
-        />
-      ))}
     </span>
   );
 }
@@ -391,22 +367,6 @@ function FinalCta() {
   );
 }
 
-function LandingFooter() {
-  return (
-    <footer className="flex flex-col gap-5 bg-brief-ink px-4 py-9 text-brief-paper sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-20">
-      <span role="img" aria-label="GATHER" className="text-brief-paper">
-        <Mark size={32} />
-      </span>
-      <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
-        <Link href="/take-down" className="font-archivo text-[15px] underline underline-offset-[3px]">
-          Take my story down
-        </Link>
-        <span className={`${mono} text-[#B4ACBA]`}>© 2026 GATHER</span>
-      </div>
-    </footer>
-  );
-}
-
 export function Landing() {
   return (
     <div id="landing" className="relative overflow-x-clip bg-brief-paper font-archivo text-[17px] leading-[27px] text-brief-ink">
@@ -415,6 +375,7 @@ export function Landing() {
       <div aria-hidden data-px-top="0.13" className="pointer-events-none absolute -top-0.5 right-[400px] hidden h-[170px] w-[170px] rounded-br-full border-2 border-brief-ink bg-brief-marigold lg:block" />
       <Header />
       <Hero />
+      <ResumeBar />
       <Concept />
       <HowItWorks />
       <Collectibles />
@@ -423,7 +384,7 @@ export function Landing() {
       <Rules />
       <FairQuestions />
       <FinalCta />
-      <LandingFooter />
+      <SiteFooter />
       <RevealOnScroll rootId="landing" />
       <Parallax rootId="landing" />
     </div>

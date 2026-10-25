@@ -1,121 +1,53 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SiteFooter } from "@/components/site/SiteFooter";
 
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { SampleBadge } from "@/components/ui/SampleBadge";
-import { LinkButton } from "@/components/ui/Button";
-import { MarkField } from "@/components/ui/MarkField";
-import { RankedList } from "@/components/insights/RankedList";
-import {
-  CURRENT_YEAR,
-  INSIGHT_CARDS,
-  SAMPLE_TOTAL_EXPERIENCES,
-  WHAT_PEOPLE_VALUE,
-  YEAR_SNAPSHOTS,
-} from "@/lib/mockData/insights";
-import { relationshipColorWeights } from "@/lib/markFieldWeights";
-import { POP_COLOR_STYLES } from "@/lib/colors";
-import { CATEGORY_META } from "@/lib/types";
-import { useLiveTotal } from "@/lib/hooks/useLiveTotal";
-
-const headlineStat = WHAT_PEOPLE_VALUE[0]; // Communication, 82%
-const mostValued = WHAT_PEOPLE_VALUE.slice(0, 4).map((s) => s.trait);
-const mostDiscussed = YEAR_SNAPSHOTS[CURRENT_YEAR].mostDiscussedTraits.slice(0, 4);
-const surprise = INSIGHT_CARDS[1]; // "Consistency > grand gestures."
-const patternWeights = relationshipColorWeights();
+/**
+ * Insights empty state (approved Claude Design board "Insights · empty
+ * state v2"). Typography and whitespace do the work: no diagram, no stats,
+ * one clear action. The landing page shell (corner shape, header, footer)
+ * is unchanged; "Insights" carries the pink active underline.
+ */
+export const metadata: Metadata = {
+  title: "Insights · GATHER People Insights",
+  description: "We're still collecting stories about dating and relationships. Share yours.",
+};
 
 export default function InsightsPage() {
-  const total = useLiveTotal(SAMPLE_TOTAL_EXPERIENCES);
-
   return (
-    <div>
-      <section className="px-5 pb-8 pt-14 sm:px-8 sm:pt-20">
-        <div className="mx-auto max-w-6xl">
-          <SectionLabel>Human Insights</SectionLabel>
-          <h1 className="mt-4 font-display text-[clamp(2.5rem,7vw,4.5rem)] font-bold leading-[0.98] tracking-tight">
-            What people are experiencing right now.
-          </h1>
-        </div>
-      </section>
-
-      {/* This year, as accumulation rather than a giant number */}
-      <section className="border-t border-line px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_1.5fr] lg:items-center lg:gap-16">
-          <div>
-            <span className="font-display text-3xl font-bold tracking-tight">
-              {CURRENT_YEAR}
-            </span>
-            <p className="mt-2 text-lg font-bold text-ink">
-              {total.toLocaleString()} experiences shared
-            </p>
-            <div className="mt-4">
-              <SampleBadge>Illustrative, not live data</SampleBadge>
-            </div>
-          </div>
-          <div className="h-56 sm:h-72">
-            <MarkField seed={11} count={90} />
-          </div>
-        </div>
-      </section>
-
-      {/* Patterns, clustered by category rather than stated as a percentage on a color block */}
-      <section className="border-t border-line px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-6xl">
-          <p className="font-display text-2xl font-bold leading-snug tracking-tight sm:text-3xl">
-            {headlineStat.trait} keeps coming up, across every kind of
-            relationship.
+    <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-brief-paper font-archivo text-brief-ink">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-[42px] -top-[42px] h-[170px] w-[170px] rounded-bl-full border-2 border-brief-ink bg-brief-rani md:-right-20 md:-top-20 md:h-[320px] md:w-[320px] lg:-right-[110px] lg:-top-[110px] lg:h-[440px] lg:w-[440px]"
+      />
+      <SiteHeader />
+      <main className="relative flex flex-1 flex-col justify-center gap-[34px] px-4 pb-9 pt-7 sm:px-8 md:px-12 md:pb-14 md:pt-10 lg:px-20">
+        <span className="flex items-center gap-2.5 font-martian-mono text-xs font-semibold leading-[18px] tracking-[0.05em] text-[#5F5866] before:h-3.5 before:w-3.5 before:rounded-tl-full before:border-2 before:border-brief-ink before:bg-brief-rani">
+          THE PICTURE IS STILL TAKING SHAPE
+        </span>
+        <h1 className="m-0 text-[52px] font-black leading-[0.9] tracking-[-0.02em] [font-stretch:125%] sm:text-[72px] md:text-[92px] lg:text-[clamp(92px,9.2vw,132px)]">
+          We&apos;re still
+          <br />
+          collecting{" "}
+          <span className="bg-[linear-gradient(transparent_58%,var(--color-brief-rani)_58%,var(--color-brief-rani)_92%,transparent_92%)] px-[0.04em]">
+            stories.
+          </span>
+        </h1>
+        <div className="flex max-w-[600px] flex-col gap-[26px]">
+          <p className="m-0 text-[17px] leading-[1.55] text-[#2A2430] md:text-[19px] lg:text-[20px]">
+            We&apos;re gathering real experiences about dating and relationships. As more people share, we&apos;ll have more
+            to learn from and more patterns to uncover. We&apos;re just getting started.
           </p>
-          <div className="mt-8 h-72 sm:h-96">
-            <MarkField seed={12} count={110} weights={patternWeights} />
-          </div>
-          <p className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-sm font-medium">
-            {Object.values(CATEGORY_META).map((meta) => (
-              <span
-                key={meta.short}
-                className={
-                  meta.color === "ink" ? "text-muted" : POP_COLOR_STYLES[meta.color].text
-                }
-              >
-                {meta.short}
-              </span>
-            ))}
-          </p>
-          <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted">
-            Named in {headlineStat.pct}% of experiences shared so far. Sample
-            data, not live.
-          </p>
+          <Link href="/share" className="landing-btn min-h-[58px] w-full px-[30px] sm:w-auto sm:self-start">
+            Share your experience{" "}
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
+              <path d="M3 10h13M11 4l6 6-6 6" />
+            </svg>
+          </Link>
         </div>
-      </section>
-
-      {/* Most valued / most discussed */}
-      <section className="border-t border-line px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto grid max-w-6xl gap-14 sm:grid-cols-2 sm:gap-10">
-          <RankedList title="Most valued" items={mostValued} color="purple" />
-          <RankedList title="Most discussed" items={mostDiscussed} color="tangerine" />
-        </div>
-      </section>
-
-      {/* A quiet editorial aside, no eyebrow needed */}
-      <section className="border-t border-line px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-3xl">
-          <p className="font-editorial text-3xl leading-snug sm:text-4xl">
-            {surprise.title}
-          </p>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-soft">
-            {surprise.body}
-          </p>
-        </div>
-      </section>
-
-      <section className="border-t border-line px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row">
-          <LinkButton href="/insights/explore" size="lg">
-            Explore by experience type
-          </LinkButton>
-          <LinkButton href="/insights/yearly" variant="secondary" size="lg">
-            See the {CURRENT_YEAR} snapshot
-          </LinkButton>
-        </div>
-      </section>
+      </main>
+      <SiteFooter />
     </div>
   );
 }
