@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Collectibles, ArrowIcon } from "./Collectibles";
 import { StoryTiles } from "./StoryTiles";
+import { RevealOnScroll } from "./RevealOnScroll";
 
 /**
  * First-timer landing page, implemented from the approved Claude Design
@@ -28,7 +29,7 @@ function Tag({ children, tone = "plain", className = "", style }: { children: Re
   const filled = tone === "peacock" || tone === "rani";
   return (
     <span
-      className={`inline-flex min-h-[46px] items-center gap-2.5 whitespace-nowrap rounded border-2 pl-3 pr-4 font-archivo text-base font-semibold leading-5 ${tone === "dark" ? "shadow-[3px_3px_0_var(--color-brief-paper)]" : "shadow-[4px_4px_0_var(--color-brief-ink)]"} ${tone === "dark" ? "" : "border-brief-ink"} ${TAG_TONES[tone]} ${className}`}
+      className={`landing-lift inline-flex min-h-[46px] items-center gap-2.5 whitespace-nowrap rounded border-2 pl-3 pr-4 font-archivo text-base font-semibold leading-5 ${tone === "dark" ? "shadow-[3px_3px_0_var(--color-brief-paper)]" : "shadow-[4px_4px_0_var(--color-brief-ink)]"} ${tone === "dark" ? "" : "border-brief-ink"} ${TAG_TONES[tone]} ${className}`}
       style={style}
     >
       <span aria-hidden className={`h-4 w-4 shrink-0 border-2 border-current ${filled ? "rounded-tl-full bg-current" : ""}`} />
@@ -43,11 +44,22 @@ function Tag({ children, tone = "plain", className = "", style }: { children: Re
  * in from apart, which reads as a broken logo in the header.)
  */
 const QUARTERS = ["rounded-br-full", "rounded-bl-full", "rounded-tr-full", "rounded-tl-full"];
-function Mark({ size, className = "" }: { size: number; className?: string }) {
+// where each quarter starts when the mark builds itself on load
+const BUILD_FROM = [
+  ["-35%", "-35%"],
+  ["35%", "-35%"],
+  ["-35%", "35%"],
+  ["35%", "35%"],
+];
+function Mark({ size, className = "", build = false }: { size: number; className?: string; build?: boolean }) {
   return (
     <span aria-hidden className={`grid shrink-0 grid-cols-2 grid-rows-2 ${className}`} style={{ width: size, height: size }}>
-      {QUARTERS.map((q) => (
-        <span key={q} className={`bg-current ${q}`} />
+      {QUARTERS.map((q, i) => (
+        <span
+          key={q}
+          className={`bg-current ${q} ${build ? "landing-mark-build" : ""}`}
+          style={build ? ({ "--mx": BUILD_FROM[i][0], "--my": BUILD_FROM[i][1] } as React.CSSProperties) : undefined}
+        />
       ))}
     </span>
   );
@@ -61,8 +73,8 @@ function Header() {
         aria-label="GATHER People Insights home"
         className="flex items-center gap-3 bg-brief-paper py-1 pr-2.5 text-brief-ink"
       >
-        <Mark size={32} className="sm:hidden" />
-        <Mark size={40} className="hidden sm:grid" />
+        <Mark size={32} className="sm:hidden" build />
+        <Mark size={40} className="hidden sm:grid" build />
         {/* stacked lockup on phones, one line from sm up */}
         <span className="flex flex-col gap-0.5 font-archivo leading-none sm:flex-row sm:items-baseline sm:gap-[0.3em]">
           <span className="text-[19px] font-black tracking-[-0.01em] [font-stretch:125%] sm:text-[20px]">GATHER</span>
@@ -87,7 +99,7 @@ function Header() {
 function Hero() {
   return (
     <section className="relative grid gap-12 px-4 pb-20 pt-14 sm:px-8 lg:grid-cols-12 lg:items-center lg:gap-6 lg:px-20 lg:pb-[110px] lg:pt-24">
-      <div className="flex flex-col gap-7 lg:col-span-7">
+      <div className="landing-hero-in flex flex-col gap-7 lg:col-span-7">
         <h1 className={`${display} text-[48px] leading-[0.92] sm:text-[68px] lg:text-[clamp(60px,6.1vw,88px)] xl:w-[759px]`}>
           People are an experience. Rate yours.
         </h1>
@@ -107,7 +119,7 @@ function Hero() {
       </div>
 
       {/* Collage: absolutely placed on desktop, a loose stack below lg */}
-      <div className="relative flex flex-col gap-6 lg:col-span-5 lg:block lg:h-[540px]">
+      <div className="landing-hero-in relative flex flex-col gap-6 [--hero-delay:180ms] lg:col-span-5 lg:block lg:h-[540px]">
         <div className="flex w-full max-w-[400px] -rotate-3 flex-col gap-4 rounded border-2 border-brief-ink bg-brief-ink p-7 text-brief-paper shadow-[8px_8px_0_var(--color-brief-rani)] lg:absolute lg:left-2.5 lg:top-10 lg:w-[400px]">
           <span className="font-archivo text-[26px] font-black leading-[1.05] [font-stretch:112%] lg:text-[30px]">
             ok but what did they get right?
@@ -135,7 +147,7 @@ function Hero() {
 
 function Concept() {
   return (
-    <section className="grid gap-10 border-y-2 border-brief-ink bg-brief-ink px-4 py-16 text-brief-paper sm:px-8 lg:grid-cols-12 lg:items-center lg:gap-6 lg:px-20 lg:py-[100px]">
+    <section data-reveal className="grid gap-10 border-y-2 border-brief-ink bg-brief-ink px-4 py-16 text-brief-paper sm:px-8 lg:grid-cols-12 lg:items-center lg:gap-6 lg:px-20 lg:py-[100px]">
       <div className="flex flex-col gap-6 lg:col-span-6">
         <h2 className={h2}>Like reviews. But for people. Minus the names.</h2>
         <p className="font-archivo text-[18px] leading-[28px] text-[#E2DCD0] lg:text-[20px] lg:leading-[31px]">
@@ -185,7 +197,7 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section id="how" className="flex scroll-mt-6 flex-col gap-12 px-4 py-16 sm:px-8 lg:px-20 lg:pb-[158px] lg:pt-[110px]">
+    <section data-reveal id="how" className="flex scroll-mt-6 flex-col gap-12 px-4 py-16 sm:px-8 lg:px-20 lg:pb-[158px] lg:pt-[110px]">
       <h2 className={`${h2} max-w-[900px]`}>Here&apos;s the whole thing.</h2>
       <ol className="flex flex-col gap-5 md:grid md:grid-cols-3 lg:flex lg:flex-row lg:items-stretch">
         {STEPS.map((s, i) => (
@@ -195,7 +207,7 @@ function HowItWorks() {
                 <ArrowIcon size={40} />
               </span>
             )}
-            <div className={`flex flex-1 flex-col gap-3 rounded border-2 border-brief-ink p-7 shadow-[6px_6px_0_var(--color-brief-ink)] ${s.card} ${s.lift}`}>
+            <div className={`landing-lift flex flex-1 flex-col gap-3 rounded border-2 border-brief-ink p-7 shadow-[6px_6px_0_var(--color-brief-ink)] ${s.card} ${s.lift}`}>
               <Mark size={44} className={s.mark} />
               <span className={`${mono} opacity-70`}>{s.n}</span>
               <h3 className={`${display} text-[28px] leading-none lg:text-[30px]`}>{s.title}</h3>
@@ -210,7 +222,7 @@ function HowItWorks() {
 
 function Topics() {
   return (
-    <section className="flex flex-col gap-9 overflow-hidden border-y-2 border-brief-ink bg-brief-marigold py-16 lg:py-[100px]">
+    <section data-reveal className="flex flex-col gap-9 overflow-hidden border-y-2 border-brief-ink bg-brief-marigold py-16 lg:py-[100px]">
       <div className="grid gap-6 px-4 sm:px-8 lg:grid-cols-12 lg:items-end lg:px-20">
         <h2 className={`${h2} lg:col-span-7`}>It&apos;s complicated. Let&apos;s talk.</h2>
         <p className="font-archivo text-[18px] leading-[28px] lg:col-span-5 lg:col-start-8 lg:text-[19px] lg:leading-[29px]">
@@ -244,7 +256,7 @@ const SAMPLE_BARS = [
 
 function InsightsPeek() {
   return (
-    <section className="grid gap-10 border-y-2 border-brief-ink bg-brief-lilac px-4 py-16 sm:px-8 lg:grid-cols-12 lg:items-start lg:gap-7 lg:px-20 lg:py-[100px]">
+    <section data-reveal className="grid gap-10 border-y-2 border-brief-ink bg-brief-lilac px-4 py-16 sm:px-8 lg:grid-cols-12 lg:items-start lg:gap-7 lg:px-20 lg:py-[100px]">
       <div className="flex flex-col gap-5 lg:col-span-5">
         <h2 className={`${display} text-[40px] leading-[0.95] sm:text-[48px] lg:text-[56px]`}>
           A peek at what you&apos;ll find.
@@ -306,7 +318,7 @@ const RULES = [
 
 function Rules() {
   return (
-    <section className="grid gap-10 bg-brief-ink px-4 py-16 text-brief-paper sm:px-8 lg:grid-cols-12 lg:items-start lg:gap-7 lg:px-20 lg:py-[100px]">
+    <section data-reveal className="grid gap-10 bg-brief-ink px-4 py-16 text-brief-paper sm:px-8 lg:grid-cols-12 lg:items-start lg:gap-7 lg:px-20 lg:py-[100px]">
       <h2 className={`${display} text-[40px] leading-[0.95] sm:text-[48px] lg:col-span-5 lg:text-[56px]`}>
         The rules we don&apos;t break.
       </h2>
@@ -345,7 +357,7 @@ const FAQS = [
 
 function FairQuestions() {
   return (
-    <section id="faq" className="flex scroll-mt-6 flex-col gap-8 px-4 py-16 sm:px-8 lg:px-20 lg:py-[110px]">
+    <section data-reveal id="faq" className="flex scroll-mt-6 flex-col gap-8 px-4 py-16 sm:px-8 lg:px-20 lg:py-[110px]">
       <h2 className={h2}>Fair questions.</h2>
       <dl className="border-b-2 border-brief-ink">
         {FAQS.map((f) => (
@@ -363,7 +375,7 @@ function FairQuestions() {
 
 function FinalCta() {
   return (
-    <section className="relative overflow-hidden border-t-2 border-brief-ink bg-brief-rani px-4 py-20 sm:px-8 lg:px-20 lg:py-[110px]">
+    <section data-reveal className="relative overflow-hidden border-t-2 border-brief-ink bg-brief-rani px-4 py-20 sm:px-8 lg:px-20 lg:py-[110px]">
       <div aria-hidden className="absolute -bottom-[60px] -right-[60px] h-[200px] w-[200px] rounded-tl-full bg-brief-ink sm:h-[360px] sm:w-[360px]" />
       <div className="relative flex max-w-[860px] flex-col gap-[26px]">
         <h2 className={`${display} text-[52px] leading-[0.9] sm:text-[72px] lg:text-[96px]`}>Got a story to share?</h2>
@@ -400,7 +412,7 @@ function LandingFooter() {
 
 export function Landing() {
   return (
-    <div className="relative overflow-x-clip bg-brief-paper font-archivo text-[17px] leading-[27px] text-brief-ink">
+    <div id="landing" className="relative overflow-x-clip bg-brief-paper font-archivo text-[17px] leading-[27px] text-brief-ink">
       {/* corner blobs behind the header */}
       <div aria-hidden className="pointer-events-none absolute -right-[90px] -top-[90px] h-[180px] w-[180px] rounded-bl-full border-2 border-brief-ink bg-brief-rani sm:h-[380px] sm:w-[380px] lg:h-[520px] lg:w-[520px]" />
       <div aria-hidden className="pointer-events-none absolute -top-0.5 right-[400px] hidden h-[170px] w-[170px] rounded-br-full border-2 border-brief-ink bg-brief-marigold lg:block" />
@@ -415,6 +427,7 @@ export function Landing() {
       <FairQuestions />
       <FinalCta />
       <LandingFooter />
+      <RevealOnScroll rootId="landing" />
     </div>
   );
 }

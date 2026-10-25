@@ -386,4 +386,74 @@ body {
     transition: none;
   }
 }
+
+  /* ── Landing motion: subtle, once, and off for reduced motion ── */
+  @keyframes landing-rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes landing-mark-build {
+    0% { opacity: 0; transform: translate(var(--mx), var(--my)) rotate(-20deg); }
+    60% { opacity: 1; }
+    100% { opacity: 1; transform: translate(0, 0) rotate(0); }
+  }
+  @keyframes landing-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .landing-hero-in {
+    animation: landing-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--hero-delay, 0ms);
+  }
+  .landing-mark-build {
+    animation: landing-mark-build 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .landing-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease-out, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .landing-reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  .landing-collectible svg {
+    animation: landing-float 6s ease-in-out infinite;
+  }
+  .landing-collectible:nth-child(2) svg { animation-duration: 7s; animation-delay: -2s; }
+  .landing-collectible:nth-child(3) svg { animation-duration: 6.5s; animation-delay: -4s; }
+  .landing-collectible:nth-child(4) svg { animation-duration: 7.5s; animation-delay: -1s; }
+
+  .landing-lift {
+    transition: transform 140ms ease-out, box-shadow 140ms ease-out;
+  }
+  @media (hover: hover) {
+    .landing-btn:hover {
+      transform: translate(-2px, -2px);
+    }
+    .landing-lift:hover {
+      transform: translate(-2px, -2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-hero-in,
+    .landing-mark-build,
+    .landing-collectible svg {
+      animation: none;
+    }
+    .landing-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .landing-lift,
+    .landing-btn:hover,
+    .landing-lift:hover {
+      transition: none;
+      transform: none;
+    }
+  }
 }

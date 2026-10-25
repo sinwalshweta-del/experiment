@@ -93,6 +93,7 @@ function Postmark({ className = "" }: { className?: string }) {
 export function Collectibles() {
   return (
     <section
+      data-reveal
       aria-labelledby="gc-h"
       className="landing-mat relative overflow-hidden border-y-2 border-brief-ink text-brief-paper"
     >
