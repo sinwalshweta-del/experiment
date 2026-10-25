@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { GatherPoint } from "@/components/brief/GatherPoint";
 import { Collectibles, ArrowIcon } from "./Collectibles";
 import { StoryTiles } from "./StoryTiles";
 
@@ -38,10 +37,18 @@ function Tag({ children, tone = "plain", className = "", style }: { children: Re
   );
 }
 
+/**
+ * Static Gather Point for the landing page: four quarter-discs touching,
+ * exactly as on the board. (The brief GatherPoint animates its quadrants
+ * in from apart, which reads as a broken logo in the header.)
+ */
+const QUARTERS = ["rounded-br-full", "rounded-bl-full", "rounded-tr-full", "rounded-tl-full"];
 function Mark({ size, className = "" }: { size: number; className?: string }) {
   return (
-    <span aria-hidden className={`block ${className}`}>
-      <GatherPoint size={size} />
+    <span aria-hidden className={`grid shrink-0 grid-cols-2 grid-rows-2 ${className}`} style={{ width: size, height: size }}>
+      {QUARTERS.map((q) => (
+        <span key={q} className={`bg-current ${q}`} />
+      ))}
     </span>
   );
 }
@@ -54,10 +61,12 @@ function Header() {
         aria-label="GATHER People Insights home"
         className="flex items-center gap-3 bg-brief-paper py-1 pr-2.5 text-brief-ink"
       >
-        <Mark size={36} className="lg:hidden" />
-        <Mark size={40} className="hidden lg:block" />
-        <span className="font-archivo text-[17px] font-black leading-none tracking-[-0.01em] [font-stretch:125%] sm:text-[20px]">
-          GATHER <span className="font-semibold [font-stretch:100%]">People Insights</span>
+        <Mark size={32} className="sm:hidden" />
+        <Mark size={40} className="hidden sm:grid" />
+        {/* stacked lockup on phones, one line from sm up */}
+        <span className="flex flex-col gap-0.5 font-archivo leading-none sm:flex-row sm:items-baseline sm:gap-[0.3em]">
+          <span className="text-[19px] font-black tracking-[-0.01em] [font-stretch:125%] sm:text-[20px]">GATHER</span>
+          <span className="text-[13px] font-semibold sm:text-[20px]">People Insights</span>
         </span>
       </Link>
       <nav className="flex items-center gap-3 border-2 border-brief-ink bg-brief-paper py-1 pl-4 pr-1.5 max-sm:border-0 max-sm:bg-transparent max-sm:p-0">
@@ -67,7 +76,7 @@ function Header() {
         <a href="#how" className="hidden px-2 py-3 font-archivo text-base font-semibold text-brief-ink md:inline">
           How it works
         </a>
-        <Link href="/share" className="landing-btn min-h-[46px] px-5 text-base">
+        <Link href="/share" className="landing-btn min-h-[44px] whitespace-nowrap px-4 text-[15px] sm:min-h-[46px] sm:px-5 sm:text-base">
           Share yours
         </Link>
       </nav>
@@ -376,8 +385,8 @@ function FinalCta() {
 function LandingFooter() {
   return (
     <footer className="flex flex-col gap-5 bg-brief-ink px-4 py-9 text-brief-paper sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-20">
-      <span className="text-brief-paper">
-        <GatherPoint size={32} />
+      <span role="img" aria-label="GATHER" className="text-brief-paper">
+        <Mark size={32} />
       </span>
       <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
         <Link href="/take-down" className="font-archivo text-[15px] underline underline-offset-[3px]">
@@ -393,7 +402,7 @@ export function Landing() {
   return (
     <div className="relative overflow-x-clip bg-brief-paper font-archivo text-[17px] leading-[27px] text-brief-ink">
       {/* corner blobs behind the header */}
-      <div aria-hidden className="pointer-events-none absolute -right-[110px] -top-[110px] h-[260px] w-[260px] rounded-bl-full border-2 border-brief-ink bg-brief-rani sm:h-[380px] sm:w-[380px] lg:h-[520px] lg:w-[520px]" />
+      <div aria-hidden className="pointer-events-none absolute -right-[90px] -top-[90px] h-[180px] w-[180px] rounded-bl-full border-2 border-brief-ink bg-brief-rani sm:h-[380px] sm:w-[380px] lg:h-[520px] lg:w-[520px]" />
       <div aria-hidden className="pointer-events-none absolute -top-0.5 right-[400px] hidden h-[170px] w-[170px] rounded-br-full border-2 border-brief-ink bg-brief-marigold lg:block" />
       <Header />
       <Hero />
