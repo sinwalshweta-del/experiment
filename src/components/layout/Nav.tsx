@@ -36,8 +36,9 @@ export default function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-ink ${
-                  active ? "text-ink" : "text-muted"
+                aria-current={active ? "page" : undefined}
+                className={`text-sm font-medium underline-offset-8 transition-colors hover:text-ink ${
+                  active ? "text-ink underline decoration-brief-rani decoration-4" : "text-muted"
                 }`}
               >
                 {link.label}

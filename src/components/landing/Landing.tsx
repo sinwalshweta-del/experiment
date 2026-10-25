@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Collectibles, ArrowIcon } from "./Collectibles";
 import { StoryTiles } from "./StoryTiles";
 import { RevealOnScroll } from "./RevealOnScroll";
+import { Parallax } from "./Parallax";
+import { HeaderNav } from "./HeaderNav";
 
 /**
  * First-timer landing page, implemented from the approved Claude Design
@@ -82,12 +84,7 @@ function Header() {
         </span>
       </Link>
       <nav className="flex items-center gap-3 border-2 border-brief-ink bg-brief-paper py-1 pl-4 pr-1.5 max-sm:border-0 max-sm:bg-transparent max-sm:p-0">
-        <Link href="/insights" className="hidden px-2 py-3 font-archivo text-base font-semibold text-brief-ink md:inline">
-          Insights
-        </Link>
-        <a href="#how" className="hidden px-2 py-3 font-archivo text-base font-semibold text-brief-ink md:inline">
-          How it works
-        </a>
+        <HeaderNav />
         <Link href="/share" className="landing-btn min-h-[44px] whitespace-nowrap px-4 text-[15px] sm:min-h-[46px] sm:px-5 sm:text-base">
           Share yours
         </Link>
@@ -119,7 +116,7 @@ function Hero() {
       </div>
 
       {/* Collage: absolutely placed on desktop, a loose stack below lg */}
-      <div className="landing-hero-in relative flex flex-col gap-6 [--hero-delay:180ms] lg:col-span-5 lg:block lg:h-[540px]">
+      <div data-px-top="-0.08" className="landing-hero-in landing-hero-collage relative flex flex-col gap-6 [--hero-delay:180ms] lg:col-span-5 lg:block lg:h-[540px]">
         <div className="flex w-full max-w-[400px] -rotate-3 flex-col gap-4 rounded border-2 border-brief-ink bg-brief-ink p-7 text-brief-paper shadow-[8px_8px_0_var(--color-brief-rani)] lg:absolute lg:left-2.5 lg:top-10 lg:w-[400px]">
           <span className="font-archivo text-[26px] font-black leading-[1.05] [font-stretch:112%] lg:text-[30px]">
             ok but what did they get right?
@@ -148,7 +145,7 @@ function Hero() {
 function Concept() {
   return (
     <section data-reveal className="grid gap-10 border-y-2 border-brief-ink bg-brief-ink px-4 py-16 text-brief-paper sm:px-8 lg:grid-cols-12 lg:items-center lg:gap-6 lg:px-20 lg:py-[100px]">
-      <div className="flex flex-col gap-6 lg:col-span-6">
+      <div data-px="14" className="flex flex-col gap-6 lg:col-span-6">
         <h2 className={h2}>Like reviews. But for people. Minus the names.</h2>
         <p className="font-archivo text-[18px] leading-[28px] text-[#E2DCD0] lg:text-[20px] lg:leading-[31px]">
           Relationships, dating, marriage — the expectations, the green flags, the mixed signals. We&apos;re bringing
@@ -158,7 +155,7 @@ function Concept() {
           No one gets named or rated. You review the experience, not the person.
         </p>
       </div>
-      <div className="flex flex-col gap-[18px] lg:col-span-5 lg:col-start-8">
+      <div data-px="46" className="flex flex-col gap-[18px] lg:col-span-5 lg:col-start-8">
         <StoryTiles />
         <p className="font-archivo text-base leading-6 text-[#B4ACBA]">
           Every tile is one story. On its own, it&apos;s a moment. Together, they show the patterns.
@@ -198,8 +195,8 @@ const STEPS = [
 function HowItWorks() {
   return (
     <section data-reveal id="how" className="flex scroll-mt-6 flex-col gap-12 px-4 py-16 sm:px-8 lg:px-20 lg:pb-[158px] lg:pt-[110px]">
-      <h2 className={`${h2} max-w-[900px]`}>Here&apos;s the whole thing.</h2>
-      <ol className="flex flex-col gap-5 md:grid md:grid-cols-3 lg:flex lg:flex-row lg:items-stretch">
+      <h2 data-px="14" className={`${h2} max-w-[900px]`}>Here&apos;s the whole thing.</h2>
+      <ol data-px="46" className="flex flex-col gap-5 md:grid md:grid-cols-3 lg:flex lg:flex-row lg:items-stretch">
         {STEPS.map((s, i) => (
           <li key={s.n} className="contents">
             {i > 0 && (
@@ -223,13 +220,13 @@ function HowItWorks() {
 function Topics() {
   return (
     <section data-reveal className="flex flex-col gap-9 overflow-hidden border-y-2 border-brief-ink bg-brief-marigold py-16 lg:py-[100px]">
-      <div className="grid gap-6 px-4 sm:px-8 lg:grid-cols-12 lg:items-end lg:px-20">
+      <div data-px="14" className="grid gap-6 px-4 sm:px-8 lg:grid-cols-12 lg:items-end lg:px-20">
         <h2 className={`${h2} lg:col-span-7`}>It&apos;s complicated. Let&apos;s talk.</h2>
         <p className="font-archivo text-[18px] leading-[28px] lg:col-span-5 lg:col-start-8 lg:text-[19px] lg:leading-[29px]">
           First dates, situationships, exes and everything in between. It&apos;s about how it went, not who they were.
         </p>
       </div>
-      <div className="flex -rotate-[1.5deg] flex-wrap gap-3.5 px-4 sm:px-8 lg:flex-nowrap lg:pl-20">
+      <div data-px="46" className="flex -rotate-[1.5deg] flex-wrap gap-3.5 px-4 sm:px-8 lg:flex-nowrap lg:pl-20">
         <Tag>dating</Tag>
         <Tag tone="peacock">situationships</Tag>
         <Tag>first dates</Tag>
@@ -237,7 +234,7 @@ function Topics() {
         <Tag>mixed signals</Tag>
         <Tag>long-distance</Tag>
       </div>
-      <div className="flex -rotate-[1.5deg] flex-wrap gap-3.5 px-4 sm:px-8 lg:flex-nowrap lg:pl-[220px]">
+      <div data-px="70" className="flex -rotate-[1.5deg] flex-wrap gap-3.5 px-4 sm:px-8 lg:flex-nowrap lg:pl-[220px]">
         <Tag>exes</Tag>
         <Tag tone="peacock">green flags</Tag>
         <Tag>ghosting</Tag>
@@ -257,7 +254,7 @@ const SAMPLE_BARS = [
 function InsightsPeek() {
   return (
     <section data-reveal className="grid gap-10 border-y-2 border-brief-ink bg-brief-lilac px-4 py-16 sm:px-8 lg:grid-cols-12 lg:items-start lg:gap-7 lg:px-20 lg:py-[100px]">
-      <div className="flex flex-col gap-5 lg:col-span-5">
+      <div data-px="14" className="flex flex-col gap-5 lg:col-span-5">
         <h2 className={`${display} text-[40px] leading-[0.95] sm:text-[48px] lg:text-[56px]`}>
           A peek at what you&apos;ll find.
         </h2>
@@ -269,7 +266,7 @@ function InsightsPeek() {
           Explore insights
         </Link>
       </div>
-      <div className="flex flex-col gap-[22px] lg:col-span-6 lg:col-start-7">
+      <div data-px="46" className="flex flex-col gap-[22px] lg:col-span-6 lg:col-start-7">
         <div className="flex flex-col gap-3 rounded border-2 border-brief-ink bg-brief-white p-5 shadow-[6px_6px_0_var(--color-brief-ink)] sm:p-7">
           <span className="landing-sample self-start">SAMPLE DATA · FOR ILLUSTRATION ONLY</span>
           <h3 className="font-archivo text-[24px] font-black leading-[1.05] [font-stretch:112%] sm:text-[28px]">
@@ -319,10 +316,10 @@ const RULES = [
 function Rules() {
   return (
     <section data-reveal className="grid gap-10 bg-brief-ink px-4 py-16 text-brief-paper sm:px-8 lg:grid-cols-12 lg:items-start lg:gap-7 lg:px-20 lg:py-[100px]">
-      <h2 className={`${display} text-[40px] leading-[0.95] sm:text-[48px] lg:col-span-5 lg:text-[56px]`}>
+      <h2 data-px="14" className={`${display} text-[40px] leading-[0.95] sm:text-[48px] lg:col-span-5 lg:text-[56px]`}>
         The rules we don&apos;t break.
       </h2>
-      <ul className="flex flex-col gap-[22px] lg:col-span-6 lg:col-start-7">
+      <ul data-px="46" className="flex flex-col gap-[22px] lg:col-span-6 lg:col-start-7">
         {RULES.map((r) => (
           <li key={r} className="flex items-start gap-3.5 font-archivo text-[17px] font-semibold leading-[25px] sm:text-[19px] sm:leading-[27px]">
             <span aria-hidden className="mt-[3px] h-[22px] w-[22px] shrink-0 rounded-tl-full border-2 border-brief-paper bg-brief-rani" />
@@ -358,8 +355,8 @@ const FAQS = [
 function FairQuestions() {
   return (
     <section data-reveal id="faq" className="flex scroll-mt-6 flex-col gap-8 px-4 py-16 sm:px-8 lg:px-20 lg:py-[110px]">
-      <h2 className={h2}>Fair questions.</h2>
-      <dl className="border-b-2 border-brief-ink">
+      <h2 data-px="14" className={h2}>Fair questions.</h2>
+      <dl data-px="30" className="border-b-2 border-brief-ink">
         {FAQS.map((f) => (
           <div key={f.q} className="grid gap-2 border-t-2 border-brief-ink py-[22px] md:grid-cols-12 md:gap-6">
             <dt className="font-archivo text-[20px] font-extrabold leading-[1.2] [font-stretch:112%] md:col-span-5 lg:text-[22px]">
@@ -376,8 +373,8 @@ function FairQuestions() {
 function FinalCta() {
   return (
     <section data-reveal className="relative overflow-hidden border-t-2 border-brief-ink bg-brief-rani px-4 py-20 sm:px-8 lg:px-20 lg:py-[110px]">
-      <div aria-hidden className="absolute -bottom-[60px] -right-[60px] h-[200px] w-[200px] rounded-tl-full bg-brief-ink sm:h-[360px] sm:w-[360px]" />
-      <div className="relative flex max-w-[860px] flex-col gap-[26px]">
+      <div aria-hidden data-px="120" className="absolute -bottom-[60px] -right-[60px] h-[200px] w-[200px] rounded-tl-full bg-brief-ink sm:h-[360px] sm:w-[360px]" />
+      <div data-px="14" className="relative flex max-w-[860px] flex-col gap-[26px]">
         <h2 className={`${display} text-[52px] leading-[0.9] sm:text-[72px] lg:text-[96px]`}>Got a story to share?</h2>
         <p className="font-archivo text-[19px] font-semibold leading-[29px] lg:text-[22px] lg:leading-[32px]">
           Good, bad or complicated, it takes about 4 minutes. Leave the names out and help someone else spot the
@@ -414,8 +411,8 @@ export function Landing() {
   return (
     <div id="landing" className="relative overflow-x-clip bg-brief-paper font-archivo text-[17px] leading-[27px] text-brief-ink">
       {/* corner blobs behind the header */}
-      <div aria-hidden className="pointer-events-none absolute -right-[90px] -top-[90px] h-[180px] w-[180px] rounded-bl-full border-2 border-brief-ink bg-brief-rani sm:h-[380px] sm:w-[380px] lg:h-[520px] lg:w-[520px]" />
-      <div aria-hidden className="pointer-events-none absolute -top-0.5 right-[400px] hidden h-[170px] w-[170px] rounded-br-full border-2 border-brief-ink bg-brief-marigold lg:block" />
+      <div aria-hidden data-px-top="0.25" className="pointer-events-none absolute -right-[90px] -top-[90px] h-[180px] w-[180px] rounded-bl-full border-2 border-brief-ink bg-brief-rani sm:h-[380px] sm:w-[380px] lg:h-[520px] lg:w-[520px]" />
+      <div aria-hidden data-px-top="0.13" className="pointer-events-none absolute -top-0.5 right-[400px] hidden h-[170px] w-[170px] rounded-br-full border-2 border-brief-ink bg-brief-marigold lg:block" />
       <Header />
       <Hero />
       <Concept />
@@ -428,6 +425,7 @@ export function Landing() {
       <FinalCta />
       <LandingFooter />
       <RevealOnScroll rootId="landing" />
+      <Parallax rootId="landing" />
     </div>
   );
 }

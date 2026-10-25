@@ -108,10 +108,11 @@ export function Collectibles() {
       />
       <div
         aria-hidden
+        data-px="120"
         className="pointer-events-none absolute -bottom-[90px] -left-[90px] hidden h-[280px] w-[280px] rounded-tr-full border-2 border-brief-ink bg-brief-rani lg:block"
       />
       <div className="relative mx-auto grid max-w-[1440px] gap-10 px-4 py-14 sm:px-8 sm:py-20 lg:min-h-[920px] lg:grid-cols-[540px_1fr] lg:items-center lg:gap-[60px] lg:px-20 lg:py-0">
-        <div className="relative flex flex-col gap-6 lg:gap-7">
+        <div data-px="14" className="relative flex flex-col gap-6 lg:gap-7">
           <Postmark className="-ml-1 h-auto w-[160px] lg:-ml-1.5 lg:w-[220px]" />
           <h2
             id="gc-h"
@@ -130,7 +131,7 @@ export function Collectibles() {
             Share yours <ArrowIcon />
           </a>
         </div>
-        <div className="mx-auto w-full max-w-[740px]">
+        <div data-px="46" className="mx-auto w-full max-w-[740px]">
           <Arrangement layout={DESKTOP} className="hidden sm:block" />
           <Arrangement layout={MOBILE} className="sm:hidden" />
         </div>

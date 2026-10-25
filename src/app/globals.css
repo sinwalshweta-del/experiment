@@ -438,11 +438,59 @@ body {
     }
   }
 
+
+  /* story tiles: each tile moves on its own clock (inline animation in StoryTiles) */
+  @keyframes landing-gt-turn { 0%, 18% { transform: rotate(0); } 34%, 62% { transform: rotate(90deg); } 78%, 100% { transform: rotate(0); } }
+  @keyframes landing-gt-turnb { 0%, 22% { transform: rotate(0); } 38%, 66% { transform: rotate(-90deg); } 82%, 100% { transform: rotate(0); } }
+  @keyframes landing-gt-flip { 0%, 25% { transform: rotate(0); } 45%, 65% { transform: rotate(180deg); } 85%, 100% { transform: rotate(360deg); } }
+  @keyframes landing-gt-chomp { 0%, 30%, 100% { transform: scale(1); } 45% { transform: scale(0.62); } 60% { transform: scale(1); } 72% { transform: scale(0.62); } 86% { transform: scale(1); } }
+  @keyframes landing-gt-nudge { 0%, 20%, 100% { transform: translate(0, 0); } 40%, 60% { transform: translate(var(--nx), var(--ny)); } }
+  .landing-tile { will-change: transform; }
+
+  /* hero collage: slow, out-of-sync float */
+  @keyframes landing-fl-a { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+  @keyframes landing-fl-b { 0%, 100% { translate: 0 0; } 50% { translate: 3px -5px; } }
+  .landing-hero-collage > *,
+  .landing-hero-collage > .lg\:contents > * { animation: landing-fl-a 9s ease-in-out infinite; }
+  .landing-hero-collage > *:nth-child(3) { animation: landing-fl-b 11s ease-in-out -3s infinite; }
+  .landing-hero-collage > .lg\:contents > *:nth-child(1) { animation: landing-fl-b 10s ease-in-out -6s infinite; }
+  .landing-hero-collage > .lg\:contents > *:nth-child(2) { animation: landing-fl-a 12.5s ease-in-out -4s infinite; }
+  .landing-hero-collage > .lg\:contents > *:nth-child(3) { animation: landing-fl-b 7.5s ease-in-out -1s infinite; }
+
+  /* header nav: underline-only active state (hot pink), faint ink on hover */
+  .landing-navlink {
+    position: relative;
+    padding: 12px 8px;
+    font-family: var(--font-archivo), Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--color-brief-ink);
+  }
+  .landing-navlink::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 5px;
+    height: 2px;
+    background: transparent;
+    transition: background 160ms cubic-bezier(0.2, 0.8, 0.2, 1), height 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .landing-navlink:hover::after { background: rgb(23 18 28 / 0.35); }
+  .landing-navlink[aria-current]::after { height: 4px; bottom: 4px; background: var(--color-brief-rani); }
+  .landing-navlink:focus-visible { outline: 3px solid var(--color-brief-peacock); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
     .landing-hero-in,
     .landing-mark-build,
-    .landing-collectible svg {
-      animation: none;
+    .landing-collectible svg,
+    .landing-tile,
+    .landing-hero-collage > *,
+    .landing-hero-collage > .lg\:contents > * {
+      animation: none !important;
+    }
+    .landing-navlink::after {
+      transition: none;
     }
     .landing-reveal {
       opacity: 1;
