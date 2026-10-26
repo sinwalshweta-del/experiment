@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { draftProgress, useSurvey } from "@/lib/store/surveyStore";
-import { SURVEY_QUESTIONS } from "@/lib/surveyQuestions";
+import { draftSummary, useShareDraft } from "@/lib/share/draft";
 
 /**
  * Saved-draft resume bar (approved board "Saved draft · Option A"): a slim
@@ -20,14 +19,14 @@ function Arrow() {
 }
 
 export function ResumeBar() {
-  const { state, hydrated, reset } = useSurvey();
+  const { draft, hydrated, reset } = useShareDraft();
   const [confirming, setConfirming] = useState(false);
   const [discarded, setDiscarded] = useState(false);
   const keepRef = useRef<HTMLButtonElement>(null);
   const discardRef = useRef<HTMLButtonElement>(null);
 
-  const questionCount = state.category ? SURVEY_QUESTIONS[state.category].length : 0;
-  const { hasDraft, answered, total, href } = draftProgress(state, questionCount);
+  const { hasDraft, answered, total } = draftSummary(draft);
+  const href = "/share?resume=1";
 
   useEffect(() => {
     if (!confirming) return;

@@ -11,7 +11,7 @@ import "./globals.css";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
 import { HideOnHome } from "@/components/layout/HideOnHome";
-import { SurveyProvider } from "@/lib/store/surveyStore";
+import { ShareDraftProvider } from "@/lib/share/draft";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-display",
@@ -67,7 +67,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${bricolage.variable} ${fraunces.variable} ${inter.variable} ${spaceMono.variable} ${archivo.variable} ${martianMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
-        <SurveyProvider>
+        <ShareDraftProvider>
           <HideOnHome>
             <Nav />
           </HideOnHome>
@@ -75,7 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <HideOnHome>
             <Footer />
           </HideOnHome>
-        </SurveyProvider>
+        </ShareDraftProvider>
       </body>
     </html>
   );

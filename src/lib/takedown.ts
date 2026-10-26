@@ -1,9 +1,8 @@
-import { getSubmissions } from "./submissions";
-import { CATEGORY_META, ExperienceCategory } from "./types";
+import { getStories } from "./share/stories";
 
 /**
  * Take-down data layer. In the MVP there's no backend yet: stories live in
- * this browser (see submissions.ts), so "your stories" are the ones shared
+ * this browser (see share/stories.ts), so "your stories" are the ones shared
  * from this device, and a removal is recorded here too. A backend (email
  * codes, real review status, insights recompute) replaces this module
  * without touching the page.
@@ -23,16 +22,15 @@ function readRemoved(): Removed {
   }
 }
 
-function title(category: ExperienceCategory) {
-  return CATEGORY_META[category]?.label ?? "A story";
-}
-
-export function getMyStories(): MyStory[] {
+/** Stories sent from this browser; when an email is given, only the ones sent with it. */
+export function getMyStories(email?: string): MyStory[] {
   const removed = readRemoved();
-  return getSubmissions()
+  const e = email?.trim().toLowerCase();
+  return getStories()
+    .filter((s) => !e || !s.email || s.email === e)
     .map((s) => ({
       id: s.id,
-      title: title(s.category),
+      title: s.title,
       sharedAt: s.createdAt,
       // no review backend yet, so anything not taken down is still with the review team
       status: (removed[s.id] ? "down" : "review") as StoryStatus,

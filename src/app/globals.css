@@ -387,6 +387,83 @@ body {
   }
 }
 
+
+/* ── Share flow (approved boards 13a–c): charcoal base, accent follows Q1 ── */
+.sf {
+  --bg: #17121c; --sf: #221b28; --sf2: #2c2433; --fg: #f3eee4; --mu: #b4acba; --dim: #7e7585;
+  --soft: #4a4251; --on: #17121c;
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-archivo), Arial, sans-serif;
+}
+.sf-eb { font-family: var(--font-martian-mono), ui-monospace, monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; line-height: 18px; color: var(--mu); }
+.sf-q { margin: 0; font-weight: 800; font-stretch: 112%; letter-spacing: -0.01em; font-size: 30px; line-height: 1.04; color: var(--fg); outline: none; }
+.sf-hp { margin: 0; font-size: 16px; line-height: 24px; color: var(--mu); }
+.sf-sm { margin: 0; font-size: 14px; line-height: 20px; color: var(--mu); }
+.sf-ch {
+  width: 100%; min-height: 54px; border: 2px solid var(--soft); border-radius: 4px; background: var(--sf); color: var(--fg);
+  font-weight: 600; font-size: 16px; line-height: 20px; display: flex; align-items: center; gap: 12px; padding: 0 16px 0 14px; text-align: left;
+  transition: border-color 160ms cubic-bezier(.2,.8,.2,1), background 160ms cubic-bezier(.2,.8,.2,1);
+}
+.sf-ch::before { content: ""; width: 18px; height: 18px; flex: none; border: 2px solid var(--mu); transition: border-radius 180ms cubic-bezier(.2,.8,.2,1); }
+.sf-ch:hover { border-color: var(--fg); }
+.sf-ch:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+.sf-ch[aria-pressed="true"], .sf-ch[aria-checked="true"] { background: var(--ac); color: var(--on); border-color: var(--ac); box-shadow: 3px 3px 0 var(--fg); }
+.sf-ch[aria-pressed="true"]::before, .sf-ch[aria-checked="true"]::before { background: currentColor; border-color: currentColor; border-top-left-radius: 100%; }
+.sf-ch:disabled { color: var(--dim); border-style: dashed; background: transparent; cursor: not-allowed; }
+.sf-ch:disabled::before { border-color: var(--dim); }
+.sf-ch.na { color: var(--dim); border-style: dashed; background: transparent; }
+.sf-wr { display: flex; flex-wrap: wrap; gap: 9px; }
+.sf-wr .sf-ch { width: auto; min-height: 44px; padding: 0 14px 0 11px; font-size: 15px; gap: 9px; }
+.sf-wr .sf-ch::before { width: 14px; height: 14px; }
+.sf-rt .sf-ch::before { display: none; }
+.sf-pp { display: flex; gap: 4px; margin-left: auto; }
+.sf-pp i { width: 10px; height: 10px; border: 2px solid currentColor; display: block; opacity: .85; }
+.sf-pp i.f { background: currentColor; }
+.sf-in {
+  width: 100%; min-height: 54px; border: 2px solid var(--soft); border-radius: 4px; background: var(--sf); color: var(--fg);
+  font-size: 16px; line-height: 24px; padding: 13px 16px; display: block; outline: none; resize: none;
+}
+.sf-in::placeholder { color: var(--dim); }
+.sf-in:focus { border-color: var(--fg); box-shadow: 3px 3px 0 var(--ac); }
+.sf-in.er { border-color: #ff6b6b; box-shadow: 3px 3px 0 #ff6b6b; }
+.sf-cn { font-family: var(--font-martian-mono), ui-monospace, monospace; font-size: 12px; color: var(--mu); text-align: right; }
+.sf-safe { font-size: 14px; line-height: 20px; color: var(--mu); border-left: 3px solid var(--ac); padding: 2px 0 2px 12px; }
+.sf-warn { border: 2px solid #bdb2ff; border-radius: 4px; background: #bdb2ff; color: #17121c; padding: 10px 14px; font-weight: 600; font-size: 14px; line-height: 20px; }
+.sf-err { color: #ff8a8a; font-weight: 600; font-size: 14px; line-height: 20px; margin: 0; }
+.sf-card { border: 2px solid var(--soft); border-radius: 4px; background: var(--sf); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.sf-bt {
+  width: 100%; min-height: 54px; border: 2px solid var(--bg); border-radius: 4px; background: #ff3e9a; color: #17121c; box-shadow: 4px 4px 0 var(--fg);
+  font-weight: 700; font-size: 17px; line-height: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 28px;
+  transition: translate 160ms cubic-bezier(.2,.8,.2,1), box-shadow 160ms cubic-bezier(.2,.8,.2,1);
+}
+.sf-bt:hover:not(:disabled) { translate: -2px -2px; box-shadow: 6px 6px 0 var(--fg); }
+.sf-bt:active:not(:disabled) { translate: 3px 3px; box-shadow: 1px 1px 0 var(--fg); transition-duration: 60ms; }
+.sf-bt:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+.sf-bt:disabled { background: var(--sf); color: var(--dim); border: 2px dashed var(--soft); box-shadow: none; cursor: not-allowed; }
+.sf-bt.sec { background: var(--sf); color: var(--fg); border: 2px solid var(--fg); box-shadow: none; }
+.sf-lk { font-weight: 600; font-size: 15px; line-height: 20px; color: var(--fg); text-decoration: underline; text-underline-offset: 3px; text-align: center; padding: 10px; min-height: 44px; }
+.sf-chk { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 22px; cursor: pointer; }
+.sf-chk input { appearance: none; width: 22px; height: 22px; border: 2px solid var(--fg); flex: none; margin: 1px 0 0; background: transparent; cursor: pointer; transition: border-radius 180ms; }
+.sf-chk input:checked { background: var(--ac); border-top-left-radius: 100%; }
+.sf-chk input:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+.sf-tiles { display: flex; gap: 6px; }
+.sf-tiles i { width: 22px; height: 22px; border: 2px dashed var(--soft); display: block; transition: background 200ms, border-radius 200ms; }
+.sf-tiles i.d { background: var(--fg); border: 2px solid var(--fg); border-bottom-right-radius: 100%; }
+.sf-tiles i.c { background: var(--ac); border: 2px solid var(--ac); }
+.sf-tl { display: flex; flex-direction: column; gap: 12px; }
+.sf-tl > div { display: flex; gap: 12px; font-size: 15px; line-height: 21px; }
+.sf-tl i { width: 18px; height: 18px; border: 2px solid var(--fg); flex: none; margin-top: 2px; }
+.sf-tl i.on { background: var(--fg); border-top-left-radius: 100%; }
+.sf-tl b { display: block; font-weight: 800; font-size: 16px; line-height: 21px; }
+@keyframes sf-next { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes sf-back { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+.sf-anim-next { animation: sf-next 220ms ease-out both; }
+.sf-anim-back { animation: sf-back 220ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .sf-anim-next, .sf-anim-back { animation: none; }
+  .sf-bt, .sf-ch, .sf-ch::before, .sf-tiles i { transition: none; }
+}
+
   /* ── Landing motion: subtle, once, and off for reduced motion ── */
   @keyframes landing-rise {
     from { opacity: 0; transform: translateY(18px); }

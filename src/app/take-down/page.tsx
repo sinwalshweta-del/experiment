@@ -125,7 +125,7 @@ export default function TakeDownPage() {
   const canBack = history.length > 0 && !["done", "start", "expired"].includes(step);
 
   const loadStories = () => {
-    const mine = getMyStories();
+    const mine = getMyStories(email);
     setStories(mine);
     setPicked(mine.find((s) => s.status !== "down")?.id ?? mine[0]?.id ?? null);
     go(mine.length ? "list" : "none");
@@ -140,7 +140,7 @@ export default function TakeDownPage() {
     if (!story) return;
     try {
       takeDown(story.id, reason ?? undefined);
-      setStories(getMyStories());
+      setStories(getMyStories(email));
       go("done");
     } catch {
       go("error");
