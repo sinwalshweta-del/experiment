@@ -9,6 +9,7 @@ export type Answers = {
   typeOther?: string;
   withGender?: string;
   met?: string;
+  metOther?: string;
   howLong?: string;
   hope?: string;
   thought?: string;
@@ -52,8 +53,8 @@ export const MET = [
   "Family or a rishta setup",
   "At a party, event or night out",
   "Somewhere else",
-  "Prefer not to say",
 ];
+export const MET_OTHER = "Somewhere else";
 
 export const HOW_LONG = ["Under a month", "1–3 months", "3–6 months", "6–12 months", "1–3 years", "More than 3 years"];
 

@@ -14,6 +14,7 @@ import {
   HOW_LONG,
   hasFaded,
   MET,
+  MET_OTHER,
   NOT_SURE,
   NOTHING_GOOD,
   NOTHING_HARD,
@@ -520,8 +521,13 @@ export function ShareFlow() {
             {H("How did you meet?")}
           </>
         ),
-        body: <Choice label="How did you meet?" options={MET} value={a.met} onPick={pick1("met")} wrap />,
-        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.met },
+        body: (
+          <div className="flex flex-col gap-4">
+            <Choice label="How did you meet?" options={MET} value={a.met} onPick={pick1("met")} wrap />
+            {a.met === MET_OTHER && <OtherField id="met-other" label="Where did you meet?" value={a.metOther ?? ""} onChange={(t) => setAnswers({ metOther: t })} max={40} hint="A place or app is enough. No names." />}
+          </div>
+        ),
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.met || (a.met === MET_OTHER && !a.metOther?.trim()) },
       };
       break;
 
@@ -618,7 +624,7 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb(`OPTIONAL · UP TO 3${n ? ` · ${n} PICKED` : ""}`)}
+            {eb(`UP TO 3${n ? ` · ${n} PICKED` : ""}`)}
             {H(good ? "What felt good?" : "What made it hard?")}
             {!good && <Kind>The hard parts are part of the story. Nobody here is judging.</Kind>}
           </>
@@ -636,8 +642,8 @@ export function ShareFlow() {
             </div>
           </div>
         ),
-        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: otherMissing(list, a[otherKey] as string) },
-        skip: () => skip({ [key]: undefined, [otherKey]: undefined } as Partial<Answers>),
+        // required: "Nothing really" / "Nothing major" is the honest way out
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !list.length || otherMissing(list, a[otherKey] as string) },
       };
       break;
     }
@@ -762,7 +768,7 @@ export function ShareFlow() {
       const join = (xs: (string | undefined)[]) => xs.filter(Boolean).join(" · ");
       const withOther = (list: string[] | undefined, other: string | undefined) => (list ?? []).map((x) => (x === OTHER ? other || OTHER : x));
       const rows: [string, string, StepId][] = [
-        ["The connection", join([a.type === OTHER ? a.typeOther : a.type, a.withGender?.toLowerCase(), a.met, a.howLong]), "q1"],
+        ["The connection", join([a.type === OTHER ? a.typeOther : a.type, a.withGender?.toLowerCase(), a.met === MET_OTHER ? a.metOther : a.met, a.howLong]), "q1"],
         ["At the start", join([a.hope && `Hoped: ${a.hope.toLowerCase()}`, a.thought && `Thought they wanted: ${a.thought.toLowerCase()}`]), "q5"],
         ["What stood out", join([withOther(a.good, a.goodOther).join(", ") || "—", withOther(a.hard, a.hardOther).join(", ") || "—"]), "q8"],
         ["How it went", join([a.status, a.slowed, withOther(a.reasons, a.reasonOther).join(", ")]), "q10"],
