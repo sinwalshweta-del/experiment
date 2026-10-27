@@ -49,6 +49,8 @@ type Ctx = {
   setStep: (step: StepId) => void;
   /** Forget the current draft (after sending, or "start a new story"). */
   reset: () => void;
+  /** Sign out on this device. The draft stays saved under the email. */
+  signOut: () => void;
 };
 const DraftContext = createContext<Ctx | null>(null);
 
@@ -105,7 +107,20 @@ export function ShareDraftProvider({ children }: { children: React.ReactNode }) 
     }
   }, [email]);
 
-  const value = useMemo(() => ({ hydrated, email, draft, signIn, setAnswers, setStep, reset }), [hydrated, email, draft, signIn, setAnswers, setStep, reset]);
+  const signOut = useCallback(() => {
+    try {
+      window.localStorage.removeItem(SESSION);
+    } catch {
+      // ignore
+    }
+    setEmail(null);
+    setDraft(EMPTY);
+  }, []);
+
+  const value = useMemo(
+    () => ({ hydrated, email, draft, signIn, setAnswers, setStep, reset, signOut }),
+    [hydrated, email, draft, signIn, setAnswers, setStep, reset, signOut],
+  );
   return <DraftContext.Provider value={value}>{children}</DraftContext.Provider>;
 }
 

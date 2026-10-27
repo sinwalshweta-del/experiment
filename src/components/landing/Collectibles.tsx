@@ -128,7 +128,7 @@ export function Collectibles() {
             href="/share"
             className="landing-btn mt-1.5 w-full shadow-[5px_5px_0_var(--color-brief-paper)] sm:w-auto sm:self-start"
           >
-            Share yours <ArrowIcon />
+            Spill yours <ArrowIcon />
           </a>
         </div>
         <div data-px="46" className="mx-auto w-full max-w-[740px]">

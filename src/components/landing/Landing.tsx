@@ -59,10 +59,10 @@ function Header() {
           <span className="text-[13px] font-semibold sm:text-[20px]">People Insights</span>
         </span>
       </Link>
-      <nav className="flex items-center gap-3 border-2 border-brief-ink bg-brief-paper py-1 pl-4 pr-1.5 max-sm:border-0 max-sm:bg-transparent max-sm:p-0">
+      <nav className="flex items-center gap-3 max-sm:gap-1.5 border-2 border-brief-ink bg-brief-paper py-1 pl-4 pr-1.5 max-sm:border-0 max-sm:bg-transparent max-sm:p-0">
         <HeaderNav />
         <Link href="/share" className="landing-btn min-h-[44px] whitespace-nowrap px-4 text-[15px] sm:min-h-[46px] sm:px-5 sm:text-base">
-          Share yours
+          Spill yours
         </Link>
       </nav>
     </header>
@@ -82,7 +82,7 @@ function Hero() {
         </p>
         <div className="flex flex-col gap-[18px] sm:flex-row sm:flex-wrap">
           <Link href="/share" className="landing-btn">
-            <span>Share yours</span> <ArrowIcon />
+            <span>Spill yours</span> <ArrowIcon />
           </Link>
           <Link href="/insights" className="landing-btn bg-brief-white">
             See what people are saying
@@ -360,7 +360,7 @@ function FinalCta() {
           href="/share"
           className="landing-btn self-start bg-brief-ink text-brief-paper shadow-[5px_5px_0_var(--color-brief-paper)]"
         >
-          Share yours <ArrowIcon />
+          Spill yours <ArrowIcon />
         </Link>
       </div>
     </section>

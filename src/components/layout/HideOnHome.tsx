@@ -10,6 +10,6 @@ import { usePathname } from "next/navigation";
 export function HideOnHome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // these routes carry the new GATHER header and footer (approved boards)
-  if (pathname === "/" || pathname === "/insights" || pathname.startsWith("/take-down") || pathname.startsWith("/share")) return null;
+  if (pathname === "/" || pathname === "/insights" || pathname.startsWith("/take-down") || pathname.startsWith("/share") || pathname === "/sign-in") return null;
   return <>{children}</>;
 }

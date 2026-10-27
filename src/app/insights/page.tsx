@@ -11,7 +11,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
  */
 export const metadata: Metadata = {
   title: "Insights · GATHER People Insights",
-  description: "We're still collecting stories about dating and relationships. Share yours.",
+  description: "We're still collecting stories about dating and relationships. Spill yours.",
 };
 
 export default function InsightsPage() {
@@ -40,7 +40,7 @@ export default function InsightsPage() {
             to learn from and more patterns to uncover. We&apos;re just getting started.
           </p>
           <Link href="/share" className="landing-btn min-h-[58px] w-full px-[30px] sm:w-auto sm:self-start">
-            Share your experience{" "}
+            Spill yours{" "}
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
               <path d="M3 10h13M11 4l6 6-6 6" />
             </svg>

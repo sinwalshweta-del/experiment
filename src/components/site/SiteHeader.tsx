@@ -8,8 +8,10 @@ import { Mark } from "./Mark";
 /**
  * Header for the pages outside the landing (Insights, take-down), from the
  * approved Insights board: same lockup and nav as the landing page; the
- * current page gets a hot pink underline and nothing else. On phones the
- * links live behind a menu button that opens a full-screen charcoal sheet.
+ * current page is bold with a 6px hot pink underline and nothing else.
+ * "Sign in" sits quietly before the only button (Claude Design board 19).
+ * On phones the links and "Sign in" live behind a menu button that opens a
+ * full-screen charcoal sheet.
  */
 const LINKS = [
   { href: "/insights", label: "Insights" },
@@ -57,19 +59,23 @@ export function SiteHeader() {
       {/* tablet and up */}
       <nav aria-label="Main" className="hidden items-center gap-3 border-2 border-brief-ink bg-brief-paper py-1 pl-4 pr-1.5 md:flex">
         {LINKS.map((l) => (
-          <Link key={l.href} href={l.href} className="landing-navlink" aria-current={isActive(l.href) ? "page" : undefined}>
+          <Link key={l.href} href={l.href} data-label={l.label} className="landing-navlink" aria-current={isActive(l.href) ? "page" : undefined}>
             {l.label}
           </Link>
         ))}
+        <span aria-hidden className="landing-navsep" />
+        <Link href="/sign-in" data-label="Sign in" className="landing-navlink landing-navlink-quiet" aria-current={isActive("/sign-in") ? "page" : undefined}>
+          Sign in
+        </Link>
         <Link href="/share" className="landing-btn min-h-[46px] whitespace-nowrap px-5 text-base">
-          Share yours
+          Spill yours
         </Link>
       </nav>
 
       {/* phones */}
       <div className="flex items-center gap-2.5 md:hidden">
         <Link href="/share" className="landing-btn min-h-[44px] whitespace-nowrap px-3.5 text-[15px]">
-          Share yours
+          Spill yours
         </Link>
         <button
           type="button"
@@ -114,15 +120,23 @@ export function SiteHeader() {
                 href={l.href}
                 onClick={() => setOpen(false)}
                 aria-current={isActive(l.href) ? "page" : undefined}
-                className="px-4 py-3.5 font-archivo text-[34px] font-black leading-none [font-stretch:125%] decoration-brief-rani decoration-4 underline-offset-[10px] aria-[current=page]:underline"
+                className="px-4 py-3.5 font-archivo text-[34px] font-black leading-none [font-stretch:125%] decoration-brief-rani decoration-[6px] underline-offset-[10px] aria-[current=page]:underline"
               >
                 {l.label}
               </Link>
             ))}
           </nav>
           <div className="mt-auto flex flex-col gap-[18px]">
+            <Link
+              href="/sign-in"
+              onClick={() => setOpen(false)}
+              aria-current={isActive("/sign-in") ? "page" : undefined}
+              className="min-h-[52px] rounded border-2 border-[#4A4251] px-4 py-3 text-center font-archivo text-[17px] font-semibold leading-[22px] aria-[current=page]:border-brief-paper"
+            >
+              Sign in
+            </Link>
             <Link href="/share" onClick={() => setOpen(false)} className="landing-btn min-h-[58px] w-full bg-brief-paper shadow-[5px_5px_0_var(--color-brief-rani)]">
-              Share yours <Arrow />
+              Spill yours <Arrow />
             </Link>
             <Link href="/take-down" onClick={() => setOpen(false)} className="text-center font-archivo text-[15px] underline underline-offset-[3px]">
               Take my story down

@@ -547,6 +547,10 @@ body {
   /* header nav: underline-only active state (hot pink), faint ink on hover */
   .landing-navlink {
     position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    white-space: nowrap;
     padding: 12px 8px;
     font-family: var(--font-archivo), Arial, sans-serif;
     font-size: 16px;
@@ -564,8 +568,20 @@ body {
     background: transparent;
     transition: background 160ms cubic-bezier(0.2, 0.8, 0.2, 1), height 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
+  /* reserve the bold width so the current page doesn't shift its neighbours */
+  .landing-navlink::before {
+    content: attr(data-label);
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    font-weight: 800;
+    pointer-events: none;
+  }
   .landing-navlink:hover::after { background: rgb(23 18 28 / 0.35); }
-  .landing-navlink[aria-current]::after { height: 4px; bottom: 4px; background: var(--color-brief-rani); }
+  .landing-navlink[aria-current] { font-weight: 800; }
+  .landing-navlink[aria-current]::after { height: 6px; bottom: 2px; background: var(--color-brief-rani); }
+  .landing-navlink-quiet { color: #3d3a40; }
+  .landing-navsep { width: 2px; height: 20px; flex: none; background: #d9d2c4; }
   .landing-navlink:focus-visible { outline: 3px solid var(--color-brief-peacock); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
     .landing-hero-in,
