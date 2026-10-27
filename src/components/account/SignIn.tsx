@@ -6,15 +6,15 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { draftSummary, useShareDraft } from "@/lib/share/draft";
 import { storyTitle } from "@/lib/share/questions";
-import { daysAgo, getStories } from "@/lib/share/stories";
+import { daysAgo, getMyStories, type MyStory } from "@/lib/share/stories";
 
 /**
  * Account access (Claude Design board 19, S1/S2): email, then the same
  * 6-digit code as the share flow. New people find "Sign up" right there;
  * both paths are the same email + code, only the words change.
  *
- * No backend yet: the code is a labelled preview (any 6 digits work,
- * 000000 shows the error) and the account lives in this browser.
+ * Codes are real Supabase Auth email codes; drafts and stories live in
+ * Supabase behind row-level security.
  */
 
 type Step = "email" | "code" | "in";
@@ -31,16 +31,27 @@ const lead = "m-0 max-w-[520px] text-[17px] leading-[1.55] text-[#2A2430] md:tex
 const input =
   "min-h-[56px] w-full max-w-[440px] rounded border-2 border-brief-ink bg-brief-white px-4 font-archivo text-[17px] text-brief-ink outline-none transition-shadow focus:shadow-[4px_4px_0_var(--color-brief-rani)]";
 const small = "m-0 text-[15px] leading-[22px] text-[#5F5866]";
+const STATUS: Record<MyStory["status"], string> = {
+  received: "Waiting for review",
+  in_review: "Being reviewed",
+  approved: "Approved",
+  not_used: "Not used",
+  taken_down: "Taken down",
+};
+
 const textBtn = "font-semibold text-brief-ink underline underline-offset-[3px]";
 
 export function SignIn() {
-  const { hydrated, email: signedIn, draft, signIn, signOut } = useShareDraft();
+  const { hydrated, email: signedIn, userId, draft, requestCode, verifyCode, signOut } = useShareDraft();
   const [mode, setMode] = useState<Mode>("signin");
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [tries, setTries] = useState(3);
+  const [busy, setBusy] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [mine, setMine] = useState<MyStory[] | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const moved = useRef(false);
 
@@ -49,25 +60,46 @@ export function SignIn() {
     moved.current = true;
   }, [step, mode]);
 
+  // the signed-in view lists this person's own stories
+  useEffect(() => {
+    if (!userId) return;
+    let alive = true;
+    getMyStories(userId)
+      .then((list) => alive && setMine(list))
+      .catch(() => alive && setMine([]));
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
+
   if (!hydrated) return <Shell />;
 
   const current: Step = signedIn && step !== "code" ? "in" : step;
   const ok = /^\S+@\S+\.\S{2,}$/.test(email.trim());
 
-  const sendCode = () => {
+  const sendCode = async () => {
+    if (busy) return;
+    setBusy(true);
+    setSendError(null);
+    const r = await requestCode(email);
+    setBusy(false);
+    if (!r.ok) return setSendError(r.error);
     setCode("");
     setError(null);
     setTries(3);
     setStep("code");
   };
-  const verify = () => {
-    if (code === "000000") {
+  const verify = async () => {
+    if (busy) return;
+    setBusy(true);
+    const r = await verifyCode(email, code);
+    setBusy(false);
+    if (!r.ok) {
       const left = tries - 1;
       setTries(left);
-      setError(left > 0 ? `That code didn’t match. ${left} ${left === 1 ? "try" : "tries"} left.` : "Too many tries. Wait 10 minutes or use a different email.");
+      setError(left > 0 ? `${r.error} ${left} ${left === 1 ? "try" : "tries"} left.` : "Too many tries. Ask for a new code, or wait a few minutes.");
       return;
     }
-    signIn(email);
     setStep("in");
   };
 
@@ -108,10 +140,10 @@ export function SignIn() {
             aria-describedby="si-email-hint"
           />
           <p id="si-email-hint" className={small} aria-live="polite">
-            {email && !ok ? "That email doesn’t look right. Check for typos." : "We’ll never show your email with your story."}
+            {email && !ok ? "That email doesn’t look right. Check for typos." : sendError ?? "We’ll never show your email with your story."}
           </p>
-          <button type="submit" disabled={!ok} className="landing-btn mt-2 w-full max-w-[440px] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-start">
-            Send me a code {ARROW}
+          <button type="submit" disabled={!ok || busy} className="landing-btn mt-2 w-full max-w-[440px] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-start">
+            {busy ? "Sending…" : <>Send me a code {ARROW}</>}
           </button>
         </form>
         <p className={small}>
@@ -159,21 +191,18 @@ export function SignIn() {
               {error}
             </p>
           )}
-          <button type="submit" disabled={code.length !== 6 || tries <= 0} className="landing-btn mt-2 w-full max-w-[440px] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-start">
-            {mode === "signup" ? "Create account" : "Sign in"} {ARROW}
+          <button type="submit" disabled={code.length !== 6 || tries <= 0 || busy} className="landing-btn mt-2 w-full max-w-[440px] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-start">
+            {busy ? "Checking…" : <>{mode === "signup" ? "Create account" : "Sign in"} {ARROW}</>}
           </button>
         </form>
         <button type="button" className={`${textBtn} self-start text-[15px]`} onClick={() => setStep("email")}>
           Use a different email
         </button>
-        <p className="m-0 max-w-[520px] border-l-[3px] border-[#D9D2C4] pl-3 text-[14px] leading-[21px] text-[#5F5866]">
-          Preview: emails aren’t connected yet, so any 6 digits will work. Your account is kept in this browser only.
-        </p>
+        <p className={small}>Can’t find it? Check spam or promotions. It comes from GATHER.</p>
       </>
     );
   } else {
     const { hasDraft, answered, total } = draftSummary(draft);
-    const mine = getStories().filter((s) => s.email === signedIn);
     body = (
       <>
         <h1 ref={headingRef} tabIndex={-1} className={h1}>
@@ -202,21 +231,33 @@ export function SignIn() {
           )}
           <div className="flex flex-col gap-1 rounded border-2 border-brief-ink bg-brief-paper p-5">
             <b className="text-[17px]">Your stories</b>
-            <span className={small}>
-              {mine.length === 0 ? "Nothing sent yet." : `${mine.length} sent from this browser.`}{" "}
-              {mine.length > 0 && (
-                <Link href="/take-down" className={textBtn}>
-                  Manage or take one down
+            {mine === null ? (
+              <span className={small}>Loading…</span>
+            ) : mine.length === 0 ? (
+              <span className={small}>Nothing sent yet.</span>
+            ) : (
+              <>
+                <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+                  {mine.map((s) => (
+                    <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-x-3 text-[15px] leading-[22px]">
+                      <span className="font-semibold">{s.title}</span>
+                      <span className="text-[#5F5866]">{STATUS[s.status]}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/take-down" className={`${textBtn} mt-1 self-start text-[15px]`}>
+                  Take one down
                 </Link>
-              )}
-            </span>
+              </>
+            )}
           </div>
         </div>
         <button
           type="button"
           className={`${textBtn} self-start text-[15px]`}
           onClick={() => {
-            signOut();
+            void signOut();
+            setMine(null);
             setEmail("");
             setMode("signin");
             setStep("email");

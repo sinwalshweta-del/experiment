@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Mark } from "@/components/site/Mark";
 import { getMyStories, MyStory, shortDate, takeDown } from "@/lib/takedown";
+import { useShareDraft } from "@/lib/share/draft";
 
 /**
  * "Take my story down" (approved Claude Design board 11). Main flow:
@@ -95,6 +96,10 @@ export default function TakeDownPage() {
   const [stories, setStories] = useState<MyStory[]>([]);
   const [picked, setPicked] = useState<string | null>(null);
   const [reason, setReason] = useState<string | null>(null);
+  const [codeSent, setCodeSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const { userId, email: signedIn, requestCode, verifyCode } = useShareDraft();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   // links from our emails land here with ?link=expired once they've lapsed
@@ -124,11 +129,37 @@ export default function TakeDownPage() {
   const t = TONES[tone];
   const canBack = history.length > 0 && !["done", "start", "expired"].includes(step);
 
-  const loadStories = () => {
-    const mine = getMyStories(email);
-    setStories(mine);
-    setPicked(mine.find((s) => s.status !== "down")?.id ?? mine[0]?.id ?? null);
-    go(mine.length ? "list" : "none");
+  const loadStories = async (uid: string) => {
+    try {
+      const mine = await getMyStories(uid);
+      setStories(mine);
+      setPicked(mine.find((s) => s.status !== "down")?.id ?? mine[0]?.id ?? null);
+      go(mine.length ? "list" : "none");
+    } catch {
+      go("error");
+    }
+  };
+
+  const start = () => (userId ? loadStories(userId) : go("verify"));
+
+  const sendCode = async () => {
+    if (busy) return;
+    setBusy(true);
+    setAuthError(null);
+    const r = await requestCode(email);
+    setBusy(false);
+    if (!r.ok) return setAuthError(r.error);
+    setCode("");
+    setCodeSent(true);
+  };
+  const verify = async () => {
+    if (busy) return;
+    setBusy(true);
+    setAuthError(null);
+    const r = await verifyCode(email, code);
+    setBusy(false);
+    if (!r.ok) return setAuthError(r.error);
+    await loadStories(r.userId);
   };
 
   const choose = () => {
@@ -136,14 +167,17 @@ export default function TakeDownPage() {
     go(story.status === "down" ? "already" : story.status === "review" ? "review" : "confirm");
   };
 
-  const remove = () => {
-    if (!story) return;
+  const remove = async () => {
+    if (!story || busy) return;
+    setBusy(true);
     try {
-      takeDown(story.id, reason ?? undefined);
-      setStories(getMyStories(email));
+      await takeDown(story.id, reason ?? undefined);
+      if (userId) setStories(await getMyStories(userId));
       go("done");
     } catch {
       go("error");
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -164,14 +198,9 @@ export default function TakeDownPage() {
           {step === "start" ? (
             <>
               <P t={t}>Changed your mind? That&apos;s completely fine. You can remove any story you&apos;ve shared, whenever you like. No reason needed.</P>
-              <div className={`flex flex-col gap-1 rounded border-2 px-4 py-3.5 text-[15px] leading-[22px] ${t.line} ${t.surface}`}>
-                <b className="font-archivo text-[17px] font-extrabold leading-[22px]">Got our email?</b>
-                <span>Every update we send you has a &ldquo;take my story down&rdquo; link. It&apos;s the quickest way, and it skips the next step.</span>
-              </div>
-              <div className={`flex flex-col gap-1 rounded border-2 px-4 py-3.5 text-[15px] leading-[22px] ${t.line} ${t.surface}`}>
-                <b className="font-archivo text-[17px] font-extrabold leading-[22px]">No email handy?</b>
-                <span>Confirm the email you used and we&apos;ll show you your stories.</span>
-              </div>
+              <P t={t}>
+                {signedIn ? <>You&apos;re signed in as <b className="[overflow-wrap:anywhere]">{signedIn}</b>, so we can show your stories straight away.</> : "Confirm the email you used and we’ll show you your stories."}
+              </P>
             </>
           ) : (
             <P t={t}>For your privacy, links in our emails only work for 7 days, and only once. Confirm your email and you&apos;ll be back here in a minute.</P>
@@ -180,13 +209,13 @@ export default function TakeDownPage() {
       );
       foot = (
         <>
-          <Primary t={t} tone={tone} onClick={() => go("verify")}>Continue with my email</Primary>
+          <Primary t={t} tone={tone} onClick={start}>{signedIn ? "Show my stories" : "Continue with my email"}</Primary>
           {step === "start" && <P t={t} small>Only you can see or remove your stories.</P>}
         </>
       );
       break;
     case "verify": {
-      const ok = /\S+@\S+\.\S+/.test(email) && code.length === 6;
+      const emailOk = /\S+@\S+\.\S+/.test(email);
       body = (
         <>
           <H hRef={headingRef}>First, a quick check</H>
@@ -199,11 +228,14 @@ export default function TakeDownPage() {
             inputMode="email"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setCodeSent(false);
+            }}
             className={`min-h-[52px] rounded border-2 px-3.5 text-base outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-brief-peacock ${t.line} ${t.surface}`}
           />
-          <label htmlFor="td-code" className="m-0 text-[15px] font-bold">Code</label>
-          <input
+          {codeSent && <label htmlFor="td-code" className="m-0 text-[15px] font-bold">Code from your email</label>}
+          {codeSent && <input
             id="td-code"
             inputMode="numeric"
             autoComplete="one-time-code"
@@ -212,11 +244,19 @@ export default function TakeDownPage() {
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
             className={`min-h-[56px] max-w-[240px] rounded border-2 px-3.5 font-archivo text-[22px] font-extrabold tracking-[0.5em] outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-brief-peacock ${t.line} ${t.surface}`}
-          />
-          <P t={t} small>Preview: email codes aren&apos;t connected yet, so any 6 digits will continue. Stories shown are the ones shared from this browser.</P>
+          />}
+          {authError && <p role="alert" className="m-0 text-[15px] font-semibold text-[#B3123F]">{authError}</p>}
+          {codeSent && !authError && <P t={t} small>Can&apos;t find it? Check spam or promotions.</P>}
         </>
       );
-      foot = <Primary t={t} tone={tone} onClick={loadStories} disabled={!ok}>Verify</Primary>;
+      foot = codeSent ? (
+        <>
+          <Primary t={t} tone={tone} onClick={verify} disabled={code.length !== 6 || busy}>{busy ? "Checking…" : "Verify"}</Primary>
+          <button type="button" onClick={sendCode} className={link} disabled={busy}>Send a new code</button>
+        </>
+      ) : (
+        <Primary t={t} tone={tone} onClick={sendCode} disabled={!emailOk || busy}>{busy ? "Sending…" : "Send me a code"}</Primary>
+      );
       break;
     }
     case "list":
@@ -270,8 +310,8 @@ export default function TakeDownPage() {
           {step === "confirm" ? (
             <ul className="m-0 flex list-none flex-col gap-2.5 p-0 text-[15px] leading-[22px]">
               {[
-                "Your answers stop counting in the insights from the next daily update.",
-                "If your advice line was shown, it comes down too.",
+                "Your answers stop counting in the insights straight away.",
+                "If it was published, it comes down too.",
                 "This can't be undone, but you can always share again.",
               ].map((li) => (
                 <li key={li} className="relative pl-[26px] before:absolute before:left-0 before:top-1 before:h-3.5 before:w-3.5 before:rounded-tl-full before:bg-brief-peacock">{li}</li>
@@ -302,7 +342,7 @@ export default function TakeDownPage() {
       );
       foot = (
         <>
-          <Primary t={t} tone={tone} rani onClick={remove}>{step === "confirm" ? "Take it down" : "Withdraw it"}</Primary>
+          <Primary t={t} tone={tone} rani onClick={remove} disabled={busy}>{busy ? "Taking it down…" : step === "confirm" ? "Take it down" : "Withdraw it"}</Primary>
           <button type="button" onClick={back} className={link}>{step === "confirm" ? "Keep it up" : "Keep it in review"}</button>
         </>
       );
@@ -326,8 +366,8 @@ export default function TakeDownPage() {
           <div className="flex flex-col gap-3.5 rounded border-2 border-brief-ink bg-[#FFF8E8] p-4">
             {[
               ["Request received", "Saved on our side.", true],
-              ["Removed from view", "It's off your stories, out of our team's queue, and your advice line is gone.", true],
-              ["Still updating: the insights", "Your answers drop out at the next daily update, within 24 hours. Nothing for you to do.", false],
+              ["Removed from view", "It's out of our team's queue and off the site if it was published.", true],
+              ["Out of the insights", "Your answers no longer count. Nothing for you to do.", true],
             ].map(([b, s, on]) => (
               <div key={b as string} className="flex gap-3 text-[15px] leading-[21px]">
                 <i aria-hidden className={`mt-0.5 h-[18px] w-[18px] shrink-0 border-2 border-brief-ink ${on ? "rounded-tl-full bg-brief-ink" : ""}`} />

@@ -46,8 +46,8 @@ import { addStory, daysAgo } from "@/lib/share/stories";
  * how it went (with conditional follow-ups), looking back, about you,
  * review, an explicit publication choice, and confirmation.
  *
- * No backend yet: the code step is a labelled preview and drafts are kept
- * per email on this device. See lib/share/draft.tsx.
+ * Sign-in codes, drafts and stories run on Supabase. See lib/share/draft.tsx
+ * and lib/share/stories.ts.
  */
 
 type Screen = "email" | "code" | "returning" | "intro" | "under18" | StepId | "review" | "consent" | "saved" | "error" | "sent";
@@ -138,15 +138,11 @@ function Highlight({ text }: { text: string }) {
   );
 }
 
-function Preview({ children }: { children: React.ReactNode }) {
-  return <p className="sf-sm border-l-[3px] border-[var(--soft)] pl-3">{children}</p>;
-}
-
 /* ───────────────────────── the flow ───────────────────────── */
 
 export function ShareFlow() {
   const router = useRouter();
-  const { hydrated, email: signedIn, draft, signIn, setAnswers, setStep, reset } = useShareDraft();
+  const { hydrated, email: signedIn, userId, draft, requestCode, verifyCode, setAnswers, setStep, reset } = useShareDraft();
   const a = draft.answers;
   const [screen, setScreen] = useState<Screen>("email");
   const [dir, setDir] = useState<Dir>("next");
@@ -160,11 +156,13 @@ export function ShareFlow() {
   const [publish, setPublish] = useState<boolean | null>(null);
   const [ack, setAck] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const started = useRef(false);
   const steps = useMemo(() => visibleSteps(a), [a]);
 
-  // first screen: a verified email on this device skips straight in
+  // first screen: someone already signed in skips straight in
   useEffect(() => {
     if (!hydrated || started.current) return;
     started.current = true;
@@ -233,36 +231,51 @@ export function ShareFlow() {
     setAnswers({ [key]: base.includes(v) ? base.filter((x) => x !== v) : [...base, v].slice(0, limit) });
   };
 
-  const sendCode = () => {
+  const sendCode = async (resend = false) => {
+    if (busy) return;
+    setBusy(true);
+    setSendError(null);
+    const r = await requestCode(email);
+    setBusy(false);
+    if (!r.ok) {
+      if (resend) setCodeError(r.error);
+      else setSendError(r.error);
+      return;
+    }
     setCode("");
     setCodeError(null);
     setTries(3);
     setResendIn(42);
-    go("code");
+    if (!resend) go("code");
   };
-  const verify = () => {
-    // Preview: no email service yet, so any 6 digits pass except 000000,
-    // which shows the "didn't match" state from the board.
-    if (code === "000000") {
+  const verify = async () => {
+    if (busy) return;
+    setBusy(true);
+    const r = await verifyCode(email, code);
+    setBusy(false);
+    if (!r.ok) {
       const left = tries - 1;
       setTries(left);
-      setCodeError(left > 0 ? `That code didn’t match. ${left} ${left === 1 ? "try" : "tries"} left.` : "Too many tries. Wait 10 minutes or use a different email.");
+      setCodeError(left > 0 ? `${r.error} ${left} ${left === 1 ? "try" : "tries"} left.` : "Too many tries. Ask for a new code, or wait a few minutes.");
       return;
     }
-    const found = signIn(email);
     setTrail([]);
-    go(found && draftSummary(found).hasDraft ? "returning" : "intro");
+    go(draftSummary(r.draft).hasDraft ? "returning" : "intro");
   };
 
-  const send = () => {
+  const send = async () => {
+    if (busy || !userId) return;
+    setBusy(true);
     try {
-      addStory(a, signedIn ?? email, publish === true);
+      await addStory(a, userId, publish === true);
       reset();
       setTrail([]);
       setEditing(false);
       go("sent");
     } catch {
       go("error");
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -318,10 +331,16 @@ export function ShareFlow() {
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && ok && sendCode()}
             />
-            {email && !ok ? <p className="sf-err">That email doesn’t look right. Check for typos.</p> : <p className="sf-sm">Next, we’ll send you a 6-digit code.</p>}
+            {email && !ok ? (
+              <p className="sf-err">That email doesn’t look right. Check for typos.</p>
+            ) : sendError ? (
+              <p className="sf-err" role="alert">{sendError}</p>
+            ) : (
+              <p className="sf-sm">Next, we’ll send you a 6-digit code.</p>
+            )}
           </div>
         ),
-        next: { label: <>Continue {ARROW}</>, onClick: sendCode, disabled: !ok },
+        next: { label: busy ? "Sending…" : <>Continue {ARROW}</>, onClick: () => sendCode(), disabled: !ok || busy },
       };
       break;
     }
@@ -365,7 +384,7 @@ export function ShareFlow() {
               {resendIn > 0 ? (
                 `Didn’t get it? Resend in 0:${String(resendIn).padStart(2, "0")}`
               ) : (
-                <button type="button" className="underline underline-offset-[3px]" onClick={() => { setResendIn(42); setTries(3); setCodeError(null); }}>
+                <button type="button" className="underline underline-offset-[3px]" onClick={() => sendCode(true)}>
                   Send a new code
                 </button>
               )}
@@ -373,10 +392,9 @@ export function ShareFlow() {
             <button type="button" className="sf-lk self-start pl-0" onClick={() => go("email", "back")}>
               Use a different email
             </button>
-            <Preview>Preview: emails aren’t connected yet, so any 6 digits will work. Your draft is kept on this device only.</Preview>
           </div>
         ),
-        next: { label: "Verify", onClick: verify, disabled: code.length !== 6 || tries <= 0 },
+        next: { label: busy ? "Checking…" : "Verify", onClick: verify, disabled: code.length !== 6 || tries <= 0 || busy },
       };
       break;
     }
@@ -845,10 +863,9 @@ export function ShareFlow() {
               <input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)} />
               <span>I understand a real person will read this and may edit or remove details that could identify anyone.</span>
             </label>
-            <Preview>Preview: stories aren’t sent anywhere yet. This one will stay in this browser.</Preview>
           </div>
         ),
-        next: { label: "Send my story", onClick: send, disabled: publish === null || !ack },
+        next: { label: busy ? "Sending…" : "Send my story", onClick: send, disabled: publish === null || !ack || busy },
       };
       break;
 
@@ -859,8 +876,7 @@ export function ShareFlow() {
         lead: (
           <>
             {H("Saved.")}
-            {hp("Your answers are kept for 30 days. Come back to GATHER on this device and you’ll pick up right where you left off.")}
-            <Preview>Preview: once email is connected, we’ll also send you a link so you can continue on any device.</Preview>
+            {hp("Your answers are saved to your account. Sign in on any device and you’ll pick up right where you left off.")}
           </>
         ),
         next: { label: "Back to GATHER", onClick: () => router.push("/") },
@@ -878,10 +894,10 @@ export function ShareFlow() {
         lead: (
           <>
             {H("Ugh, that didn’t go through.")}
-            {hp("Your answers are still saved on this device. Nothing’s lost.")}
+            {hp("Your answers are still saved. Nothing’s lost. Check your connection and try again.")}
           </>
         ),
-        next: { label: "Try again", onClick: send },
+        next: { label: busy ? "Sending…" : "Try again", onClick: send, disabled: busy },
       };
       break;
 
@@ -894,8 +910,7 @@ export function ShareFlow() {
         lead: (
           <>
             {H("Your story is with us.", "text-[38px] md:text-[48px] lg:text-[60px] lg:leading-[0.98]")}
-            <p className="sf-hp text-[17px] leading-[26px] text-[var(--fg)] lg:text-[18px] lg:leading-7">Thanks for sharing. Our team will read it, and we’ll email you when the review is done. Nothing is published until then.</p>
-            <Preview>Preview: this story was saved in this browser only. Nothing was sent.</Preview>
+            <p className="sf-hp text-[17px] leading-[26px] text-[var(--fg)] lg:text-[18px] lg:leading-7">Thanks for sharing. Our team will read it before anything is used. Nothing is published until then.</p>
           </>
         ),
         body: (
@@ -904,7 +919,7 @@ export function ShareFlow() {
               {[
                 ["Received", "Just now", true],
                 ["Being reviewed", "Usually 2-3 days", false],
-                ["We’ll email you", "When the review’s done", false],
+                ["Check anytime", "Sign in to see where it is", false],
               ].map(([t, d, on]) => (
                 <div key={t as string}>
                   <i className={on ? "on" : ""} aria-hidden />
@@ -916,11 +931,11 @@ export function ShareFlow() {
               ))}
             </div>
             <p className="sf-sm">
-              Changed your mind? You can take your story down anytime from the link in our emails, or{" "}
+              Changed your mind?{" "}
               <Link href="/take-down" className="underline underline-offset-[3px]">
-                here
-              </Link>
-              .
+                Take your story down
+              </Link>{" "}
+              anytime.
             </p>
           </div>
         ),

@@ -1,45 +1,53 @@
+import { supabase } from "@/lib/supabase";
 import type { Answers } from "./questions";
 import { storyTitle } from "./questions";
 
 /**
- * Stories sent from this browser. There's no backend in the MVP yet, so a
- * "sent" story is kept here; the take-down flow reads the same list. The
- * email is stored with the private record only, never with anything that
- * would be published. A real API replaces this module.
+ * Stories, stored in Supabase (public.stories). Row-level security means a
+ * person only ever sees their own; new stories always start as "received"
+ * and only a reviewer can approve them. The email is never stored here: the
+ * row points at the auth user id, and the address lives in Supabase Auth.
  */
-const KEY = "gather:stories";
+export type StoryStatus = "received" | "in_review" | "approved" | "not_used" | "taken_down";
 
-export type SentStory = {
+export type MyStory = {
   id: string;
   title: string;
-  answers: Answers;
-  email: string;
-  /** true: publish story + selected answers after review; false: insights only */
   publish: boolean;
+  status: StoryStatus;
   createdAt: string;
+  takenDownAt: string | null;
 };
 
-export function getStories(): SentStory[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(window.localStorage.getItem(KEY) ?? "[]") as SentStory[];
-  } catch {
-    return [];
-  }
+/** Throws if it doesn't go through, so the flow can show "that didn't go through". */
+export async function addStory(answers: Answers, userId: string, publish: boolean) {
+  const { error } = await supabase()
+    .from("stories")
+    .insert({ user_id: userId, title: storyTitle(answers), answers, publish });
+  if (error) throw error;
 }
 
-/** Throws if storage is unavailable, so the flow can show "that didn't go through". */
-export function addStory(answers: Answers, email: string, publish: boolean): SentStory {
-  const story: SentStory = {
-    id: `s_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`,
-    title: storyTitle(answers),
-    answers,
-    email: email.trim().toLowerCase(),
-    publish,
-    createdAt: new Date().toISOString(),
-  };
-  window.localStorage.setItem(KEY, JSON.stringify([...getStories(), story]));
-  return story;
+/** Filter by owner explicitly: a reviewer's account can read every story. */
+export async function getMyStories(userId: string): Promise<MyStory[]> {
+  const { data, error } = await supabase()
+    .from("stories")
+    .select("id, title, publish, status, created_at, taken_down_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((s) => ({
+    id: s.id as string,
+    title: s.title as string,
+    publish: s.publish as boolean,
+    status: s.status as StoryStatus,
+    createdAt: s.created_at as string,
+    takenDownAt: (s.taken_down_at as string | null) ?? null,
+  }));
+}
+
+export async function takeDownStory(id: string, reason?: string) {
+  const { error } = await supabase().rpc("take_down_story", { story_id: id, reason: reason ?? null });
+  if (error) throw error;
 }
 
 export function daysAgo(iso: string | number) {

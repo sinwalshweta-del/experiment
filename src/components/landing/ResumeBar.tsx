@@ -74,7 +74,7 @@ export function ResumeBar() {
           </h2>
         </div>
         <span className="whitespace-nowrap font-archivo text-sm text-[#5F5866]">
-          {answered} of {total} answered · saved on this device
+          {answered} of {total} answered · saved to your account
         </span>
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
           <Link href={href} className="landing-btn min-h-[46px] w-full whitespace-nowrap px-5 text-base sm:w-auto">
@@ -105,7 +105,7 @@ export function ResumeBar() {
               Discard this draft?
             </h2>
             <p id="discard-b" className="m-0 font-archivo text-[17px] leading-[26px]">
-              This deletes your saved answers from this device. Your story hasn&rsquo;t been sent, and this can&rsquo;t be undone.
+              This deletes your saved answers. Your story hasn&rsquo;t been sent, and this can&rsquo;t be undone.
             </p>
             <div className="mt-1.5 flex flex-wrap gap-3.5">
               <button
