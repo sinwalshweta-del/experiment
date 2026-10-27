@@ -297,6 +297,11 @@ body {
 /* ── Landing page (approved Claude Design board "Final - 25/10/2026") ──
    In the components layer so Tailwind utilities on the same element
    (e.g. bg-brief-white on a .landing-btn) still win. */
+@layer base {
+  /* never end a paragraph on one lonely word (design board 21) */
+  p { text-wrap: pretty; }
+}
+
 @layer components {
 
 .landing-btn {

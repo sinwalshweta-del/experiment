@@ -73,8 +73,9 @@ function Hero() {
   return (
     <section className="relative grid gap-12 px-4 pb-20 pt-14 sm:px-8 lg:grid-cols-12 lg:items-center lg:gap-6 lg:px-20 lg:pb-[110px] lg:pt-24">
       <div className="landing-hero-in flex flex-col gap-7 lg:col-span-7">
-        <h1 className={`${display} text-[48px] leading-[0.92] sm:text-[68px] lg:text-[clamp(60px,6.1vw,88px)] xl:w-[759px]`}>
-          People are an experience. Rate yours.
+        <h1 className={`${display} text-[clamp(32px,10vw,48px)] leading-[0.92] sm:text-[68px] lg:text-[clamp(60px,6.1vw,88px)] xl:w-[759px]`}>
+          {/* phones: a fixed break after "an" so no word sits alone (design board 21) */}
+          People are an<br className="sm:hidden" /> experience. Rate yours.
         </h1>
         <p className="max-w-[600px] font-archivo text-[19px] leading-[29px] text-brief-ink lg:text-[21px] lg:leading-[32px]">
           The green flags, the red flags, the people who made your day, and the ones who made you question your life
@@ -84,11 +85,11 @@ function Hero() {
           <Link href="/share" className="landing-btn">
             <span>Spill yours</span> <ArrowIcon />
           </Link>
-          <Link href="/insights" className="landing-btn bg-brief-white">
+          <Link href="/insights" className="landing-btn bg-brief-white max-[349px]:px-4">
             See what people are saying
           </Link>
         </div>
-        <span className={`${mono} text-[#5F5866]`}>4 MINS · MOSTLY TAPS · NO NAMES, EVER</span>
+        <span className={`${mono} text-[#5F5866] max-[374px]:text-[11px] max-[349px]:tracking-[0.01em] max-[349px]:text-[10px]`}>4 MINS · MOSTLY TAPS · NO NAMES, EVER</span>
       </div>
 
       {/* Collage: absolutely placed on desktop, a loose stack below lg */}
@@ -197,7 +198,7 @@ function Topics() {
   return (
     <section data-reveal className="flex flex-col gap-9 overflow-hidden border-y-2 border-brief-ink bg-brief-marigold py-16 lg:py-[100px]">
       <div data-px="14" className="grid gap-6 px-4 sm:px-8 lg:grid-cols-12 lg:items-end lg:px-20">
-        <h2 className={`${h2} lg:col-span-7`}>It&apos;s complicated. Let&apos;s talk.</h2>
+        <h2 className={`${h2} max-sm:text-[clamp(34px,10.8vw,40px)] lg:col-span-7`}>It&apos;s complicated. Let&apos;s talk.</h2>
         <p className="font-archivo text-[18px] leading-[28px] lg:col-span-5 lg:col-start-8 lg:text-[19px] lg:leading-[29px]">
           First dates, situationships, exes and everything in between. It&apos;s about how it went, not who they were.
         </p>
@@ -244,13 +245,15 @@ function InsightsPeek() {
       </div>
       <div data-px="46" className="flex flex-col gap-[22px] lg:col-span-6 lg:col-start-7">
         <div className="flex flex-col gap-3 rounded border-2 border-brief-ink bg-brief-white p-5 shadow-[6px_6px_0_var(--color-brief-ink)] sm:p-7">
-          <span className="landing-sample self-start">SAMPLE DATA · FOR ILLUSTRATION ONLY</span>
+          <span className="landing-sample self-start">
+            SAMPLE DATA<span className="hidden sm:inline"> · FOR ILLUSTRATION ONLY</span>
+          </span>
           <h3 className="font-archivo text-[24px] font-black leading-[1.05] [font-stretch:112%] sm:text-[28px]">
             Where are people meeting these days?
           </h3>
           {SAMPLE_BARS.map((b) => (
-            <div key={b.label} className="grid grid-cols-[110px_1fr_44px] items-center gap-3 font-archivo sm:grid-cols-[160px_1fr_50px]">
-              <span>{b.label}</span>
+            <div key={b.label} className="grid grid-cols-[auto_1fr_44px] items-center gap-3 font-archivo sm:grid-cols-[160px_1fr_50px]">
+              <span className="max-sm:min-w-[96px] max-sm:whitespace-nowrap">{b.label}</span>
               <div className="h-5 border-2 border-brief-ink bg-brief-paper">
                 <div className="h-full border-r-2 border-brief-ink bg-brief-peacock" style={{ width: `${b.pct}%` }} />
               </div>

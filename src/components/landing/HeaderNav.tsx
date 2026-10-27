@@ -31,7 +31,7 @@ export function HeaderNav() {
         How it works
       </a>
       <span aria-hidden className="landing-navsep hidden md:block" />
-      <Link href="/sign-in" data-label="Sign in" className="landing-navlink landing-navlink-quiet max-sm:px-1.5 max-sm:text-[15px]">
+      <Link href="/sign-in" data-label="Sign in" className="landing-navlink landing-navlink-quiet max-sm:px-1.5 max-sm:text-[15px] max-[349px]:hidden">
         Sign in
       </Link>
     </>

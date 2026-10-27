@@ -116,7 +116,7 @@ export function Collectibles() {
           <Postmark className="-ml-1 h-auto w-[160px] lg:-ml-1.5 lg:w-[220px]" />
           <h2
             id="gc-h"
-            className="font-archivo text-[38px] font-black leading-[0.96] tracking-[-0.015em] [font-stretch:125%] sm:text-[52px] lg:text-[64px] lg:leading-[0.94]"
+            className="font-archivo text-[clamp(34px,11.4vw,38px)] font-black leading-[0.96] tracking-[-0.015em] [font-stretch:125%] sm:text-[52px] lg:text-[64px] lg:leading-[0.94]"
           >
             Share your experience. <span className="text-brief-marigold">Discover GATHER Collectibles.</span>
           </h2>
