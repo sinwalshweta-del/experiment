@@ -4,49 +4,52 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Mark } from "@/components/site/Mark";
-import { useShareDraft, draftSummary, type Draft } from "@/lib/share/draft";
+import { draftSummary, useShareDraft } from "@/lib/share/draft";
 import {
-  accentFor,
   AGES,
   GENDERS,
-  GLAD,
-  GREEN,
+  GOOD,
+  HARD,
+  HOPE,
   HOW_LONG,
+  hasFaded,
   MET,
-  NA,
-  NOW,
-  OVERALL,
-  RATING,
-  RED,
+  NOT_SURE,
+  NOTHING_GOOD,
+  NOTHING_HARD,
+  OTHER,
+  REASONS,
   REGIONS,
+  SECTIONS,
   sectionLabel,
+  SLOWED,
   spotNames,
-  STATEMENTS,
+  statusOptions,
   STEPS,
+  STORY_MAX,
+  STORY_MIN,
   storyTitle,
-  THEIR_AGES,
+  THOUGHT,
   TYPES,
   visibleSteps,
-  WHEN,
-  WHO,
+  WITH,
   type Answers,
   type StepId,
 } from "@/lib/share/questions";
-import { addStory, daysAgo, findDuplicate, type SentStory } from "@/lib/share/stories";
+import { addStory, daysAgo } from "@/lib/share/stories";
 
 /**
- * The share flow, built from the approved Claude Design boards:
- * 13a (every screen, mobile), 13b (desktop 1440 + tablet 820) and
- * 13c (states, shell and motion). Charcoal base; the accent follows Q1.
+ * Share flow v2, built from the agreed questionnaire (Claude Design boards
+ * 18a mobile and 18b desktop): email first and verified, then the
+ * connection, what you hoped for, your story (required), what stood out,
+ * how it went (with conditional follow-ups), looking back, about you,
+ * review, an explicit publication choice, and confirmation.
  *
- * Mobile: back · mark · save & exit, progress under it, actions at the
- * bottom. Tablet + desktop: mark + full name · progress · save & exit, and a
- * pinned footer bar with back · skip · next. Desktop splits choice screens
- * into question (left) and answers (right); writing screens use one 760px
- * column.
+ * No backend yet: the code step is a labelled preview and drafts are kept
+ * per email on this device. See lib/share/draft.tsx.
  */
 
-type Screen = "privacy" | "under18" | "returning" | StepId | "email" | "code" | "duplicate" | "error" | "sent";
+type Screen = "email" | "code" | "returning" | "intro" | "under18" | StepId | "review" | "consent" | "saved" | "error" | "sent";
 type Dir = "next" | "back";
 
 const ARROW = (
@@ -54,25 +57,29 @@ const ARROW = (
     <path d="M3 10h13M11 4l6 6-6 6" />
   </svg>
 );
-
-const WRITING: Screen[] = ["q11", "q12"];
+const WRITING: Screen[] = ["q7", "q13"];
+const isStep = (s: Screen): s is StepId => STEPS.some((x) => x.id === s);
 
 /* ───────────────────────── small pieces ───────────────────────── */
 
-function Chips({
+function Kind({ children }: { children: React.ReactNode }) {
+  return <div className="sf-kind">{children}</div>;
+}
+
+function Choice({
+  label,
   options,
   value,
   onPick,
   wrap = false,
   disabled,
-  label,
 }: {
+  label: string;
   options: string[];
   value: string | string[] | undefined;
   onPick: (v: string) => void;
   wrap?: boolean;
   disabled?: (v: string) => boolean;
-  label: string;
 }) {
   const on = (o: string) => (Array.isArray(value) ? value.includes(o) : value === o);
   return (
@@ -86,53 +93,17 @@ function Chips({
   );
 }
 
-function Field({
-  id,
-  label,
-  value,
-  onChange,
-  max,
-  placeholder,
-  area = false,
-  tall = false,
-  hint,
-}: {
-  id: string;
-  label?: string;
-  value: string;
-  onChange: (v: string) => void;
-  max: number;
-  placeholder?: string;
-  area?: boolean;
-  tall?: boolean;
-  hint?: React.ReactNode;
-}) {
-  const over = value.length > max;
-  const common = {
-    id,
-    value,
-    placeholder,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => onChange(e.target.value),
-    className: `sf-in ${over ? "er" : ""}`,
-    "aria-describedby": `${id}-cn`,
-  };
+function OtherField({ id, label, value, onChange, max, hint }: { id: string; label: string; value: string; onChange: (v: string) => void; max: number; hint?: string }) {
   return (
-    <div className="flex flex-col gap-2">
-      {label && (
-        <label htmlFor={id} className="text-[15px] font-bold leading-5">
-          {label}
-        </label>
-      )}
-      {area ? (
-        <textarea {...common} rows={tall ? 10 : 5} className={`${common.className} ${tall ? "min-h-[210px] md:min-h-[300px] md:text-[18px] md:leading-[30px]" : "min-h-[150px]"}`} />
-      ) : (
-        <input {...common} type="text" />
-      )}
-      {hint}
-      <span id={`${id}-cn`} className="sf-cn" style={over ? { color: "#FF8A8A" } : undefined}>
-        {value.length.toLocaleString("en-IN")} / {max.toLocaleString("en-IN")}
-        {over && ` · trim ${value.length - max} character${value.length - max === 1 ? "" : "s"}`}
+    <div className="sf-other">
+      <label htmlFor={id} className="text-[15px] font-bold leading-5">
+        {label}
+      </label>
+      <input id={id} className="sf-in" value={value} maxLength={max} onChange={(e) => onChange(e.target.value)} autoFocus placeholder="In your own words" />
+      <span className="sf-cn">
+        {value.length} / {max}
       </span>
+      {hint && <p className="sf-sm">{hint}</p>}
     </div>
   );
 }
@@ -140,12 +111,29 @@ function Field({
 function NameWarning({ text }: { text: string }) {
   const names = spotNames(text);
   if (!names.length) return null;
-  const list = names.map((n) => `“${n}”`).join(", ");
+  const one = names.length === 1;
   return (
     <div className="sf-warn" role="status">
-      {list} {names.length === 1 ? "looks like a name" : "look like names"}. Want to take {names.length === 1 ? "it" : "them"} out? Our review team will remove{" "}
-      {names.length === 1 ? "it" : "them"} anyway.
+      {names.map((n) => `“${n}”`).join(", ")} {one ? "looks like a name" : "look like names"}. Want to take {one ? "it" : "them"} out? Our team will remove {one ? "it" : "them"} anyway.
     </div>
+  );
+}
+
+function Highlight({ text }: { text: string }) {
+  const names = new Set(spotNames(text).map((n) => n.toLowerCase()));
+  if (!names.size) return <>{text}</>;
+  return (
+    <>
+      {text.split(/(\b[A-Za-z]+\b)/).map((part, i) =>
+        names.has(part.toLowerCase()) ? (
+          <mark key={i} className="rounded-sm bg-[#BDB2FF] px-0.5 text-brief-ink">
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </>
   );
 }
 
@@ -157,49 +145,47 @@ function Preview({ children }: { children: React.ReactNode }) {
 
 export function ShareFlow() {
   const router = useRouter();
-  const { draft, hydrated, setAnswers, setStep, reset } = useShareDraft();
+  const { hydrated, email: signedIn, draft, signIn, setAnswers, setStep, reset } = useShareDraft();
   const a = draft.answers;
-  const [screen, setScreen] = useState<Screen>("privacy");
+  const [screen, setScreen] = useState<Screen>("email");
   const [dir, setDir] = useState<Dir>("next");
   const [trail, setTrail] = useState<Screen[]>([]);
-  const [adult, setAdult] = useState(false);
-  const [consent, setConsent] = useState(false);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState<string | null>(null);
   const [tries, setTries] = useState(3);
   const [resendIn, setResendIn] = useState(0);
-  const [dupe, setDupe] = useState<SentStory | null>(null);
-  const [sending, setSending] = useState(false);
-  const [picked, setPicked] = useState<string | null>(null); // rating that just landed
+  const [adult, setAdult] = useState(false);
+  const [publish, setPublish] = useState<boolean | null>(null);
+  const [ack, setAck] = useState(false);
+  const [editing, setEditing] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const started = useRef(false);
-
-  const accent = accentFor(a.overall);
   const steps = useMemo(() => visibleSteps(a), [a]);
 
-  // first screen: resume straight in (from the landing bar), offer the draft, or start fresh
+  // first screen: a verified email on this device skips straight in
   useEffect(() => {
     if (!hydrated || started.current) return;
     started.current = true;
+    if (!signedIn) return;
     const { hasDraft } = draftSummary(draft);
     const resume = new URLSearchParams(window.location.search).get("resume") === "1";
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (hasDraft && draft.step !== "privacy") setScreen(resume ? draft.step : "returning");
-  }, [hydrated, draft]);
+    setEmail(signedIn);
+    setScreen(hasDraft ? (resume ? draft.step : "returning") : "intro");
+  }, [hydrated, signedIn, draft]);
 
   // keep the draft pointing at the current question so it reopens there
   useEffect(() => {
-    if (STEPS.some((s) => s.id === screen)) setStep(screen as StepId);
+    if (isStep(screen)) setStep(screen);
   }, [screen, setStep]);
 
-  // move focus to each new screen's question, for keyboard and screen-reader users
+  // focus each new screen's heading for keyboard and screen-reader users
   useEffect(() => {
     if (started.current) headingRef.current?.focus({ preventScroll: true });
     window.scrollTo({ top: 0 });
   }, [screen]);
 
-  // code resend countdown
   useEffect(() => {
     if (resendIn <= 0) return;
     const t = window.setTimeout(() => setResendIn((s) => s - 1), 1000);
@@ -211,21 +197,9 @@ export function ShareFlow() {
     if (d === "next") setTrail((t) => [...t, screen]);
     setScreen(to);
   };
-
-  const nextStep = (from: StepId): Screen => {
-    const i = steps.findIndex((s) => s.id === from);
-    return steps[i + 1]?.id ?? "check";
-  };
-  const prevStep = (from: Screen): Screen | null => {
-    const i = steps.findIndex((s) => s.id === from);
-    if (i > 0) return steps[i - 1].id;
-    if (from === "email") return "check";
-    if (from === "code") return "email";
-    return null;
-  };
   const back = () => {
-    const prev = trail[trail.length - 1] ?? prevStep(screen);
-    if (!prev || prev === "returning") {
+    const prev = trail[trail.length - 1];
+    if (!prev || prev === "code" || prev === "email") {
       router.push("/");
       return;
     }
@@ -233,72 +207,67 @@ export function ShareFlow() {
     setDir("back");
     setScreen(prev);
   };
-  const advance = () => go(nextStep(screen as StepId));
+  const nextOf = (id: StepId): Screen => {
+    const i = steps.findIndex((s) => s.id === id);
+    const nxt = steps[i + 1]?.id;
+    // while editing from the review, jump back, unless a change opened a follow-up that still needs an answer
+    if (editing) return nxt === "q11" && !a.slowed ? "q11" : nxt === "q12" && !a.reasons?.length ? "q12" : "review";
+    return nxt ?? "review";
+  };
+  const advance = () => go(nextOf(screen as StepId));
   const skip = (patch: Partial<Answers>) => {
     setAnswers(patch);
     advance();
   };
-  const saveAndExit = () => router.push("/");
+  const edit = (to: StepId) => {
+    setEditing(true);
+    go(to, "back");
+  };
 
   const pick1 = (key: keyof Answers) => (v: string) => setAnswers({ [key]: a[key] === v ? undefined : v } as Partial<Answers>);
-  const pickMany = (key: "green" | "red") => (v: string) => {
+  const pickMany = (key: "good" | "hard" | "reasons", none: string, limit: number) => (v: string) => {
     const cur = a[key] ?? [];
-    setAnswers({ [key]: cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v].slice(0, 3) });
+    if (v === none) return setAnswers({ [key]: cur.includes(none) ? [] : [none] });
+    const base = cur.filter((x) => x !== none);
+    setAnswers({ [key]: base.includes(v) ? base.filter((x) => x !== v) : [...base, v].slice(0, limit) });
   };
 
-  const rate = (i: number, v: string) => {
-    setAnswers({ ratings: { ...(a.ratings ?? {}), [STATEMENTS[i]]: v } });
-    setPicked(v);
-    // the tapped option fills and holds briefly so you see it land, then moves on
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.setTimeout(() => {
-      setPicked(null);
-      go(nextStep(`q7-${i}` as StepId));
-    }, reduce ? 0 : 180);
+  const sendCode = () => {
+    setCode("");
+    setCodeError(null);
+    setTries(3);
+    setResendIn(42);
+    go("code");
   };
-
-  const send = (force = false) => {
-    if (!force) {
-      const d = findDuplicate(a);
-      if (d) {
-        setDupe(d);
-        go("duplicate");
-        return;
-      }
-    }
-    setSending(true);
-    try {
-      addStory(a, email);
-      reset();
-      setTrail([]);
-      go("sent");
-    } catch {
-      go("error");
-    } finally {
-      setSending(false);
-    }
-  };
-
   const verify = () => {
-    // Preview: there is no email service yet, so any 6 digits pass except
-    // 000000, which shows the "didn't match" state from the board.
+    // Preview: no email service yet, so any 6 digits pass except 000000,
+    // which shows the "didn't match" state from the board.
     if (code === "000000") {
       const left = tries - 1;
       setTries(left);
-      setCodeError(
-        left > 0
-          ? `That code didn't match. Check the latest email and try again. ${left} ${left === 1 ? "try" : "tries"} left.`
-          : "Too many tries. Give it 10 mins or use a different email.",
-      );
+      setCodeError(left > 0 ? `That code didn’t match. ${left} ${left === 1 ? "try" : "tries"} left.` : "Too many tries. Wait 10 minutes or use a different email.");
       return;
     }
-    setCodeError(null);
-    send();
+    const found = signIn(email);
+    setTrail([]);
+    go(found && draftSummary(found).hasDraft ? "returning" : "intro");
+  };
+
+  const send = () => {
+    try {
+      addStory(a, signedIn ?? email, publish === true);
+      reset();
+      setTrail([]);
+      setEditing(false);
+      go("sent");
+    } catch {
+      go("error");
+    }
   };
 
   if (!hydrated) return <div className="sf min-h-dvh" />;
 
-  /* ───────── per-screen content: eyebrow + question (left) and answers (right) ───────── */
+  /* ───────── per-screen content ───────── */
 
   const H = (text: React.ReactNode, size = "") => (
     <h1 ref={headingRef} tabIndex={-1} className={`sf-q ${size || "md:text-[38px] lg:text-[46px] lg:leading-[1.02]"}`}>
@@ -306,490 +275,52 @@ export function ShareFlow() {
     </h1>
   );
   const eb = (t: string) => <span className="sf-eb">{t}</span>;
-  const REQ = eb("PICK ONE · REQUIRED");
-  const OPT = eb("PICK ONE · OPTIONAL");
+  const hp = (t: React.ReactNode) => <p className="sf-hp md:text-[18px] md:leading-7">{t}</p>;
 
   type View = {
-    lead: React.ReactNode; // eyebrow, question, helper
-    body?: React.ReactNode; // answers
+    lead: React.ReactNode;
+    body?: React.ReactNode;
     next?: { label: React.ReactNode; onClick: () => void; disabled?: boolean } | null;
     skip?: () => void;
+    extra?: React.ReactNode;
     noBack?: boolean;
     exit?: "save" | "close" | null;
-    progress?: boolean;
-    centre?: boolean; // vertically centred, used for short message screens
+    centre?: boolean;
   };
-
-  const writing = WRITING.includes(screen);
   let v: View;
+  const otherMissing = (list: string[] | undefined, text: string | undefined) => Boolean(list?.includes(OTHER) && !text?.trim());
 
   switch (screen) {
-    case "privacy":
-      v = {
-        noBack: true,
-        exit: "close",
-        progress: false,
-        lead: (
-          <>
-            {H("Your story, your call.", "text-[34px] md:text-[42px] lg:text-[52px] lg:leading-none")}
-            <Preview>Preview: stories aren&apos;t sent anywhere yet. Anything you share stays in this browser.</Preview>
-          </>
-        ),
-        body: (
-          <div className="flex flex-col gap-4">
-            {[
-              ["STAYS PRIVATE", "Your email. We only use it to tell you when your story's counted."],
-              ["MIGHT BE SHOWN", "Numbers mixed in with loads of other stories. Maybe your advice, with nothing that points to you."],
-              ["TOTALLY OPTIONAL", "Everything except 3 quick questions. Skip what you like."],
-            ].map(([t, d]) => (
-              <div key={t} className="sf-card">
-                {eb(t)}
-                <span>{d}</span>
-              </div>
-            ))}
-            <p className="sf-sm">A real person reads every story and may remove anything that could identify someone.</p>
-            <label className="sf-chk">
-              <input type="checkbox" checked={adult} onChange={(e) => setAdult(e.target.checked)} />
-              <span>I&apos;m 18 or older</span>
-            </label>
-            <button type="button" className="sf-lk self-start p-0 text-[14px] font-normal text-[var(--mu)]" onClick={() => go("under18")}>
-              I&apos;m under 18
-            </button>
-          </div>
-        ),
-        next: { label: <>Let&apos;s go {ARROW}</>, onClick: () => go("q1"), disabled: !adult },
-      };
-      break;
-
-    case "under18":
-      v = {
-        exit: null,
-        progress: false,
-        centre: true,
-        lead: (
-          <>
-            {H("This one's for 18+.")}
-            <p className="sf-hp">GATHER is for people 18 and over. Come back when you&apos;re 18. We&apos;ll still be here.</p>
-          </>
-        ),
-        next: { label: "Back to home", onClick: () => router.push("/") },
-      };
-      break;
-
-    case "returning": {
-      const { answered, total } = draftSummary(draft);
-      v = {
-        noBack: true,
-        exit: "close",
-        progress: false,
-        centre: true,
-        lead: (
-          <>
-            {H("Pick up where you left off?")}
-            <div className="sf-card">
-              {eb("YOUR DRAFT")}
-              <b className="text-[17px]">{storyTitle(a)}</b>
-              <span className="sf-sm">
-                {answered} of {total} answered · saved {daysAgo(new Date(draft.updatedAt).toISOString())}
-              </span>
-            </div>
-            <p className="sf-sm">Drafts only live in this browser. Nothing&apos;s been sent yet.</p>
-          </>
-        ),
-        next: { label: "Keep going", onClick: () => go(draft.step as Screen) },
-        skip: undefined,
-      };
-      break;
-    }
-
-    case "q1":
-      v = {
-        lead: (
-          <>
-            {REQ}
-            {H("So… how was it, overall?")}
-            <p className="sf-hp md:text-[18px] md:leading-7">No wrong answer. This just sets the mood.</p>
-          </>
-        ),
-        body: <Chips label="How was it, overall?" options={OVERALL} value={a.overall} onPick={(o) => setAnswers({ overall: o as Answers["overall"] })} />,
-        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.overall },
-        noBack: true,
-      };
-      break;
-
-    case "q2a":
-      v = {
-        lead: (
-          <>
-            {eb(a.overall === "Kinda rough" ? "RANT MODE · PICK ONE" : a.overall === "Honestly good" ? "CREDIT WHERE IT'S DUE · PICK ONE" : "PICK ONE · REQUIRED")}
-            {H("Who are we talking about?")}
-          </>
-        ),
-        body: (
-          <Chips
-            label="Who are we talking about?"
-            options={WHO}
-            value={a.who}
-            onPick={(o) => setAnswers({ who: o, ...(o !== a.who ? { type: undefined, typeOther: undefined } : {}) })}
-          />
-        ),
-        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.who },
-      };
-      break;
-
-    case "q2b": {
-      const opts = TYPES[a.who ?? ""] ?? [];
-      v = {
-        lead: (
-          <>
-            {REQ}
-            {H("What were they to you?")}
-            {a.who === "Someone romantic" && <p className="sf-hp md:text-[18px] md:leading-7">No judgement here. Every kind counts.</p>}
-          </>
-        ),
-        body: (
-          <div className="flex flex-col gap-5">
-            <Chips label="What were they to you?" options={opts} value={a.type} onPick={pick1("type")} wrap={opts.length > 8} />
-            {a.type === "Something else" && (
-              <Field
-                id="type-other"
-                label="Ok, how would you put it?"
-                value={a.typeOther ?? ""}
-                onChange={(t) => setAnswers({ typeOther: t })}
-                max={40}
-                hint={<p className="sf-sm">Describe the situation, not the person. No names.</p>}
-              />
-            )}
-          </div>
-        ),
-        next: {
-          label: <>Next {ARROW}</>,
-          onClick: advance,
-          disabled: !a.type || (a.type === "Something else" && (!a.typeOther?.trim() || a.typeOther.length > 40)),
-        },
-      };
-      break;
-    }
-
-    case "q3":
-    case "q4":
-    case "q5":
-    case "q6": {
-      const conf = {
-        q3: { key: "met", q: "Where'd you two meet?", opts: MET, wrap: true, help: "" },
-        q4: { key: "howLong", q: "How long were they in the picture?", opts: HOW_LONG, wrap: false, help: "" },
-        q5: { key: "now", q: "And where are things now?", opts: NOW, wrap: false, help: "" },
-        q6: { key: "when", q: "When did this start?", opts: WHEN, wrap: false, help: "So we can show what's happening now, not ten years ago." },
-      }[screen] as { key: keyof Answers; q: string; opts: string[]; wrap: boolean; help: string };
-      v = {
-        lead: (
-          <>
-            {OPT}
-            {H(conf.q)}
-            {conf.help && <p className="sf-hp md:text-[18px] md:leading-7">{conf.help}</p>}
-          </>
-        ),
-        body: <Chips label={conf.q} options={conf.opts} value={a[conf.key] as string | undefined} onPick={pick1(conf.key)} wrap={conf.wrap} />,
-        next: { label: <>Next {ARROW}</>, onClick: advance },
-        skip: () => skip({ [conf.key]: undefined } as Partial<Answers>),
-      };
-      break;
-    }
-
-    case "q7-0":
-    case "q7-1":
-    case "q7-2":
-    case "q7-3":
-    case "q7-4": {
-      const i = Number(screen.slice(3));
-      const cur = picked ?? a.ratings?.[STATEMENTS[i]];
-      v = {
-        lead: (
-          <>
-            {eb("TAP ONE · MOVES ON BY ITSELF")}
-            {H(STATEMENTS[i])}
-            <p className="sf-sm">{i + 1} of 5 statements</p>
-          </>
-        ),
-        body: (
-          <div role="radiogroup" aria-label={STATEMENTS[i]} className="sf-rt flex flex-col gap-2.5">
-            {RATING.map((r) => (
-              <button key={r.label} type="button" role="radio" aria-checked={cur === r.label} className="sf-ch md:min-h-[58px] md:text-[17px]" onClick={() => rate(i, r.label)}>
-                {r.label}
-                <span className="sf-pp" aria-hidden>
-                  {Array.from({ length: 5 }, (_, k) => (
-                    <i key={k} className={k < r.n ? "f" : ""} />
-                  ))}
-                </span>
-              </button>
-            ))}
-            <button type="button" role="radio" aria-checked={cur === NA} className="sf-ch na" onClick={() => rate(i, NA)}>
-              {NA}
-            </button>
-          </div>
-        ),
-        next: null,
-        skip: () => {
-          const r = { ...(a.ratings ?? {}) };
-          delete r[STATEMENTS[i]];
-          skip({ ratings: r });
-        },
-      };
-      break;
-    }
-
-    case "q8":
-    case "q9": {
-      const g = screen === "q8";
-      const key = g ? "green" : "red";
-      const list = a[key] ?? [];
-      const n = list.length;
-      v = {
-        lead: (
-          <>
-            {eb(n === 3 ? "UP TO 3 · 3 OF 3 PICKED" : n ? `UP TO 3 · ${n} PICKED` : "UP TO 3")}
-            {H(g ? "Ok but what did they get right?" : "And the not-so-great part?")}
-          </>
-        ),
-        body: (
-          <div className="flex flex-col gap-4">
-            <Chips label={g ? "What they got right" : "The not-so-great part"} options={g ? GREEN : RED} value={list} onPick={pickMany(key)} wrap disabled={() => n >= 3} />
-            {n === 3 && <p className="sf-sm">That&apos;s 3. Tap one to swap it out.</p>}
-            <Field
-              id={`${key}-note`}
-              label="Anything else? (optional)"
-              placeholder="One line, no names"
-              value={(g ? a.greenNote : a.redNote) ?? ""}
-              onChange={(t) => setAnswers(g ? { greenNote: t } : { redNote: t })}
-              max={140}
-              hint={<NameWarning text={(g ? a.greenNote : a.redNote) ?? ""} />}
-            />
-          </div>
-        ),
-        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: ((g ? a.greenNote : a.redNote) ?? "").length > 140 },
-        skip: g ? undefined : () => skip({ red: undefined, redNote: undefined }),
-      };
-      break;
-    }
-
-    case "q10":
-      v = {
-        lead: (
-          <>
-            {OPT}
-            {H("Looking back, glad they were in your life?")}
-            <p className="sf-hp md:text-[18px] md:leading-7">Hard things can still be worth it. Or not. Both are valid.</p>
-          </>
-        ),
-        body: <Chips label="Glad they were in your life?" options={GLAD} value={a.glad} onPick={pick1("glad")} />,
-        next: { label: <>Next {ARROW}</>, onClick: advance },
-        skip: () => skip({ glad: undefined }),
-      };
-      break;
-
-    case "q11": {
-      const good = a.overall === "Honestly good";
-      v = {
-        lead: (
-          <>
-            {eb("OPTIONAL · NEVER PUBLISHED")}
-            {H(good ? "Okay, tell us about them." : "Okay, spill. What happened?", "md:text-[38px] lg:text-[42px]")}
-            <p className="sf-hp md:text-[18px] md:leading-7">
-              {good ? "The moments that stuck. No names, no places. Just the good stuff." : "No names, no places, nothing that points to them. Just how it went."}
-            </p>
-          </>
-        ),
-        body: (
-          <Field
-            id="story"
-            area
-            tall
-            value={a.story ?? ""}
-            onChange={(t) => setAnswers({ story: t })}
-            max={1000}
-            placeholder={good ? "Start anywhere. Two lines is plenty." : "Start anywhere."}
-            hint={<NameWarning text={a.story ?? ""} />}
-          />
-        ),
-        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: (a.story ?? "").length > 1000 },
-        skip: () => skip({ story: undefined }),
-      };
-      break;
-    }
-
-    case "q12":
-      v = {
-        lead: (
-          <>
-            {eb("OPTIONAL · MIGHT GET SHARED")}
-            {H("What would you tell someone going through the same thing?", "md:text-[38px] lg:text-[42px]")}
-          </>
-        ),
-        body: (
-          <div className="flex flex-col gap-3.5">
-            <div className="sf-safe">This might get shared, with nothing that points to you. Keep it about the situation, not a whole group of people.</div>
-            <Field id="advice" area value={a.advice ?? ""} onChange={(t) => setAnswers({ advice: t })} max={280} hint={<NameWarning text={a.advice ?? ""} />} />
-          </div>
-        ),
-        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: (a.advice ?? "").length > 280 },
-        skip: () => skip({ advice: undefined }),
-      };
-      break;
-
-    case "q13":
-    case "q14": {
-      const you = screen === "q13";
-      const groups: [string, keyof Answers, string[]][] = you
-        ? [
-            ["Age", "age", AGES],
-            ["Gender", "gender", GENDERS],
-            ["Where you're based", "region", REGIONS],
-          ]
-        : [
-            ["Their age", "theirAge", THEIR_AGES],
-            ["Their gender", "theirGender", GENDERS],
-          ];
-      v = {
-        lead: (
-          <>
-            {eb("ALL OPTIONAL")}
-            {H(you ? "A bit about you" : "And them?")}
-            <p className="sf-sm">
-              {you
-                ? "So we can say stuff like “25–34s said…”. We never show a group smaller than 25."
-                : "Only used to compare groups, always both ways, once there are 50+ stories on each side."}
-            </p>
-          </>
-        ),
-        body: (
-          <div className="flex flex-col gap-5">
-            {groups.map(([label, key, opts]) => (
-              <div key={key} className="flex flex-col gap-2">
-                <span className="text-[15px] font-bold leading-5">{label}</span>
-                <Chips label={label} options={opts} value={a[key] as string | undefined} onPick={pick1(key)} wrap />
-              </div>
-            ))}
-          </div>
-        ),
-        next: { label: you ? <>Next {ARROW}</> : <>Check my answers {ARROW}</>, onClick: advance },
-        skip: you ? undefined : () => skip({ theirAge: undefined, theirGender: undefined }),
-      };
-      break;
-    }
-
-    case "check": {
-      const count = (keys: (keyof Answers)[]) =>
-        keys.filter((k) => {
-          const x = a[k];
-          return Array.isArray(x) ? x.length : typeof x === "object" && x ? Object.keys(x).length : Boolean(x && String(x).trim());
-        }).length;
-      const ratings = Object.keys(a.ratings ?? {}).length;
-      const words = count(["story", "advice"]);
-      const names = spotNames(`${a.story ?? ""} ${a.advice ?? ""} ${a.greenNote ?? ""} ${a.redNote ?? ""}`).length;
-      const who = a.age && a.age !== "Rather not say" ? `someone, ${a.age}` : "someone";
-      const rows: [string, string, React.ReactNode, StepId][] = [
-        ["The basics", "Edit", `${count(["overall", "who", "type", "met", "howLong", "now", "when"])} answers`, "q1"],
-        ["How it went", "Edit", `${ratings + count(["green", "red", "glad"])} answers`, "q7-0"],
-        [
-          "In your words",
-          names ? "Review" : "Edit",
-          <>
-            {words}
-            {names > 0 && (
-              <>
-                {" "}
-                · <span className="text-[#BDB2FF]">{names} POSSIBLE NAME{names > 1 ? "S" : ""}</span>
-              </>
-            )}
-          </>,
-          "q11",
-        ],
-        ["About you + them", "Edit", `${count(["age", "gender", "region", "theirAge", "theirGender"])} answers`, "q13"],
-      ];
-      v = {
-        lead: (
-          <>
-            {H("Here's what could show up on GATHER", "text-[27px] md:text-[34px] lg:text-[40px]")}
-            {a.advice?.trim() ? (
-              <div className="sf-card" style={{ borderColor: "var(--ac)" }}>
-                {eb("IF OUR REVIEW TEAM PICKS YOUR ADVICE")}
-                <span className="text-[18px] font-extrabold leading-6 [font-stretch:112%] lg:text-[21px] lg:leading-7">“{a.advice.trim()}”</span>
-                <span className="sf-sm">— {who}</span>
-              </div>
-            ) : null}
-            <p className="sf-sm">Everything else only counts as numbers, mixed in with at least 24 other stories.</p>
-          </>
-        ),
-        body: (
-          <div className="flex flex-col gap-3">
-            {eb("EVERYTHING YOU TOLD US · PRIVATE")}
-            <div>
-              {rows.map(([t, act, n, to]) => (
-                <div key={t} className="flex items-center justify-between gap-2.5 border-b-2 border-[var(--soft)] py-2.5 lg:py-3.5">
-                  <span>
-                    <b className="text-base lg:text-[17px]">{t}</b>
-                    <br />
-                    <span className="sf-sm">{n}</span>
-                  </span>
-                  <button type="button" className="sf-lk px-0 py-1.5" onClick={() => go(to, "back")} aria-label={`${act} ${t.toLowerCase()}`}>
-                    {act}
-                  </button>
-                </div>
-              ))}
-            </div>
-            <label className="sf-chk mt-2">
-              <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-              <span>I get that a real person will read this and may remove details that could identify anyone before it&apos;s used.</span>
-            </label>
-          </div>
-        ),
-        next: { label: "Send it", onClick: () => go("email"), disabled: !consent },
-      };
-      break;
-    }
-
     case "email": {
       const ok = /^\S+@\S+\.\S{2,}$/.test(email.trim());
       v = {
-        progress: false,
+        noBack: true,
+        exit: "close",
         lead: (
           <>
-            {eb("LAST BIT, PROMISE")}
-            {H("Where should we tell you when it's counted?")}
-            <p className="sf-hp md:text-[18px] md:leading-7">We&apos;ll send a 6-digit code to check it&apos;s you. Your email is never shown or shared.</p>
+            {H("First things first.", "text-[36px] md:text-[48px] lg:text-[64px] lg:leading-none")}
+            {hp("Enter your email so you can save your story and pick up where you left off. We’ll also use it to send updates about your submission. Your email will never appear alongside your published story.")}
           </>
         ),
         body: (
           <div className="flex flex-col gap-2">
             <label htmlFor="sf-email" className="text-[15px] font-bold leading-5">
-              Email
+              Email address
             </label>
             <input
               id="sf-email"
               type="email"
               inputMode="email"
               autoComplete="email"
-              className={`sf-in ${email && !ok ? "er" : ""}`}
+              className={`sf-in md:min-h-[60px] md:text-[18px] ${email && !ok ? "er" : ""}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              aria-describedby="sf-email-help"
+              onKeyDown={(e) => e.key === "Enter" && ok && sendCode()}
             />
-            {email && !ok && <p className="sf-err">That email doesn&apos;t look right. Check for typos.</p>}
-            <p id="sf-email-help" className="sf-sm">It&apos;s also how you edit or take down your story later.</p>
-            <Preview>Preview: codes aren&apos;t emailed yet, so any 6 digits will work on the next screen.</Preview>
+            {email && !ok ? <p className="sf-err">That email doesn’t look right. Check for typos.</p> : <p className="sf-sm">Next, we’ll send you a 6-digit code.</p>}
           </div>
         ),
-        next: {
-          label: "Send me the code",
-          onClick: () => {
-            setCode("");
-            setCodeError(null);
-            setTries(3);
-            setResendIn(42);
-            go("code");
-          },
-          disabled: !ok,
-        },
+        next: { label: <>Continue {ARROW}</>, onClick: sendCode, disabled: !ok },
       };
       break;
     }
@@ -797,11 +328,11 @@ export function ShareFlow() {
     case "code": {
       const masked = email.replace(/^(.)[^@]*(@.*)$/, "$1•••$2");
       v = {
-        progress: false,
+        exit: null,
         lead: (
           <>
-            {H("Check your inbox")}
-            {!codeError && <p className="sf-hp md:text-[18px] md:leading-7">We sent a code to {masked}. It works for 10 mins.</p>}
+            {H("Check your inbox.")}
+            {hp(`We sent a 6-digit code to ${masked}. It works for 10 minutes.`)}
           </>
         ),
         body: (
@@ -820,79 +351,529 @@ export function ShareFlow() {
                 setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
                 setCodeError(null);
               }}
+              onKeyDown={(e) => e.key === "Enter" && code.length === 6 && tries > 0 && verify()}
               aria-invalid={Boolean(codeError)}
               aria-describedby={codeError ? "sf-code-err" : undefined}
             />
-            {codeError ? (
-              <>
-                <p id="sf-code-err" className="sf-err" role="alert">
-                  {codeError}
-                </p>
-                <button type="button" className="sf-lk self-start px-0" onClick={() => { setCode(""); setCodeError(null); setResendIn(42); }}>
-                  Send a new code
-                </button>
-                <div className="sf-safe">Your answers are safe. Nothing&apos;s lost while you sort this.</div>
-              </>
-            ) : (
-              <p className="sf-sm">
-                {resendIn > 0 ? (
-                  `Resend in 0:${String(resendIn).padStart(2, "0")}`
-                ) : (
-                  <button type="button" className="underline underline-offset-[3px]" onClick={() => setResendIn(42)}>
-                    Send a new code
-                  </button>
-                )}
+            {codeError && (
+              <p id="sf-code-err" className="sf-err" role="alert">
+                {codeError}
               </p>
             )}
-            <div className="flex flex-wrap gap-4">
-              <button type="button" className="sf-lk pl-0" onClick={() => go("email", "back")}>
-                Use a different email
-              </button>
-            </div>
+            <p className="sf-sm">
+              {resendIn > 0 ? (
+                `Didn’t get it? Resend in 0:${String(resendIn).padStart(2, "0")}`
+              ) : (
+                <button type="button" className="underline underline-offset-[3px]" onClick={() => { setResendIn(42); setTries(3); setCodeError(null); }}>
+                  Send a new code
+                </button>
+              )}
+            </p>
+            <button type="button" className="sf-lk self-start pl-0" onClick={() => go("email", "back")}>
+              Use a different email
+            </button>
+            <Preview>Preview: emails aren’t connected yet, so any 6 digits will work. Your draft is kept on this device only.</Preview>
           </div>
         ),
-        next: {
-          label: sending ? "Sending…" : codeError ? "Try again" : "Verify and send",
-          onClick: codeError ? () => { setCode(""); setCodeError(null); } : verify,
-          disabled: tries <= 0 || (!codeError && code.length !== 6) || sending,
-        },
+        next: { label: "Verify", onClick: verify, disabled: code.length !== 6 || tries <= 0 },
       };
       break;
     }
 
-    case "duplicate":
+    case "returning": {
+      const { answered, total } = draftSummary(draft);
       v = {
-        progress: false,
+        noBack: true,
+        exit: "close",
         centre: true,
         lead: (
           <>
-            {H("Wait, haven't we heard this one?")}
-            {dupe && (
-              <div className="sf-card">
-                {eb(`SENT ${daysAgo(dupe.createdAt).toUpperCase()}`)}
-                <b className="text-[17px]">{dupe.title}</b>
-                <span className="sf-sm">Still being read</span>
-              </div>
-            )}
-            <p className="sf-hp">If it&apos;s someone else, go for it. If it&apos;s the same person, you can update your first story instead.</p>
+            {H("Pick up where you left off?")}
+            <div className="sf-card">
+              {eb("YOUR DRAFT")}
+              <b className="text-[17px]">{storyTitle(a)}</b>
+              <span className="sf-sm">
+                {answered} of {total} answered · saved {daysAgo(draft.updatedAt)}
+              </span>
+            </div>
+            <p className="sf-sm">Everything you wrote is still here.</p>
           </>
         ),
-        next: { label: "It's someone else, send it", onClick: () => send(true) },
+        next: { label: "Keep going", onClick: () => go(draft.step) },
+        extra: (
+          <button
+            type="button"
+            className="sf-lk"
+            onClick={() => {
+              if (window.confirm("Start a new story? Your unfinished draft will be deleted.")) {
+                reset();
+                go("intro");
+              }
+            }}
+          >
+            Start a new story
+          </button>
+        ),
+      };
+      break;
+    }
+
+    case "intro":
+      v = {
+        noBack: true,
+        lead: (
+          <>
+            {H("One experience. Your words.", "text-[34px] md:text-[42px] lg:text-[52px] lg:leading-none")}
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-4">
+            {[
+              ["ABOUT 5–7 MINUTES", "A few quick taps, then your story in your own words."],
+              ["NO NAMES, EVER", "Not theirs, not yours. Describe the experience, not the person."],
+              ["A REAL PERSON READS IT", "Nothing is shared until our team has reviewed it."],
+            ].map(([t, d]) => (
+              <div key={t} className="sf-card">
+                {eb(t)}
+                <span>{d}</span>
+              </div>
+            ))}
+            <label className="sf-chk">
+              <input type="checkbox" checked={adult} onChange={(e) => setAdult(e.target.checked)} />
+              <span>I’m 18 or older</span>
+            </label>
+            <button type="button" className="sf-lk self-start p-0 text-[14px] font-normal text-[var(--mu)]" onClick={() => go("under18")}>
+              I’m under 18
+            </button>
+          </div>
+        ),
+        next: { label: <>Let’s go {ARROW}</>, onClick: () => go("q1"), disabled: !adult },
+      };
+      break;
+
+    case "under18":
+      v = {
+        exit: null,
+        centre: true,
+        lead: (
+          <>
+            {H("This one’s for 18+.")}
+            {hp("GATHER is for people 18 and over. Come back when you’re 18. We’ll still be here.")}
+          </>
+        ),
+        next: { label: "Back to home", onClick: () => router.push("/") },
+      };
+      break;
+
+    case "q1":
+      v = {
+        noBack: true,
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("What kind of connection was it?")}
+            <Kind>No label is the wrong one here. Whatever it was, it counts.</Kind>
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-4">
+            <Choice
+              label="What kind of connection was it?"
+              options={TYPES}
+              value={a.type}
+              onPick={(o) => {
+                const fresh = { type: o } as Partial<Answers>;
+                // a different kind of connection has different "where things stand" options
+                if (a.status && !statusOptions({ ...a, type: o }).includes(a.status)) Object.assign(fresh, { status: undefined, slowed: undefined, reasons: undefined, reasonOther: undefined });
+                setAnswers(fresh);
+              }}
+            />
+            {a.type === OTHER && (
+              <OtherField id="type-other" label="How would you describe it?" value={a.typeOther ?? ""} onChange={(t) => setAnswers({ typeOther: t })} max={40} hint="Describe the connection, not the person. No names." />
+            )}
+          </div>
+        ),
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.type || (a.type === OTHER && !a.typeOther?.trim()) },
+      };
+      break;
+
+    case "q2":
+      v = {
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("Who was this connection with?")}
+            <Kind>Every kind of connection is welcome here.</Kind>
+            {hp("This helps us compare experiences fairly later on. We’ll never show it in a way that could point to anyone.")}
+          </>
+        ),
+        body: <Choice label="Who was this connection with?" options={WITH} value={a.withGender} onPick={pick1("withGender")} />,
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.withGender },
+      };
+      break;
+
+    case "q3":
+      v = {
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("How did you meet?")}
+          </>
+        ),
+        body: <Choice label="How did you meet?" options={MET} value={a.met} onPick={pick1("met")} wrap />,
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.met },
+      };
+      break;
+
+    case "q4":
+      v = {
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("How long were they part of your life?")}
+          </>
+        ),
+        body: <Choice label="How long were they part of your life?" options={HOW_LONG} value={a.howLong} onPick={pick1("howLong")} />,
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.howLong },
+      };
+      break;
+
+    case "q5":
+      v = {
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("At the start, what were you hoping it would become?")}
+          </>
+        ),
+        body: <Choice label="What were you hoping it would become?" options={HOPE} value={a.hope} onPick={pick1("hope")} />,
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.hope },
+      };
+      break;
+
+    case "q6":
+      v = {
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("And what did you think they wanted at the time?")}
+            <div className="sf-safe">Your best guess back then. We know you can’t know for sure.</div>
+            {a.hope && (
+              <div className="sf-card mt-2 hidden lg:flex">
+                {eb("YOU SAID YOU HOPED FOR")}
+                <b className="text-[17px]">{a.hope}</b>
+              </div>
+            )}
+          </>
+        ),
+        body: <Choice label="What did you think they wanted?" options={THOUGHT} value={a.thought} onPick={pick1("thought")} />,
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.thought },
+      };
+      break;
+
+    case "q7": {
+      const len = (a.story ?? "").trim().length;
+      v = {
+        lead: (
+          <>
+            {eb("IN YOUR OWN WORDS")}
+            {H("Tell us what happened.", "md:text-[38px] lg:text-[42px]")}
+            {hp("Start anywhere. Tell us about the good, the bad, the confusing bits, or all of it. Please don’t include names or details that could identify anyone.")}
+            <Kind>This is a judgement-free space. Sweet, messy, confusing: all of it belongs here.</Kind>
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-2">
+            <label htmlFor="story" className="sr-only">
+              Your story
+            </label>
+            <textarea
+              id="story"
+              rows={10}
+              maxLength={STORY_MAX}
+              className="sf-in min-h-[210px] md:min-h-[300px] md:text-[18px] md:leading-[30px]"
+              value={a.story ?? ""}
+              onChange={(e) => setAnswers({ story: e.target.value })}
+              aria-describedby="story-cn"
+            />
+            <NameWarning text={a.story ?? ""} />
+            <span id="story-cn" className="sf-cn">
+              {len < STORY_MIN ? `A COUPLE OF SENTENCES IS ENOUGH · ${len} / ${STORY_MIN}` : `${len.toLocaleString("en-IN")} / ${STORY_MAX.toLocaleString("en-IN")}`}
+            </span>
+          </div>
+        ),
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: len < STORY_MIN },
+      };
+      break;
+    }
+
+    case "q8":
+    case "q9": {
+      const good = screen === "q8";
+      const key = good ? "good" : "hard";
+      const none = good ? NOTHING_GOOD : NOTHING_HARD;
+      const list = a[key] ?? [];
+      const n = list.filter((x) => x !== none).length;
+      const otherKey = good ? "goodOther" : "hardOther";
+      v = {
+        lead: (
+          <>
+            {eb(`OPTIONAL · UP TO 3${n ? ` · ${n} PICKED` : ""}`)}
+            {H(good ? "What felt good?" : "What made it hard?")}
+            {!good && <Kind>The hard parts are part of the story. Nobody here is judging.</Kind>}
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-4">
+            <Choice label={good ? "What felt good" : "What made it hard"} options={good ? GOOD : HARD} value={list} onPick={pickMany(key, none, 3)} wrap disabled={() => n >= 3} />
+            {list.includes(OTHER) && (
+              <OtherField id={`${key}-other`} label="In a few words" value={(a[otherKey] as string) ?? ""} onChange={(t) => setAnswers({ [otherKey]: t } as Partial<Answers>)} max={60} />
+            )}
+            {n >= 3 && <p className="sf-sm">That’s 3. Tap one to swap it out.</p>}
+            <div className="border-t-2 border-dashed border-[var(--soft)] pt-3">
+              <Choice label="Or" options={[none]} value={list} onPick={pickMany(key, none, 3)} wrap />
+              <p className="sf-sm mt-1.5">Picking this clears your other choices.</p>
+            </div>
+          </div>
+        ),
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: otherMissing(list, a[otherKey] as string) },
+        skip: () => skip({ [key]: undefined, [otherKey]: undefined } as Partial<Answers>),
+      };
+      break;
+    }
+
+    case "q10":
+      v = {
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("Where do things stand now?")}
+            <Kind>However it turned out, there’s no wrong answer.</Kind>
+          </>
+        ),
+        body: (
+          <Choice
+            label="Where do things stand now?"
+            options={statusOptions(a)}
+            value={a.status}
+            onPick={(o) => setAnswers({ status: a.status === o ? undefined : o, slowed: undefined, reasons: undefined, reasonOther: undefined })}
+          />
+        ),
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.status },
+      };
+      break;
+
+    case "q11":
+      v = {
+        lead: (
+          <>
+            {eb("PICK ONE")}
+            {H("Roughly when did you notice things slowing down?")}
+            {hp("A rough guess is fine.")}
+          </>
+        ),
+        body: <Choice label="When did things slow down?" options={SLOWED} value={a.slowed} onPick={pick1("slowed")} />,
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !a.slowed },
+      };
+      break;
+
+    case "q12": {
+      const list = a.reasons ?? [];
+      const n = list.filter((x) => x !== NOT_SURE).length;
+      v = {
+        lead: (
+          <>
+            {eb(`UP TO 2${n ? ` · ${n} PICKED` : ""}`)}
+            {H(hasFaded(a) ? "Why do you think it faded?" : "What do you think contributed to it ending?")}
+            <Kind>Your view. We know there are two sides, and nobody here is keeping score.</Kind>
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-4">
+            <Choice label="Reasons" options={REASONS} value={list} onPick={pickMany("reasons", NOT_SURE, 2)} wrap disabled={() => n >= 2} />
+            {list.includes(OTHER) && <OtherField id="reason-other" label="In a few words" value={a.reasonOther ?? ""} onChange={(t) => setAnswers({ reasonOther: t })} max={60} />}
+            <div className="border-t-2 border-dashed border-[var(--soft)] pt-3">
+              <Choice label="Or" options={[NOT_SURE]} value={list} onPick={pickMany("reasons", NOT_SURE, 2)} wrap />
+              <p className="sf-sm mt-1.5">Picking this clears your other choices.</p>
+            </div>
+          </div>
+        ),
+        next: { label: <>Next {ARROW}</>, onClick: advance, disabled: !list.length || otherMissing(list, a.reasonOther) },
+      };
+      break;
+    }
+
+    case "q13":
+      v = {
+        lead: (
+          <>
+            {eb("OPTIONAL")}
+            {H("Looking back, what do you understand now that you didn’t at the time?", "md:text-[34px] lg:text-[40px]")}
+            {hp("Only if something comes to mind. Not every story needs a lesson.")}
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-2">
+            <label htmlFor="reflection" className="sr-only">
+              Your reflection
+            </label>
+            <textarea id="reflection" rows={5} maxLength={280} className="sf-in min-h-[150px]" value={a.reflection ?? ""} placeholder="Write as much or as little as you like" onChange={(e) => setAnswers({ reflection: e.target.value })} />
+            <NameWarning text={a.reflection ?? ""} />
+            <span className="sf-cn">{(a.reflection ?? "").length} / 280</span>
+          </div>
+        ),
+        next: { label: <>Next {ARROW}</>, onClick: advance },
+        skip: () => skip({ reflection: undefined }),
+      };
+      break;
+
+    case "about": {
+      const groups: [string, keyof Answers, string[]][] = [
+        ["Your age", "age", AGES],
+        ["Your gender", "gender", GENDERS],
+        ["Where you’re based", "region", REGIONS],
+      ];
+      v = {
+        lead: (
+          <>
+            {eb("OPTIONAL")}
+            {H("A little about you")}
+            <p className="sf-sm">So we can describe who’s sharing. Skip anything.</p>
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-5">
+            {groups.map(([label, key, opts]) => (
+              <div key={key} className="flex flex-col gap-2">
+                <span className="text-[15px] font-bold leading-5">{label}</span>
+                <Choice label={label} options={opts} value={a[key] as string | undefined} onPick={pick1(key)} wrap />
+              </div>
+            ))}
+          </div>
+        ),
+        next: { label: <>Review my story {ARROW}</>, onClick: advance },
+        skip: () => skip({ age: undefined, gender: undefined, region: undefined }),
+      };
+      break;
+    }
+
+    case "review": {
+      const names = spotNames(`${a.story ?? ""} ${a.reflection ?? ""}`).length;
+      const join = (xs: (string | undefined)[]) => xs.filter(Boolean).join(" · ");
+      const withOther = (list: string[] | undefined, other: string | undefined) => (list ?? []).map((x) => (x === OTHER ? other || OTHER : x));
+      const rows: [string, string, StepId][] = [
+        ["The connection", join([a.type === OTHER ? a.typeOther : a.type, a.withGender?.toLowerCase(), a.met, a.howLong]), "q1"],
+        ["At the start", join([a.hope && `Hoped: ${a.hope.toLowerCase()}`, a.thought && `Thought they wanted: ${a.thought.toLowerCase()}`]), "q5"],
+        ["What stood out", join([withOther(a.good, a.goodOther).join(", ") || "—", withOther(a.hard, a.hardOther).join(", ") || "—"]), "q8"],
+        ["How it went", join([a.status, a.slowed, withOther(a.reasons, a.reasonOther).join(", ")]), "q10"],
+        ["Looking back", a.reflection?.trim() ? "Added" : "Skipped", "q13"],
+        ["About you", join([a.age, a.gender, a.region]) || "Skipped", "about"],
+      ];
+      v = {
+        lead: (
+          <>
+            {eb("ALMOST DONE")}
+            {H("Here’s your story.", "text-[28px] md:text-[38px] lg:text-[44px]")}
+            <div className="sf-card gap-2">
+              {eb("YOUR STORY")}
+              <p className="m-0 whitespace-pre-line text-[15px] leading-[23px]">
+                <Highlight text={a.story ?? ""} />
+              </p>
+              {names > 0 && <span className="sf-sm text-[#BDB2FF]">{names} possible name{names > 1 ? "s" : ""} highlighted</span>}
+              <button type="button" className="sf-lk self-start px-0 py-1" onClick={() => edit("q7")}>
+                Edit story
+              </button>
+            </div>
+          </>
+        ),
+        body: (
+          <div>
+            {rows.map(([t, val, to]) => (
+              <div key={t} className="flex items-start justify-between gap-3 border-t-2 border-[var(--soft)] py-3">
+                <span>
+                  <b className="text-[15px]">{t}</b>
+                  <span className="sf-sm block">{val || "—"}</span>
+                </span>
+                <button type="button" className="sf-lk px-0 py-1" onClick={() => edit(to)} aria-label={`Edit ${t.toLowerCase()}`}>
+                  {val === "Skipped" ? "Add" : "Edit"}
+                </button>
+              </div>
+            ))}
+          </div>
+        ),
+        next: { label: <>Continue {ARROW}</>, onClick: () => { setEditing(false); go("consent"); } },
+      };
+      break;
+    }
+
+    case "consent":
+      v = {
+        lead: (
+          <>
+            {eb("LAST STEP")}
+            {H("How can we use your story?", "text-[28px] md:text-[38px] lg:text-[44px]")}
+            <div className="sf-safe">
+              Your email is never shown with your story. Removing names lowers the chance someone recognises it, but people who know you might still spot details. You can take your story down anytime from the link in our emails.
+            </div>
+          </>
+        ),
+        body: (
+          <div className="flex flex-col gap-3.5">
+            {eb("CHOOSE ONE")}
+            <div role="radiogroup" aria-label="How can we use your story?" className="flex flex-col gap-3">
+              {[
+                [true, "Publish my story and selected answers anonymously, after review.", "Our team reads it first and removes or changes anything that could identify you or anyone else. It’s never published instantly."],
+                [false, "Use my answers in insights only. Don’t publish my story.", "Your story is read only by our review team, to check it. It’s never shown or quoted. Your answers only appear inside totals."],
+              ].map(([val, t, d]) => (
+                <button key={String(val)} type="button" role="radio" aria-checked={publish === val} className="sf-radio" onClick={() => setPublish(val as boolean)}>
+                  <span>
+                    <b>{t as string}</b>
+                    {d as string}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <label className="sf-chk mt-1">
+              <input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)} />
+              <span>I understand a real person will read this and may edit or remove details that could identify anyone.</span>
+            </label>
+            <Preview>Preview: stories aren’t sent anywhere yet. This one will stay in this browser.</Preview>
+          </div>
+        ),
+        next: { label: "Send my story", onClick: send, disabled: publish === null || !ack },
+      };
+      break;
+
+    case "saved":
+      v = {
+        exit: null,
+        centre: true,
+        lead: (
+          <>
+            {H("Saved.")}
+            {hp("Your answers are kept for 30 days. Come back to GATHER on this device and you’ll pick up right where you left off.")}
+            <Preview>Preview: once email is connected, we’ll also send you a link so you can continue on any device.</Preview>
+          </>
+        ),
+        next: { label: "Back to GATHER", onClick: () => router.push("/") },
+        extra: (
+          <button type="button" className="sf-lk" onClick={() => go(draft.step, "back")}>
+            Keep going instead
+          </button>
+        ),
       };
       break;
 
     case "error":
       v = {
-        progress: false,
         centre: true,
         lead: (
           <>
-            {H("Ugh, that didn't go through.")}
-            <p className="sf-hp">Looks like the connection dropped. Your answers are saved on this device.</p>
-            <div className="sf-safe">Not sent yet. Nothing&apos;s lost.</div>
+            {H("Ugh, that didn’t go through.")}
+            {hp("Your answers are still saved on this device. Nothing’s lost.")}
           </>
         ),
-        next: { label: "Try again", onClick: () => send(true) },
+        next: { label: "Try again", onClick: send },
       };
       break;
 
@@ -901,79 +882,78 @@ export function ShareFlow() {
       v = {
         noBack: true,
         exit: "close",
-        progress: false,
         centre: true,
         lead: (
           <>
             {H("Your story is with us.", "text-[38px] md:text-[48px] lg:text-[60px] lg:leading-[0.98]")}
-            <p className="sf-hp text-[17px] leading-[26px] text-[var(--fg)] lg:text-[18px] lg:leading-7">
-              Thanks for sharing your experience. The GATHER team will review your story, and we&apos;ll email you when there&apos;s an update.
-            </p>
+            <p className="sf-hp text-[17px] leading-[26px] text-[var(--fg)] lg:text-[18px] lg:leading-7">Thanks for sharing. Our team will read it, and we’ll email you when the review is done. Nothing is published until then.</p>
             <Preview>Preview: this story was saved in this browser only. Nothing was sent.</Preview>
           </>
         ),
         body: (
           <div className="flex flex-col gap-4">
             <div className="sf-card sf-tl gap-3.5 p-4 lg:p-6">
-              <div>
-                <i className="on" aria-hidden />
-                <span>
-                  <b>Received</b>Just now
-                </span>
-              </div>
-              <div>
-                <i aria-hidden />
-                <span>
-                  <b>Being reviewed</b>Usually 2–3 days
-                </span>
-              </div>
-              <div>
-                <i aria-hidden />
-                <span>
-                  <b>We&apos;ll email you</b>When the review&apos;s done
-                </span>
-              </div>
+              {[
+                ["Received", "Just now", true],
+                ["Being reviewed", "Usually 2–3 days", false],
+                ["We’ll email you", "When the review’s done", false],
+              ].map(([t, d, on]) => (
+                <div key={t as string}>
+                  <i className={on ? "on" : ""} aria-hidden />
+                  <span>
+                    <b>{t as string}</b>
+                    {d as string}
+                  </span>
+                </div>
+              ))}
             </div>
-            <p className="sf-sm border-t-2 border-[var(--soft)] pt-3.5">If a collectible is appropriate for the story, we may send you one by email.</p>
+            <p className="sf-sm">
+              Changed your mind? You can take your story down anytime from the link in our emails, or{" "}
+              <Link href="/take-down" className="underline underline-offset-[3px]">
+                here
+              </Link>
+              .
+            </p>
           </div>
         ),
         next: { label: "Back to GATHER", onClick: () => router.push("/") },
       };
   }
 
-  /* ───────── progress ───────── */
+  /* ───────── chrome ───────── */
   const stepDef = STEPS.find((s) => s.id === screen);
-  const showProgress = v.progress !== false && Boolean(stepDef);
   const label = stepDef ? sectionLabel(a, stepDef.id) : "";
-  const tiles = stepDef
-    ? Array.from({ length: 5 }, (_, i) => (i < stepDef.section - 1 ? "d" : i === stepDef.section - 1 ? "c" : ""))
-    : [];
-  const progress = showProgress ? (
+  const progress = stepDef ? (
     <div className="flex items-center gap-3" aria-label={`Progress: ${label}`}>
       <div className="sf-tiles" aria-hidden>
-        {tiles.map((c, i) => (
-          <i key={i} className={c} />
+        {SECTIONS.map((_, i) => (
+          <i key={i} className={i < stepDef.section - 1 ? "d" : i === stepDef.section - 1 ? "c" : ""} />
         ))}
       </div>
       <span className="sf-eb">{label}</span>
     </div>
   ) : null;
 
-  const exitLabel = v.exit === undefined ? "save" : v.exit;
+  const signedInNow = Boolean(signedIn) && !["email", "code"].includes(screen);
+  const exitKind = v.exit === undefined ? (signedInNow ? "save" : "close") : v.exit;
   const exitBtn =
-    exitLabel === null ? null : (
-      <button type="button" onClick={exitLabel === "close" ? () => router.push("/") : saveAndExit} className="ml-auto min-h-[44px] rounded px-3 py-2.5 text-[15px] font-semibold underline underline-offset-[3px]">
-        {exitLabel === "close" ? "Close" : "Save & exit"}
+    exitKind === null ? null : (
+      <button
+        type="button"
+        onClick={exitKind === "close" || screen === "sent" ? () => router.push("/") : () => go("saved")}
+        className="relative z-10 ml-auto min-h-[44px] rounded bg-[var(--bg)] px-3 py-2.5 text-[15px] font-semibold underline underline-offset-[3px]"
+      >
+        {exitKind === "close" ? "Close" : "Save & exit"}
       </button>
     );
-  const backBtn = !v.noBack ? (
+  const showBack = !v.noBack && screen !== "sent";
+  const backBtn = showBack ? (
     <button type="button" aria-label="Back" onClick={back} className="flex h-11 w-11 flex-none items-center justify-center rounded border-2 border-[var(--soft)] bg-[var(--sf)]">
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
         <path d="M16 10H4M9 4l-6 6 6 6" />
       </svg>
     </button>
   ) : null;
-
   const nextBtn = v.next ? (
     <button type="button" className="sf-bt md:w-auto md:px-[34px]" onClick={v.next.onClick} disabled={v.next.disabled}>
       {v.next.label}
@@ -984,59 +964,40 @@ export function ShareFlow() {
       Skip this one
     </button>
   ) : null;
-  const extra =
-    screen === "returning" ? (
-      <button type="button" className="sf-lk" onClick={() => { reset(); setTrail([]); go("q1"); }}>
-        Start over
-      </button>
-    ) : screen === "duplicate" ? (
-      <Link href="/take-down" className="sf-bt sec md:w-auto">
-        See my stories
-      </Link>
-    ) : screen === "error" ? (
-      <button type="button" className="sf-lk" onClick={saveAndExit}>
-        Save and come back later
-      </button>
-    ) : null;
 
+  const writing = WRITING.includes(screen);
   const twoCol = !writing && v.body && !v.centre;
 
   return (
-    <div className="sf relative flex min-h-dvh flex-col overflow-x-clip" style={{ ["--ac" as string]: accent } as React.CSSProperties}>
-      {/* corner shape in the accent */}
+    <div className="sf relative flex min-h-dvh flex-col overflow-x-clip" style={{ ["--ac" as string]: "#FF3E9A" } as React.CSSProperties}>
       <div aria-hidden className="pointer-events-none absolute -right-14 -top-14 h-[140px] w-[140px] rounded-bl-full bg-[var(--ac)] opacity-95 md:-right-[90px] md:-top-[90px] md:h-[220px] md:w-[220px] md:opacity-90" />
 
-      {/* header: phones */}
+      {/* phones */}
       <header className="relative flex min-h-[44px] items-center gap-3 px-4 pt-[18px] md:hidden">
         {backBtn}
         <Link href="/" aria-label="GATHER home" className="text-[var(--fg)]">
           <Mark size={26} />
         </Link>
-        {exitBtn && <div className="ml-auto rounded bg-[var(--bg)]">{exitBtn}</div>}
+        {exitBtn}
       </header>
       {progress && <div className="relative mt-[18px] px-4 md:hidden">{progress}</div>}
 
-      {/* header: tablet + desktop */}
+      {/* tablet + desktop */}
       <header className="relative hidden items-center gap-5 border-b-2 border-[var(--soft)] px-8 py-5 md:flex lg:px-12 lg:py-[22px]">
         <Link href="/" aria-label="GATHER People Insights home" className="flex items-center gap-2.5 text-[18px] font-black leading-none [font-stretch:125%]">
           <Mark size={26} />
           GATHER <span className="font-semibold [font-stretch:100%]">People Insights</span>
         </Link>
         <div className="mx-auto">{progress}</div>
-        {exitBtn && <div className="rounded bg-[var(--bg)]">{exitBtn}</div>}
+        {exitBtn}
       </header>
 
-      <main
-        key={screen}
-        className={`relative flex flex-1 flex-col ${dir === "next" ? "sf-anim-next" : "sf-anim-back"} ${v.centre ? "justify-center" : ""}`}
-      >
+      <main key={screen} className={`relative flex flex-1 flex-col ${dir === "next" ? "sf-anim-next" : "sf-anim-back"} ${v.centre ? "justify-center" : ""}`}>
         <div
           className={
             writing
               ? "mx-auto flex w-full max-w-[760px] flex-col gap-4 px-4 pb-6 pt-[26px] md:px-0 md:pt-14"
-              : twoCol
-                ? "flex w-full max-w-[1440px] flex-col gap-4 px-4 pb-6 pt-[26px] md:px-16 md:pt-12 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-[72px] lg:px-24 lg:pt-16"
-                : "flex w-full max-w-[1440px] flex-col gap-4 px-4 pb-6 pt-[26px] md:px-16 md:pt-12 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-center lg:gap-[72px] lg:px-24"
+              : `flex w-full max-w-[1440px] flex-col gap-4 px-4 pb-6 pt-[26px] md:px-16 md:pt-12 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-[72px] lg:px-24 ${twoCol ? "lg:items-start lg:pt-16" : "lg:items-center"}`
           }
         >
           <div className="flex flex-col gap-3.5 md:gap-4">{v.lead}</div>
@@ -1044,34 +1005,20 @@ export function ShareFlow() {
         </div>
       </main>
 
-      {/* actions: stacked on phones (pinned to the bottom), a footer bar from tablet up */}
-      {(nextBtn || skipBtn || extra) && (
+      {(nextBtn || skipBtn || v.extra) && (
         <footer className="sticky bottom-0 z-10 flex flex-col gap-1.5 bg-[var(--bg)] px-4 pb-[22px] pt-3.5 md:flex-row md:items-center md:gap-4 md:border-t-2 md:border-[var(--soft)] md:px-8 md:py-[18px] lg:px-12">
-          {!v.noBack && (
+          {showBack && (
             <button type="button" className="sf-bt sec hidden md:flex md:w-auto md:px-6" onClick={back}>
               Back
             </button>
           )}
           <div className="order-2 flex flex-col md:order-none md:ml-auto md:flex-row md:items-center md:gap-4">
             {skipBtn}
-            {extra}
+            {v.extra}
           </div>
           <div className="order-1 md:order-none">{nextBtn}</div>
         </footer>
       )}
-      {screen === "sent" && (
-        <div className="hidden items-center justify-between border-t-2 border-[var(--soft)] px-12 py-3.5 text-sm text-[var(--mu)] lg:flex">
-          <span />
-          <span>
-            <Link href="/take-down" className="underline underline-offset-[3px]">
-              Take my story down
-            </Link>{" "}
-            · © 2026 GATHER
-          </span>
-        </div>
-      )}
     </div>
   );
 }
-
-export type { Draft };

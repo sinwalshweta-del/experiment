@@ -1,246 +1,192 @@
 /**
- * The share flow's questions, copied from the approved Claude Design boards
- * (13a "Share flow: every screen, mobile", 13b desktop + tablet, 13c states).
- * Every question from the original flow is kept; copy is sentence case.
+ * Share flow v2: the agreed questionnaire (Claude Design boards 18a/18b).
+ * Every question exists to support an insight, the story, privacy or the
+ * submission itself. Copy is sentence case.
  */
 
-export type Overall = "Honestly good" | "Kinda rough" | "A bit of both" | "It's complicated";
 export type Answers = {
-  overall?: Overall;
-  who?: string;
   type?: string;
   typeOther?: string;
+  withGender?: string;
   met?: string;
   howLong?: string;
-  now?: string;
-  when?: string;
-  ratings?: Record<string, string>;
-  green?: string[];
-  greenNote?: string;
-  red?: string[];
-  redNote?: string;
-  glad?: string;
+  hope?: string;
+  thought?: string;
   story?: string;
-  advice?: string;
+  good?: string[];
+  goodOther?: string;
+  hard?: string[];
+  hardOther?: string;
+  status?: string;
+  slowed?: string;
+  reasons?: string[];
+  reasonOther?: string;
+  reflection?: string;
   age?: string;
   gender?: string;
   region?: string;
-  theirAge?: string;
-  theirGender?: string;
 };
 
-export const OVERALL: Overall[] = ["Honestly good", "Kinda rough", "A bit of both", "It's complicated"];
+export const OTHER = "Something else";
 
-export const WHO = [
-  "Someone romantic",
-  "Family",
-  "Someone from work",
-  "School or college",
-  "A friend",
-  "Flatmate, landlord, neighbour",
-  "Someone else",
+export const TYPES = [
+  "A talking stage",
+  "A few dates",
+  "A situationship",
+  "Dating, not official yet",
+  "An official relationship",
+  "Engaged",
+  "Married",
+  OTHER,
 ];
+export const COMMITTED = ["An official relationship", "Engaged", "Married"];
 
-// "What were they to you?" exists for the two groups designed on the board.
-export const TYPES: Record<string, string[]> = {
-  "Someone romantic": [
-    "A one-night thing",
-    "Casual / FWB",
-    "Situationship",
-    "A few dates",
-    "Dating",
-    "Long-term",
-    "Living together",
-    "Engaged",
-    "Married",
-    "Open / non-monogamous",
-    "Something else",
-  ],
-  "Someone from work": [
-    "My manager",
-    "A colleague",
-    "Someone I managed",
-    "A client",
-    "A mentor",
-    "Co-founder or business partner",
-    "Something else",
-  ],
-};
+export const WITH = ["A man", "A woman", "A non-binary person", "Another gender identity", "Not sure", "Prefer not to say"];
 
 export const MET = [
   "Dating app",
-  "Slid into the DMs",
   "Through friends",
-  "Family / rishta setup",
+  "Instagram or other DMs",
   "Work",
   "School or college",
-  "Party or night out",
-  "Gig, fest or event",
-  "Gym, class or hobby",
-  "Online community or game",
-  "While travelling",
-  "The neighbourhood",
+  "Family or a rishta setup",
+  "At a party, event or night out",
   "Somewhere else",
+  "Prefer not to say",
 ];
-export const HOW_LONG = ["Under a month", "1–6 months", "6 months to 2 years", "2–5 years", "5+ years"];
-export const NOW = ["Still around", "Over, but we're cool", "Over, no contact", "Never really started", "It's complicated"];
-export const WHEN = ["This year", "1–2 years ago", "3–5 years ago", "A while back"];
 
-export const STATEMENTS = [
-  "They respected me.",
-  "They actually listened.",
-  "I could be myself around them.",
-  "They showed up for me.",
-  "Fights were fair.",
-];
-export const RATING = [
-  { label: "Never", n: 1 },
-  { label: "Rarely", n: 2 },
-  { label: "Sometimes", n: 3 },
-  { label: "Mostly", n: 4 },
-  { label: "Always", n: 5 },
-];
-export const NA = "Doesn't apply";
+export const HOW_LONG = ["Under a month", "1–3 months", "3–6 months", "6–12 months", "1–3 years", "More than 3 years"];
 
-export const GREEN = [
-  "Made me laugh",
+export const HOPE = ["Something serious", "I wanted to see where it went", "Something casual", "I didn't know yet"];
+export const THOUGHT = ["Something serious", "To see where it went", "Something casual", "I couldn't tell"];
+
+export const GOOD = [
   "Actually listened",
-  "Planned things",
-  "Showed up when they said",
+  "Made me laugh",
+  "Showed up when they said they would",
   "Respected my boundaries",
-  "Honest, even when it was hard",
-  "Had my back",
-  "Introduced me to their people",
-  "Nothing comes to mind",
+  "Was honest with me",
+  "Made me feel I could be myself",
+  "Made me part of their life",
+  OTHER,
 ];
-export const RED = [
+export const NOTHING_GOOD = "Nothing really";
+
+export const HARD = [
   "Mixed signals",
-  "Ghosted me",
-  "Ignored my boundaries",
   "Wasn't honest",
-  "Wanted different things",
-  "Too much, too soon",
-  "Family pressure",
-  "Honestly, nothing major",
+  "Didn't make time for me",
+  "Ignored my boundaries",
+  "Moved too fast",
+  "Jealous or controlling",
+  "Pressure from family or others",
+  OTHER,
 ];
-export const GLAD = ["Yeah, honestly", "In some ways", "Nope", "Still deciding"];
+export const NOTHING_HARD = "Nothing major";
 
-export const AGES = ["18–24", "25–34", "35–44", "45+", "Rather not say"];
-export const THEIR_AGES = ["18–24", "25–34", "35–44", "45+", "Not sure", "Rather not say"];
-export const GENDERS = ["Woman", "Man", "Non-binary", "Another way", "Rather not say"];
-export const REGIONS = ["North", "South", "East", "West", "Northeast", "Central", "Outside India", "Rather not say"];
+export const STATUS_EARLY = [
+  "It turned into a relationship",
+  "Still going, still undefined",
+  "It ended after a conversation",
+  "It faded out without a real conversation",
+  "It stopped suddenly, with no explanation",
+  "It's complicated",
+  "Not sure",
+];
+export const STATUS_COMMITTED = ["Still together", "On a break", "It ended", "It's complicated"];
+export const FADED = ["It faded out without a real conversation", "It stopped suddenly, with no explanation"];
+export const ENDED = [...FADED, "It ended after a conversation", "It ended"];
 
-export type Section = 1 | 2 | 3 | 4 | 5;
-export const SECTION_NAMES: Record<Section, string> = {
-  1: "THE BASICS",
-  2: "HOW IT WENT",
-  3: "IN YOUR WORDS",
-  4: "ABOUT YOU",
-  5: "CHECK",
-};
+export const SLOWED = ["In the first month", "In the second month", "Months 3–6", "After 6 months", "It stopped all at once", "I don't remember"];
 
-/** Question steps, in order. `when` hides a step for some answers. */
-export type StepId =
-  | "q1"
-  | "q2a"
-  | "q2b"
-  | "q3"
-  | "q4"
-  | "q5"
-  | "q6"
-  | "q7-0"
-  | "q7-1"
-  | "q7-2"
-  | "q7-3"
-  | "q7-4"
-  | "q8"
-  | "q9"
-  | "q10"
-  | "q11"
-  | "q12"
-  | "q13"
-  | "q14"
-  | "check";
+export const REASONS = [
+  "We wanted different things",
+  "Communication broke down",
+  "Trust was broken",
+  "We grew apart",
+  "Timing or distance",
+  "Family or outside pressure",
+  "Their interest faded (as I saw it)",
+  "My interest faded",
+  OTHER,
+];
+export const NOT_SURE = "I'm not sure";
 
-type StepDef = { id: StepId; section: Section; q: number; when?: (a: Answers) => boolean };
+export const AGES = ["18–24", "25–34", "35–44", "45+", "Prefer not to say"];
+export const GENDERS = ["Woman", "Man", "Non-binary", "Another gender identity", "Prefer not to say"];
+export const REGIONS = ["India", "Outside India", "Prefer not to say"];
+
+export const STORY_MIN = 80;
+export const STORY_MAX = 3000;
+
+export const isCommitted = (a: Answers) => Boolean(a.type && COMMITTED.includes(a.type));
+export const statusOptions = (a: Answers) => (isCommitted(a) ? STATUS_COMMITTED : STATUS_EARLY);
+export const hasFaded = (a: Answers) => Boolean(a.status && FADED.includes(a.status));
+export const hasEnded = (a: Answers) => Boolean(a.status && ENDED.includes(a.status));
+
+export const SECTIONS = ["THE CONNECTION", "AT THE START", "YOUR STORY", "WHAT STOOD OUT", "HOW IT WENT", "LOOKING BACK"];
+
+export type StepId = "q1" | "q2" | "q3" | "q4" | "q5" | "q6" | "q7" | "q8" | "q9" | "q10" | "q11" | "q12" | "q13" | "about";
+type StepDef = { id: StepId; section: number; when?: (a: Answers) => boolean };
 
 export const STEPS: StepDef[] = [
-  { id: "q1", section: 1, q: 1 },
-  { id: "q2a", section: 1, q: 2 },
-  { id: "q2b", section: 1, q: 2, when: (a) => Boolean(a.who && TYPES[a.who]) },
-  { id: "q3", section: 1, q: 3, when: (a) => a.who !== "Family" },
-  { id: "q4", section: 1, q: 4 },
-  { id: "q5", section: 1, q: 5 },
-  { id: "q6", section: 1, q: 6 },
-  { id: "q7-0", section: 2, q: 7 },
-  { id: "q7-1", section: 2, q: 7 },
-  { id: "q7-2", section: 2, q: 7 },
-  { id: "q7-3", section: 2, q: 7 },
-  { id: "q7-4", section: 2, q: 7 },
-  { id: "q8", section: 2, q: 8 },
-  { id: "q9", section: 2, q: 9 },
-  { id: "q10", section: 2, q: 10 },
-  { id: "q11", section: 3, q: 11 },
-  { id: "q12", section: 3, q: 12 },
-  { id: "q13", section: 4, q: 13 },
-  { id: "q14", section: 4, q: 14 },
-  { id: "check", section: 5, q: 15 },
+  { id: "q1", section: 1 },
+  { id: "q2", section: 1 },
+  { id: "q3", section: 1 },
+  { id: "q4", section: 1 },
+  { id: "q5", section: 2 },
+  { id: "q6", section: 2 },
+  { id: "q7", section: 3 },
+  { id: "q8", section: 4 },
+  { id: "q9", section: 4 },
+  { id: "q10", section: 5 },
+  { id: "q11", section: 5, when: hasFaded },
+  { id: "q12", section: 5, when: hasEnded },
+  { id: "q13", section: 6 },
+  { id: "about", section: 6 },
 ];
 
-export function visibleSteps(a: Answers) {
-  return STEPS.filter((s) => !s.when || s.when(a));
-}
+export const visibleSteps = (a: Answers) => STEPS.filter((s) => !s.when || s.when(a));
 
-/** "THE BASICS · 3/7": position inside the section, as on the boards. */
+/** "HOW IT WENT · 2/3", counted within the steps this person will actually see. */
 export function sectionLabel(a: Answers, id: StepId) {
   const steps = visibleSteps(a);
   const me = steps.find((s) => s.id === id);
   if (!me) return "";
-  // count against the full section, as on the boards ("THE BASICS · 4/7"),
-  // so a skipped branch question shows as a jump rather than renumbering
-  const inSection = STEPS.filter((s) => s.section === me.section);
-  return `${SECTION_NAMES[me.section]} · ${inSection.indexOf(me) + 1}/${inSection.length}`;
+  const inSec = steps.filter((s) => s.section === me.section);
+  return `${SECTIONS[me.section - 1]} · ${inSec.indexOf(me) + 1}/${inSec.length}`;
 }
 
-/** How many of the 14 numbered questions have an answer (for "6 of 14 answered"). */
+/** Answered vs. total for the questions this person will see (for "8 of 13 answered"). */
 export function answeredCount(a: Answers) {
-  const has: Record<number, boolean> = {
-    1: !!a.overall,
-    2: !!a.who,
-    3: !!a.met,
-    4: !!a.howLong,
-    5: !!a.now,
-    6: !!a.when,
-    7: !!a.ratings && Object.keys(a.ratings).length > 0,
-    8: !!a.green?.length || !!a.greenNote,
-    9: !!a.red?.length || !!a.redNote,
-    10: !!a.glad,
-    11: !!a.story?.trim(),
-    12: !!a.advice?.trim(),
-    13: !!(a.age || a.gender || a.region),
-    14: !!(a.theirAge || a.theirGender),
+  const filled: Record<StepId, boolean> = {
+    q1: Boolean(a.type),
+    q2: Boolean(a.withGender),
+    q3: Boolean(a.met),
+    q4: Boolean(a.howLong),
+    q5: Boolean(a.hope),
+    q6: Boolean(a.thought),
+    q7: (a.story?.trim().length ?? 0) >= STORY_MIN,
+    q8: Boolean(a.good?.length),
+    q9: Boolean(a.hard?.length),
+    q10: Boolean(a.status),
+    q11: Boolean(a.slowed),
+    q12: Boolean(a.reasons?.length),
+    q13: Boolean(a.reflection?.trim()),
+    about: Boolean(a.age || a.gender || a.region),
   };
-  const total = a.who === "Family" ? 13 : 14;
-  const answered = Object.entries(has).filter(([q, v]) => v && !(q === "3" && a.who === "Family")).length;
-  return { answered, total };
+  const steps = visibleSteps(a);
+  return { answered: steps.filter((s) => filled[s.id]).length, total: steps.length };
 }
 
-/** Short title used for drafts and stories, e.g. "Romantic · situationship". */
+/** Short private title for drafts and the take-down list, e.g. "A situationship · 1–3 months". */
 export function storyTitle(a: Answers) {
-  const who = a.who === "Someone romantic" ? "Romantic" : a.who === "Someone from work" ? "Work" : a.who ?? "A story";
-  const type = a.type === "Something else" ? a.typeOther : a.type;
-  return type ? `${who} · ${type.charAt(0).toLowerCase()}${type.slice(1)}` : who;
+  const type = a.type === OTHER ? a.typeOther?.trim() || "Something else" : a.type ?? "A story";
+  return a.howLong ? `${type} · ${a.howLong.toLowerCase()}` : type;
 }
 
-/** The accent follows Q1; the charcoal base never changes. */
-export function accentFor(overall?: Overall) {
-  if (overall === "Honestly good") return "#FFB627";
-  if (overall === "A bit of both" || overall === "It's complicated") return "#7FD8C4";
-  return "#FF3E9A";
-}
-
-// A light, local "looks like a name" check for the story and notes. It only
-// nudges; the review team removes identifying details either way.
+// A light, local "looks like a name" check. It only nudges; the review team
+// removes identifying details either way.
 const NAMES = new Set(
   `rohan rahul raj aman amit ankit arjun karan kunal vikram vivek varun akash aditya abhishek nikhil siddharth sid rohit
    priya pooja neha sneha anjali ananya riya shreya kavya divya nisha isha tanya simran meera aisha sara sana zoya
