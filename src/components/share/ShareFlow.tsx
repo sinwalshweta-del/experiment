@@ -776,7 +776,7 @@ export function ShareFlow() {
             {H("Here’s your story.", "text-[28px] md:text-[38px] lg:text-[44px]")}
             <div className="sf-card gap-2">
               {eb("YOUR STORY")}
-              <p className="m-0 whitespace-pre-line text-[15px] leading-[23px]">
+              <p className="m-0 max-h-[260px] overflow-y-auto whitespace-pre-line text-[15px] leading-[23px] [overflow-wrap:anywhere]">
                 <Highlight text={a.story ?? ""} />
               </p>
               {names > 0 && <span className="sf-sm text-[#BDB2FF]">{names} possible name{names > 1 ? "s" : ""} highlighted</span>}
@@ -790,9 +790,9 @@ export function ShareFlow() {
           <div>
             {rows.map(([t, val, to]) => (
               <div key={t} className="flex items-start justify-between gap-3 border-t-2 border-[var(--soft)] py-3">
-                <span>
+                <span className="min-w-0">
                   <b className="text-[15px]">{t}</b>
-                  <span className="sf-sm block">{val || "—"}</span>
+                  <span className="sf-sm block [overflow-wrap:anywhere]">{val || "—"}</span>
                 </span>
                 <button type="button" className="sf-lk px-0 py-1" onClick={() => edit(to)} aria-label={`Edit ${t.toLowerCase()}`}>
                   {val === "Skipped" ? "Add" : "Edit"}
@@ -812,8 +812,9 @@ export function ShareFlow() {
           <>
             {eb("LAST STEP")}
             {H("How can we use your story?", "text-[28px] md:text-[38px] lg:text-[44px]")}
+            {hp("When you publish, your story helps someone going through the same thing feel a little less alone.")}
             <div className="sf-safe">
-              Your email is never shown with your story. Removing names lowers the chance someone recognises it, but people who know you might still spot details. You can take your story down anytime from the link in our emails.
+              Your email is never shown with your story, and our team removes names and identifying details before anything goes live. You can take it down anytime.
             </div>
           </>
         ),
@@ -822,11 +823,12 @@ export function ShareFlow() {
             {eb("CHOOSE ONE")}
             <div role="radiogroup" aria-label="How can we use your story?" className="flex flex-col gap-3">
               {[
-                [true, "Publish my story and selected answers anonymously, after review.", "Our team reads it first and removes or changes anything that could identify you or anyone else. It’s never published instantly."],
-                [false, "Use my answers in insights only. Don’t publish my story.", "Your story is read only by our review team, to check it. It’s never shown or quoted. Your answers only appear inside totals."],
+                [true, "Publish my story anonymously, after review.", "Share your story and selected answers so others can learn from it. Our team reads it first and takes out anything that could identify you or anyone else."],
+                [false, "Use my answers in insights only.", "Your story isn’t published. Your answers are counted in the totals."],
               ].map(([val, t, d]) => (
-                <button key={String(val)} type="button" role="radio" aria-checked={publish === val} className="sf-radio" onClick={() => setPublish(val as boolean)}>
+                <button key={String(val)} type="button" role="radio" aria-checked={publish === val} className={`sf-radio ${val ? "" : "py-3"}`} onClick={() => setPublish(val as boolean)}>
                   <span>
+                    {val && <span className="sf-eb mb-1.5 block text-[var(--ac)]">HELPS OTHERS MOST</span>}
                     <b>{t as string}</b>
                     {d as string}
                   </span>
