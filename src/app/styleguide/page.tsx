@@ -23,9 +23,9 @@ const PALETTE = [
 ] as const;
 
 const WORLDS: { id: World; label: string }[] = [
-  { id: "basics", label: "basics — “a bit of both”" },
-  { id: "rant", label: "rant — “kinda rough”" },
-  { id: "grateful", label: "grateful — “honestly good”" },
+  { id: "basics", label: "basics: “a bit of both”" },
+  { id: "rant", label: "rant: “kinda rough”" },
+  { id: "grateful", label: "grateful: “honestly good”" },
 ];
 
 function WorldSection({ world, label }: { world: World; label: string }) {
@@ -59,7 +59,7 @@ function WorldSection({ world, label }: { world: World; label: string }) {
             little cheeky, lowercase. sounds like a friend texting, not a brand.
           </p>
           <p className="font-martian-mono text-xs font-semibold uppercase tracking-[0.08em] text-[var(--world-muted)]">
-            martian mono 600 — labels and counters only
+            martian mono 600: labels and counters only
           </p>
         </section>
 
@@ -168,15 +168,15 @@ export default function StyleguidePage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
       <p className="font-mono text-xs uppercase tracking-[0.1em] text-muted">
-        Stage 2 — foundations
+        Stage 2: foundations
       </p>
       <h1 className="mt-4 font-display text-[clamp(2rem,5vw,3.25rem)] font-bold leading-[1.02] tracking-tight">
         Styleguide
       </h1>
       <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-soft">
         The GATHER_BUILD_BRIEF design system: tokens, fonts and base components, in all three
-        worlds. Not wired into the live site yet (that happens page by page in later stages) —
-        the nav and footer above and below this card are still the current prototype&rsquo;s.
+        worlds. Not wired into the live site yet (that happens page by page in later stages).
+        The nav and footer above and below this card are still the current prototype&rsquo;s.
       </p>
 
       {/* Raw palette, outside any single world (lilac in particular is an

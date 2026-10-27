@@ -56,7 +56,7 @@ export const MET = [
 ];
 export const MET_OTHER = "Somewhere else";
 
-export const HOW_LONG = ["Under a month", "1–3 months", "3–6 months", "6–12 months", "1–3 years", "More than 3 years"];
+export const HOW_LONG = ["Under a month", "1-3 months", "3-6 months", "6-12 months", "1-3 years", "More than 3 years"];
 
 export const HOPE = ["Something serious", "I wanted to see where it went", "Something casual", "I didn't know yet"];
 export const THOUGHT = ["Something serious", "To see where it went", "Something casual", "I couldn't tell"];
@@ -98,7 +98,7 @@ export const STATUS_COMMITTED = ["Still together", "On a break", "It ended", "It
 export const FADED = ["It faded out without a real conversation", "It stopped suddenly, with no explanation"];
 export const ENDED = [...FADED, "It ended after a conversation", "It ended"];
 
-export const SLOWED = ["In the first month", "In the second month", "Months 3–6", "After 6 months", "It stopped all at once", "I don't remember"];
+export const SLOWED = ["In the first month", "In the second month", "Months 3-6", "After 6 months", "It stopped all at once", "I don't remember"];
 
 export const REASONS = [
   "We wanted different things",
@@ -113,7 +113,7 @@ export const REASONS = [
 ];
 export const NOT_SURE = "I'm not sure";
 
-export const AGES = ["18–24", "25–34", "35–44", "45+", "Prefer not to say"];
+export const AGES = ["18-24", "25-34", "35-44", "45+", "Prefer not to say"];
 export const GENDERS = ["Woman", "Man", "Non-binary", "Another gender identity", "Prefer not to say"];
 export const REGIONS = ["India", "Outside India", "Prefer not to say"];
 
@@ -180,7 +180,7 @@ export function answeredCount(a: Answers) {
   return { answered: steps.filter((s) => filled[s.id]).length, total: steps.length };
 }
 
-/** Short private title for drafts and the take-down list, e.g. "A situationship · 1–3 months". */
+/** Short private title for drafts and the take-down list, e.g. "A situationship · 1-3 months". */
 export function storyTitle(a: Answers) {
   const type = a.type === OTHER ? a.typeOther?.trim() || "Something else" : a.type ?? "A story";
   return a.howLong ? `${type} · ${a.howLong.toLowerCase()}` : type;

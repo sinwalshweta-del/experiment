@@ -430,7 +430,7 @@ export function ShareFlow() {
         body: (
           <div className="flex flex-col gap-4">
             {[
-              ["ABOUT 5–7 MINUTES", "A few quick taps, then your story in your own words."],
+              ["ABOUT 5-7 MINUTES", "A few quick taps, then your story in your own words."],
               ["NO NAMES, EVER", "Not theirs, not yours. Describe the experience, not the person."],
               ["A REAL PERSON READS IT", "Nothing is shared until our team has reviewed it."],
             ].map(([t, d]) => (
@@ -770,7 +770,7 @@ export function ShareFlow() {
       const rows: [string, string, StepId][] = [
         ["The connection", join([a.type === OTHER ? a.typeOther : a.type, a.withGender?.toLowerCase(), a.met === MET_OTHER ? a.metOther : a.met, a.howLong]), "q1"],
         ["At the start", join([a.hope && `Hoped: ${a.hope.toLowerCase()}`, a.thought && `Thought they wanted: ${a.thought.toLowerCase()}`]), "q5"],
-        ["What stood out", join([withOther(a.good, a.goodOther).join(", ") || "—", withOther(a.hard, a.hardOther).join(", ") || "—"]), "q8"],
+        ["What stood out", join([withOther(a.good, a.goodOther).join(", ") || "Not answered", withOther(a.hard, a.hardOther).join(", ") || "Not answered"]), "q8"],
         ["How it went", join([a.status, a.slowed, withOther(a.reasons, a.reasonOther).join(", ")]), "q10"],
         ["Looking back", a.reflection?.trim() ? "Added" : "Skipped", "q13"],
         ["About you", join([a.age, a.gender, a.region]) || "Skipped", "about"],
@@ -798,7 +798,7 @@ export function ShareFlow() {
               <div key={t} className="flex items-start justify-between gap-3 border-t-2 border-[var(--soft)] py-3">
                 <span className="min-w-0">
                   <b className="text-[15px]">{t}</b>
-                  <span className="sf-sm block [overflow-wrap:anywhere]">{val || "—"}</span>
+                  <span className="sf-sm block [overflow-wrap:anywhere]">{val || "Not answered"}</span>
                 </span>
                 <button type="button" className="sf-lk px-0 py-1" onClick={() => edit(to)} aria-label={`Edit ${t.toLowerCase()}`}>
                   {val === "Skipped" ? "Add" : "Edit"}
@@ -903,7 +903,7 @@ export function ShareFlow() {
             <div className="sf-card sf-tl gap-3.5 p-4 lg:p-6">
               {[
                 ["Received", "Just now", true],
-                ["Being reviewed", "Usually 2–3 days", false],
+                ["Being reviewed", "Usually 2-3 days", false],
                 ["We’ll email you", "When the review’s done", false],
               ].map(([t, d, on]) => (
                 <div key={t as string}>

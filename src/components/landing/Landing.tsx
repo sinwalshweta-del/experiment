@@ -89,7 +89,7 @@ function Hero() {
             See what people are saying
           </Link>
         </div>
-        <span className={`${mono} text-[#5F5866] max-[374px]:text-[11px] max-[349px]:tracking-[0.01em] max-[349px]:text-[10px]`}>4 MINS · MOSTLY TAPS · NO NAMES, EVER</span>
+        <p className="font-archivo text-[15px] font-semibold leading-[22px] text-[#3d3a40]">About 5 minutes. No names, ever.</p>
       </div>
 
       {/* Collage: absolutely placed on desktop, a loose stack below lg */}
@@ -125,7 +125,7 @@ function Concept() {
       <div data-px="14" className="flex flex-col gap-6 lg:col-span-6">
         <h2 className={h2}>Like reviews. But for people. Minus the names.</h2>
         <p className="font-archivo text-[18px] leading-[28px] text-[#E2DCD0] lg:text-[20px] lg:leading-[31px]">
-          Relationships, dating, marriage — the expectations, the green flags, the mixed signals. We&apos;re bringing
+          Relationships, dating, marriage: the expectations, the green flags, the mixed signals. We&apos;re bringing
           people&apos;s experiences together to see what&apos;s really going on.
         </p>
         <p className="font-archivo text-[18px] font-bold leading-[28px] lg:text-[20px] lg:leading-[31px]">
@@ -183,7 +183,6 @@ function HowItWorks() {
             )}
             <div className={`landing-lift flex flex-1 flex-col gap-3 rounded border-2 border-brief-ink p-7 shadow-[6px_6px_0_var(--color-brief-ink)] ${s.card} ${s.lift}`}>
               <Mark size={44} className={s.mark} />
-              <span className={`${mono} opacity-70`}>{s.n}</span>
               <h3 className={`${display} text-[28px] leading-none lg:text-[30px]`}>{s.title}</h3>
               <p className="font-archivo text-[17px] leading-[27px]">{s.body}</p>
             </div>
@@ -356,7 +355,7 @@ function FinalCta() {
       <div data-px="14" className="relative flex max-w-[860px] flex-col gap-[26px]">
         <h2 className={`${display} text-[52px] leading-[0.9] sm:text-[72px] lg:text-[96px]`}>Got a story to share?</h2>
         <p className="font-archivo text-[19px] font-semibold leading-[29px] lg:text-[22px] lg:leading-[32px]">
-          Good, bad or complicated, it takes about 4 minutes. Leave the names out and help someone else spot the
+          Good, bad or complicated, it takes about 5 minutes. Leave the names out and help someone else spot the
           pattern.
         </p>
         <Link

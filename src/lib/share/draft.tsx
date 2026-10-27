@@ -24,7 +24,8 @@ const EMPTY: Draft = { answers: {}, step: "q1", updatedAt: 0 };
 
 function readStore(): Store {
   try {
-    const all = JSON.parse(window.localStorage.getItem(DRAFTS) ?? "{}") as Store;
+    // older drafts saved answers like "1–3 months"; the options now use a plain hyphen
+    const all = JSON.parse(window.localStorage.getItem(DRAFTS) ?? "{}", (_k, v) => (typeof v === "string" ? v.replace(/\u2013/g, "-") : v)) as Store;
     const now = Date.now();
     return Object.fromEntries(Object.entries(all).filter(([, d]) => now - d.updatedAt < KEEP_MS));
   } catch {
