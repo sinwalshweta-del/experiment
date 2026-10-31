@@ -38,6 +38,7 @@ import {
   type StepId,
 } from "@/lib/share/questions";
 import { addStory, daysAgo } from "@/lib/share/stories";
+import { FeedbackCard } from "./FeedbackCard";
 
 /**
  * Share flow v2, built from the agreed questionnaire (Claude Design boards
@@ -942,6 +943,7 @@ export function ShareFlow() {
               </Link>{" "}
               anytime.
             </p>
+            <FeedbackCard />
           </div>
         ),
         next: { label: "Back to GATHER", onClick: () => router.push("/") },

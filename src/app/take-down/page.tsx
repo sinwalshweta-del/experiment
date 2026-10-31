@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { Mark } from "@/components/site/Mark";
 import { getMyStories, MyStory, shortDate, takeDown } from "@/lib/takedown";
 import { useShareDraft } from "@/lib/share/draft";
+import { supabase } from "@/lib/supabase";
 
 /**
  * "Take my story down" (approved Claude Design board 11). Main flow:
@@ -172,6 +173,8 @@ export default function TakeDownPage() {
     setBusy(true);
     try {
       await takeDown(story.id, reason ?? undefined);
+      // confirmation email (board 23, E4); it's a nice-to-have, so a failure doesn't block the flow
+      void supabase().functions.invoke("send-story-email", { body: { story_id: story.id, kind: "taken_down" } }).catch(() => undefined);
       if (userId) setStories(await getMyStories(userId));
       go("done");
     } catch {

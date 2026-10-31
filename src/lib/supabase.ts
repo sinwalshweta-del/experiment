@@ -9,14 +9,14 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
  * the thresholded insight counts. Never put the secret service-role key here.
  * Env vars override the defaults (set them in Vercel to point at another project).
  */
-const URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uxyrqhuusuwentiptswl.supabase.co";
-const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_j-ok3kKWho1CYK5LnzdbHg_jJtI7udR";
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uxyrqhuusuwentiptswl.supabase.co";
+export const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_j-ok3kKWho1CYK5LnzdbHg_jJtI7udR";
 
 let client: SupabaseClient | null = null;
 
 export function supabase() {
   if (!client) {
-    client = createClient(URL, KEY, {
+    client = createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "gather:auth" },
     });
   }
