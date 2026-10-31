@@ -122,7 +122,7 @@ export function FeedbackCard() {
           That didn’t go through. Try again?
         </p>
       )}
-      <button type="button" className="sf-bt" onClick={send} disabled={!ready || state === "sending"}>
+      <button type="button" className="sf-bt" onClick={send} disabled={!ready || state === "sending"} aria-busy={state === "sending"}>
         {state === "sending" ? "Sending…" : "Send feedback"}
       </button>
       <button type="button" className="sf-lk self-center" onClick={() => setState("skipped")}>

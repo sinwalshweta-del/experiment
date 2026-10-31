@@ -141,7 +141,7 @@ export function SignIn() {
           <p id="si-email-hint" className={small} aria-live="polite">
             {email && !ok ? "That email doesn’t look right. Check for typos." : sendError ?? "We’ll never show your email with your story."}
           </p>
-          <button type="submit" disabled={!ok || busy} className="landing-btn mt-2 w-full max-w-[440px] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-start">
+          <button type="submit" disabled={!ok || busy} aria-busy={busy} className="landing-btn mt-2 w-full max-w-[440px] sm:w-auto sm:self-start">
             {busy ? "Sending…" : <>Send me a code {ARROW}</>}
           </button>
         </form>
@@ -190,7 +190,7 @@ export function SignIn() {
               {error}
             </p>
           )}
-          <button type="submit" disabled={code.length !== 6 || tries <= 0 || busy} className="landing-btn mt-2 w-full max-w-[440px] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-start">
+          <button type="submit" disabled={code.length !== 6 || tries <= 0 || busy} aria-busy={busy} className="landing-btn mt-2 w-full max-w-[440px] sm:w-auto sm:self-start">
             {busy ? "Checking…" : <>{mode === "signup" ? "Create account" : "Sign in"} {ARROW}</>}
           </button>
         </form>

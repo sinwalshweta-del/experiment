@@ -977,7 +977,7 @@ export function ShareFlow() {
     </button>
   ) : null;
   const nextBtn = v.next ? (
-    <button type="button" className="sf-bt md:w-auto md:px-[34px]" onClick={v.next.onClick} disabled={v.next.disabled}>
+    <button type="button" className="sf-bt md:w-auto md:px-[34px]" onClick={v.next.onClick} disabled={v.next.disabled} aria-busy={busy}>
       {v.next.label}
     </button>
   ) : null;

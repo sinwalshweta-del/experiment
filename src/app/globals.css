@@ -453,7 +453,7 @@ body {
 .sf-bt:hover:not(:disabled) { translate: -2px -2px; box-shadow: 6px 6px 0 var(--fg); }
 .sf-bt:active:not(:disabled) { translate: 3px 3px; box-shadow: 1px 1px 0 var(--fg); transition-duration: 60ms; }
 .sf-bt:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
-.sf-bt:disabled { background: var(--sf); color: var(--dim); border: 2px dashed var(--soft); box-shadow: none; cursor: not-allowed; }
+.sf-bt:disabled:not([aria-busy="true"]) { background: var(--sf2); color: #8f8697; border: 2px solid var(--soft); box-shadow: none; cursor: not-allowed; }
 .sf-bt.sec { background: var(--sf); color: var(--fg); border: 2px solid var(--fg); box-shadow: none; }
 .sf-lk { font-weight: 600; font-size: 15px; line-height: 20px; color: var(--fg); text-decoration: underline; text-underline-offset: 3px; text-align: center; padding: 10px; min-height: 44px; }
 .sf-chk { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 22px; cursor: pointer; }
@@ -628,4 +628,45 @@ body {
       transform: none;
     }
   }
+}
+
+
+/* ── Disabled buttons (Claude Design board 28, option A) ──
+   The hard shadow means "you can press this", so a button that isn't ready
+   loses its shadow and its pink and sits flat and grey. While something is
+   sending (aria-busy) it stays pink and shows a small moving bar instead.
+   Unlayered on purpose, so it wins over colour utilities on the button. */
+.landing-btn:disabled:not([aria-busy="true"]),
+.btn-light:disabled:not([aria-busy="true"]) {
+  background: #e2dcd0;
+  color: #6f6876;
+  border-color: #b9b0a2;
+  box-shadow: none;
+  transform: none;
+  translate: none;
+  cursor: not-allowed;
+}
+.btn-dark:disabled:not([aria-busy="true"]) {
+  background: #2c2433;
+  color: #8f8697;
+  border-color: #4a4251;
+  box-shadow: none;
+  transform: none;
+  translate: none;
+  cursor: not-allowed;
+}
+button[aria-busy="true"] { position: relative; overflow: hidden; cursor: progress; }
+button[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  height: 4px;
+  background: var(--color-brief-ink);
+  animation: btn-busy 1.1s ease-in-out infinite;
+}
+@keyframes btn-busy { from { translate: -100% 0; } to { translate: 250% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  button[aria-busy="true"]::after { animation: btn-busy 2.4s linear infinite; }
 }

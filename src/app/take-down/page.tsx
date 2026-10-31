@@ -68,13 +68,14 @@ function Summary({ s, line, t }: { s: MyStory; line: string; t: T }) {
   );
 }
 // Main buttons are always rani pink, like everywhere else on the site.
-function Primary({ children, onClick, t, tone, disabled = false }: { children: React.ReactNode; onClick: () => void; t: T; tone: Tone; rani?: boolean; disabled?: boolean }) {
+function Primary({ children, onClick, t, tone, disabled = false, busy = false }: { children: React.ReactNode; onClick: () => void; t: T; tone: Tone; rani?: boolean; disabled?: boolean; busy?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${btn} ${t.line} disabled:opacity-50 bg-brief-rani text-brief-ink ${tone === "dark" ? "shadow-[4px_4px_0_var(--color-brief-paper)]" : "shadow-[4px_4px_0_var(--color-brief-ink)]"}`}
+      aria-busy={busy}
+      className={`${btn} ${t.line} ${tone === "dark" ? "btn-dark" : "btn-light"} bg-brief-rani text-brief-ink ${tone === "dark" ? "shadow-[4px_4px_0_var(--color-brief-paper)]" : "shadow-[4px_4px_0_var(--color-brief-ink)]"}`}
     >
       {children}
     </button>
@@ -253,11 +254,11 @@ export default function TakeDownPage() {
       );
       foot = codeSent ? (
         <>
-          <Primary t={t} tone={tone} onClick={verify} disabled={code.length !== 6 || busy}>{busy ? "Checking…" : "Verify"}</Primary>
+          <Primary t={t} tone={tone} onClick={verify} disabled={code.length !== 6 || busy} busy={busy}>{busy ? "Checking…" : "Verify"}</Primary>
           <button type="button" onClick={sendCode} className={link} disabled={busy}>Send a new code</button>
         </>
       ) : (
-        <Primary t={t} tone={tone} onClick={sendCode} disabled={!emailOk || busy}>{busy ? "Sending…" : "Send me a code"}</Primary>
+        <Primary t={t} tone={tone} onClick={sendCode} disabled={!emailOk || busy} busy={busy}>{busy ? "Sending…" : "Send me a code"}</Primary>
       );
       break;
     }
@@ -344,7 +345,7 @@ export default function TakeDownPage() {
       );
       foot = (
         <>
-          <Primary t={t} tone={tone} rani onClick={remove} disabled={busy}>{busy ? "Taking it down…" : step === "confirm" ? "Take it down" : "Withdraw it"}</Primary>
+          <Primary t={t} tone={tone} rani onClick={remove} disabled={busy} busy={busy}>{busy ? "Taking it down…" : step === "confirm" ? "Take it down" : "Withdraw it"}</Primary>
           <button type="button" onClick={back} className={link}>{step === "confirm" ? "Keep it up" : "Keep it in review"}</button>
         </>
       );

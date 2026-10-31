@@ -75,7 +75,7 @@ const when = (iso: string) =>
   new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
 const mask = (e: string) => e.replace(/^(.)[^@]*(@.*)$/, "$1•••$2");
 
-const btn = "inline-flex min-h-[44px] items-center justify-center rounded border-2 border-brief-ink px-4 font-archivo text-[15px] font-bold shadow-[3px_3px_0_var(--color-brief-ink)] disabled:opacity-50";
+const btn = "inline-flex min-h-[44px] items-center justify-center rounded border-2 border-brief-ink px-4 font-archivo text-[15px] font-bold shadow-[3px_3px_0_var(--color-brief-ink)] btn-light";
 const h1 = "m-0 text-[44px] font-black leading-[0.94] [font-stretch:125%] sm:text-[56px]";
 const small = "m-0 text-[14px] leading-[20px] text-brief-muted";
 
@@ -443,6 +443,7 @@ function DecisionPanel({
           <button
             type="button"
             disabled={busy || needsNote}
+            aria-busy={busy}
             onClick={async () => {
               setBusy(true);
               await onConfirm(row, kind, email, note.trim(), approve ? null : reason);
