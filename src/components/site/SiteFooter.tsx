@@ -9,6 +9,9 @@ export function SiteFooter() {
         <Mark size={32} />
       </span>
       <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
+        <a href="mailto:gatherpeopleinsights@gmail.com" className="font-archivo text-[15px] underline underline-offset-[3px] [overflow-wrap:anywhere]">
+          gatherpeopleinsights@gmail.com
+        </a>
         <Link href="/privacy" className="font-archivo text-[15px] underline underline-offset-[3px]">
           Privacy
         </Link>

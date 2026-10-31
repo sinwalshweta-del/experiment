@@ -92,7 +92,7 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
       <ul>
         <li><b>Take a story down anytime</b> from <Link href="/take-down">Take my story down</Link>. No reason needed.</li>
         <li><b>See your stories</b> and where they are in review by <Link href="/sign-in">signing in</Link>.</li>
-        <li><b>Delete your account and everything with it,</b> get a copy of your data, or correct something: reply to any email from us (including your sign-in code email) and we&apos;ll do it within 30 days.</li>
+        <li><b>Delete your account and everything with it,</b> get a copy of your data, or correct something: write to <a href="mailto:gatherpeopleinsights@gmail.com">gatherpeopleinsights@gmail.com</a> (or reply to any email from us) and we&apos;ll do it within 30 days.</li>
       </ul>
     ),
   },
@@ -112,7 +112,7 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
     h: "Questions or concerns",
     body: (
       <p>
-        Reply to any email from GATHER and a real person will get back to you. If we ever change how we handle your data, we&apos;ll update this page and the date at the top.
+        Write to <a href="mailto:gatherpeopleinsights@gmail.com">gatherpeopleinsights@gmail.com</a> and a real person will get back to you. If we ever change how we handle your data, we&apos;ll update this page and the date at the top.
       </p>
     ),
   },
