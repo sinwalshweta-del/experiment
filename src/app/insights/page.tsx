@@ -23,8 +23,8 @@ export default function InsightsPage() {
         className="pointer-events-none absolute -right-[42px] -top-[42px] h-[170px] w-[170px] rounded-bl-full border-2 border-brief-ink bg-brief-rani md:-right-20 md:-top-20 md:h-[320px] md:w-[320px] lg:-right-[110px] lg:-top-[110px] lg:h-[440px] lg:w-[440px]"
       />
       <SiteHeader />
-      <main className="relative flex flex-1 flex-col justify-center gap-[34px] px-4 pb-9 pt-7 sm:px-8 md:px-12 md:pb-14 md:pt-10 lg:px-20">
-        <span className="flex items-center gap-2.5 font-martian-mono text-xs font-semibold leading-[18px] tracking-[0.05em] text-[#5F5866] before:h-3.5 before:w-3.5 before:rounded-tl-full before:border-2 before:border-brief-ink before:bg-brief-rani">
+      <div className="relative flex flex-1 flex-col justify-center gap-[34px] px-4 pb-9 pt-7 sm:px-8 md:px-12 md:pb-14 md:pt-10 lg:px-20">
+        <span className="flex items-center gap-2.5 font-martian-mono text-xs font-semibold leading-[18px] tracking-[0.05em] text-brief-muted before:h-3.5 before:w-3.5 before:rounded-tl-full before:border-2 before:border-brief-ink before:bg-brief-rani">
           THE PICTURE IS STILL TAKING SHAPE
         </span>
         <h1 className="m-0 text-[52px] font-black leading-[0.9] tracking-[-0.02em] [font-stretch:125%] sm:text-[72px] md:text-[92px] lg:text-[clamp(92px,9.2vw,132px)]">
@@ -45,7 +45,7 @@ export default function InsightsPage() {
             <IconArrowRight />
           </Link>
         </div>
-      </main>
+      </div>
       <SiteFooter />
     </div>
   );

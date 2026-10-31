@@ -36,7 +36,7 @@ export function FeedbackCard() {
   if (state === "sent") {
     return (
       <div className="flex flex-col items-start gap-2.5 rounded-md border-2 border-[var(--soft)] bg-[var(--sf)] p-4 lg:p-5" role="status">
-        <span className="grid h-10 w-10 grid-cols-2 grid-rows-2 text-[#FF3E9A]" aria-hidden>
+        <span className="grid h-10 w-10 grid-cols-2 grid-rows-2 text-brief-rani" aria-hidden>
           {["rounded-br-full", "rounded-bl-full", "rounded-tr-full", "rounded-tl-full"].map((r) => (
             <span key={r} className={`bg-current ${r}`} />
           ))}
@@ -59,7 +59,7 @@ export function FeedbackCard() {
 
   return (
     <section aria-labelledby="fb-h" className="flex flex-col gap-4 rounded-md border-2 border-[var(--soft)] bg-[var(--sf)] p-4 lg:p-5">
-      <span id="fb-h" className="sf-eb !text-[#FF3E9A]">ONE LAST THING, PROMISE</span>
+      <span id="fb-h" className="sf-eb !text-brief-rani">ONE LAST THING, PROMISE</span>
 
       <fieldset className="m-0 flex flex-col gap-2.5 border-0 p-0">
         <legend className="mb-2.5 p-0 text-[18px] font-extrabold leading-tight [font-stretch:112%]">How did sharing feel?</legend>
@@ -72,7 +72,7 @@ export function FeedbackCard() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setFeeling(on ? null : i + 1)}
-                className={`flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-md border-2 px-0.5 py-2 text-center text-[12px] font-semibold leading-[1.15] ${on ? "border-[#FF3E9A] bg-[#FF3E9A] text-[#17121C]" : "border-[var(--soft)] text-[var(--fg)]"}`}
+                className={`flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-md border-2 px-0.5 py-2 text-center text-[12px] font-semibold leading-[1.15] ${on ? "border-brief-rani bg-brief-rani text-brief-ink" : "border-[var(--soft)] text-[var(--fg)]"}`}
               >
                 <Fill n={i + 1} />
                 {label}
@@ -93,7 +93,7 @@ export function FeedbackCard() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setFriend(on ? null : f.v)}
-                className={`min-h-[44px] rounded-full border-2 px-4 text-[14px] font-semibold ${on ? "border-[#FF3E9A] bg-[#FF3E9A] text-[#17121C]" : "border-[var(--soft)] text-[var(--fg)]"}`}
+                className={`min-h-[44px] rounded-full border-2 px-4 text-[14px] font-semibold ${on ? "border-brief-rani bg-brief-rani text-brief-ink" : "border-[var(--soft)] text-[var(--fg)]"}`}
               >
                 {f.label}
               </button>

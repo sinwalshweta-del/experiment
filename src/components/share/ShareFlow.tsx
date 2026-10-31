@@ -128,7 +128,7 @@ function Highlight({ text }: { text: string }) {
     <>
       {text.split(/(\b[A-Za-z]+\b)/).map((part, i) =>
         names.has(part.toLowerCase()) ? (
-          <mark key={i} className="rounded-sm bg-[#BDB2FF] px-0.5 text-brief-ink">
+          <mark key={i} className="rounded-sm bg-brief-lilac px-0.5 text-brief-ink">
             {part}
           </mark>
         ) : (
@@ -327,6 +327,7 @@ export function ShareFlow() {
               type="email"
               inputMode="email"
               autoComplete="email"
+              placeholder="you@example.com"
               className={`sf-in md:min-h-[60px] md:text-[18px] ${email && !ok ? "er" : ""}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -803,7 +804,7 @@ export function ShareFlow() {
               <p className="m-0 max-h-[260px] overflow-y-auto whitespace-pre-line text-[15px] leading-[23px] [overflow-wrap:anywhere]">
                 <Highlight text={a.story ?? ""} />
               </p>
-              {names > 0 && <span className="sf-sm text-[#BDB2FF]">{names} possible name{names > 1 ? "s" : ""} highlighted</span>}
+              {names > 0 && <span className="sf-sm text-brief-lilac">{names} possible name{names > 1 ? "s" : ""} highlighted</span>}
               <button type="button" className="sf-lk self-start px-0 py-1" onClick={() => edit("q7")}>
                 Edit story
               </button>
@@ -990,7 +991,7 @@ export function ShareFlow() {
   const twoCol = !writing && v.body && !v.centre;
 
   return (
-    <div className="sf relative flex min-h-dvh flex-col overflow-x-clip" style={{ ["--ac" as string]: "#FF3E9A" } as React.CSSProperties}>
+    <div className="sf relative flex min-h-dvh flex-col overflow-x-clip" style={{ ["--ac" as string]: "var(--color-brief-rani)" } as React.CSSProperties}>
       <div aria-hidden className="pointer-events-none absolute -right-14 -top-14 h-[140px] w-[140px] rounded-bl-full bg-[var(--ac)] opacity-95 md:-right-[90px] md:-top-[90px] md:h-[220px] md:w-[220px] md:opacity-90" />
 
       {/* phones */}
@@ -1013,7 +1014,7 @@ export function ShareFlow() {
         {exitBtn}
       </header>
 
-      <main key={screen} className={`relative flex flex-1 flex-col ${dir === "next" ? "sf-anim-next" : "sf-anim-back"} ${v.centre ? "justify-center" : ""}`}>
+      <div key={screen} className={`relative flex flex-1 flex-col ${dir === "next" ? "sf-anim-next" : "sf-anim-back"} ${v.centre ? "justify-center" : ""}`}>
         <div
           className={
             writing
@@ -1024,7 +1025,7 @@ export function ShareFlow() {
           <div className="flex flex-col gap-3.5 md:gap-4">{v.lead}</div>
           {v.body && <div className="flex flex-col gap-4">{v.body}</div>}
         </div>
-      </main>
+      </div>
 
       {(nextBtn || skipBtn || v.extra) && (
         <footer className="sticky bottom-0 z-10 flex flex-col gap-1.5 bg-[var(--bg)] px-4 pb-[22px] pt-3.5 md:flex-row md:items-center md:gap-4 md:border-t-2 md:border-[var(--soft)] md:px-8 md:py-[18px] lg:px-12">

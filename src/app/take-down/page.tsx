@@ -21,7 +21,7 @@ type Step = "start" | "verify" | "list" | "none" | "confirm" | "review" | "alrea
 type Tone = "paper" | "gold" | "dark";
 
 const TONES: Record<Tone, { page: string; surface: string; muted: string; blob: string; line: string }> = {
-  paper: { page: "bg-brief-paper text-brief-ink", surface: "bg-brief-white", muted: "text-[#5F5866]", blob: "bg-brief-lilac", line: "border-brief-ink" },
+  paper: { page: "bg-brief-paper text-brief-ink", surface: "bg-brief-white", muted: "text-brief-muted", blob: "bg-brief-lilac", line: "border-brief-ink" },
   gold: { page: "bg-brief-marigold text-brief-ink", surface: "bg-[#FFF8E8]", muted: "text-[#4A3A10]", blob: "bg-brief-rani", line: "border-brief-ink" },
   dark: { page: "bg-brief-ink text-brief-paper", surface: "bg-[#241D2B]", muted: "text-[#B4ACBA]", blob: "bg-brief-rani", line: "border-brief-paper" },
 };
@@ -186,7 +186,7 @@ export default function TakeDownPage() {
   const tags: Record<MyStory["status"], [string, string]> = {
     live: ["COUNTED", "bg-brief-peacock text-brief-paper"],
     review: ["BEING REVIEWED", "bg-brief-marigold text-brief-ink"],
-    down: ["TAKEN DOWN", "border-dashed bg-brief-paper text-[#5F5866]"],
+    down: ["TAKEN DOWN", "border-dashed bg-brief-paper text-brief-muted"],
   };
 
   let body: React.ReactNode;
@@ -406,7 +406,7 @@ export default function TakeDownPage() {
     <div className={`relative flex min-h-dvh flex-col overflow-x-clip font-archivo ${t.page}`}>
       <div aria-hidden className={`pointer-events-none absolute -right-[70px] -top-[70px] h-[200px] w-[200px] rounded-bl-full border-2 md:-right-24 md:-top-24 md:h-[320px] md:w-[320px] ${t.blob} ${t.line}`} />
       <SiteHeader />
-      <main className="relative mx-auto flex w-full max-w-[520px] flex-1 flex-col px-4 pb-10 pt-6 sm:pt-12">
+      <div className="relative mx-auto flex w-full max-w-[520px] flex-1 flex-col px-4 pb-10 pt-6 sm:pt-12">
         <div className="min-h-[44px]">
           {canBack && (
             <button type="button" aria-label="Back" onClick={back} className={`flex h-11 w-11 items-center justify-center rounded border-2 shadow-[3px_3px_0_currentColor] ${t.line} ${t.surface}`}>
@@ -416,7 +416,7 @@ export default function TakeDownPage() {
         </div>
         <div aria-live="polite" className="mt-6 flex flex-col gap-3.5">{body}</div>
         <div className="mt-8 flex flex-col gap-2">{foot}</div>
-      </main>
+      </div>
       <SiteFooter />
     </div>
   );

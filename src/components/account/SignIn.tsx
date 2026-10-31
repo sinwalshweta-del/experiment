@@ -29,7 +29,7 @@ const h1 = "m-0 text-[44px] font-black leading-[0.94] tracking-[-0.02em] [font-s
 const lead = "m-0 max-w-[520px] text-[17px] leading-[1.55] text-[#2A2430] md:text-[19px]";
 const input =
   "min-h-[56px] w-full max-w-[440px] rounded border-2 border-brief-ink bg-brief-white px-4 font-archivo text-[17px] text-brief-ink outline-none transition-shadow focus:shadow-[4px_4px_0_var(--color-brief-rani)]";
-const small = "m-0 text-[15px] leading-[22px] text-[#5F5866]";
+const small = "m-0 text-[15px] leading-[22px] text-brief-muted";
 const STATUS: Record<MyStory["status"], string> = {
   received: "Waiting for review",
   in_review: "Being reviewed",
@@ -213,7 +213,7 @@ export function SignIn() {
         <div className="flex max-w-[560px] flex-col gap-4">
           {hasDraft && (
             <div className="flex flex-col gap-3 rounded border-2 border-brief-ink bg-brief-white p-5 shadow-[5px_5px_0_var(--color-brief-ink)]">
-              <span className="font-martian-mono text-xs font-semibold tracking-[0.05em] text-[#5F5866]">YOUR DRAFT</span>
+              <span className="font-martian-mono text-xs font-semibold tracking-[0.05em] text-brief-muted">YOUR DRAFT</span>
               <b className="text-[19px] leading-6">{storyTitle(draft.answers)}</b>
               <span className={small}>
                 {answered} of {total} answered · saved {daysAgo(draft.updatedAt)}
@@ -240,7 +240,7 @@ export function SignIn() {
                   {mine.map((s) => (
                     <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-x-3 text-[15px] leading-[22px]">
                       <span className="font-semibold">{s.title}</span>
-                      <span className="text-[#5F5866]">{STATUS[s.status]}</span>
+                      <span className="text-brief-muted">{STATUS[s.status]}</span>
                     </li>
                   ))}
                 </ul>
@@ -279,7 +279,7 @@ function Shell({ children }: { children?: React.ReactNode }) {
         className="pointer-events-none absolute -right-[42px] -top-[42px] h-[170px] w-[170px] rounded-bl-full border-2 border-brief-ink bg-brief-rani md:-right-20 md:-top-20 md:h-[320px] md:w-[320px] lg:-right-[110px] lg:-top-[110px] lg:h-[440px] lg:w-[440px]"
       />
       <SiteHeader />
-      <main className="relative flex flex-1 flex-col justify-center gap-6 px-4 pb-14 pt-10 sm:px-8 md:px-12 md:pb-20 md:pt-14 lg:px-20">{children}</main>
+      <div className="relative flex flex-1 flex-col justify-center gap-6 px-4 pb-14 pt-10 sm:px-8 md:px-12 md:pb-20 md:pt-14 lg:px-20">{children}</div>
       <SiteFooter />
     </div>
   );

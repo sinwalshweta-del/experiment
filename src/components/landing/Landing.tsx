@@ -259,7 +259,7 @@ function InsightsPeek() {
               <span className={mono}>{b.pct}%</span>
             </div>
           ))}
-          <span className={`${mono} text-[#5F5866]`}>NOT REAL DATA. REAL NUMBERS SHOW UP ONCE STORIES COME IN.</span>
+          <span className={`${mono} text-brief-muted`}>NOT REAL DATA. REAL NUMBERS SHOW UP ONCE STORIES COME IN.</span>
         </div>
         <div className="flex w-full -rotate-[1.5deg] flex-col gap-3.5 self-end rounded border-2 border-brief-ink bg-brief-marigold p-5 shadow-[6px_6px_0_var(--color-brief-ink)] sm:w-[86%] sm:p-7">
           <span className={`${mono} text-[#4A3A10]`}>QUESTIONS WE&apos;RE EXPLORING</span>

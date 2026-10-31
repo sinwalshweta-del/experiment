@@ -122,10 +122,10 @@ export default function PrivacyPage() {
   return (
     <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-brief-paper font-archivo text-brief-ink">
       <SiteHeader />
-      <main className="relative mx-auto flex w-full max-w-[760px] flex-1 flex-col gap-10 px-4 pb-16 pt-10 sm:px-8 md:pt-16">
+      <div className="relative mx-auto flex w-full max-w-[760px] flex-1 flex-col gap-10 px-4 pb-16 pt-10 sm:px-8 md:pt-16">
         <div className="flex flex-col gap-4">
           <h1 className="m-0 text-[48px] font-black leading-[0.92] tracking-[-0.02em] [font-stretch:125%] sm:text-[64px]">Privacy, in plain words</h1>
-          <p className="m-0 text-[15px] text-[#5F5866]">Last updated {UPDATED}</p>
+          <p className="m-0 text-[15px] text-brief-muted">Last updated {UPDATED}</p>
         </div>
         {SECTIONS.map((s) => (
           <section key={s.h} className="privacy flex flex-col gap-3 text-[17px] leading-[1.6]">
@@ -133,7 +133,7 @@ export default function PrivacyPage() {
             {s.body}
           </section>
         ))}
-      </main>
+      </div>
       <SiteFooter />
     </div>
   );

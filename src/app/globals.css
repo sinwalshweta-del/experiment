@@ -30,6 +30,7 @@
   --color-brief-peacock: #006b5b;
   --color-brief-lilac: #bdb2ff;
   --color-brief-white: #ffffff;
+  --color-brief-muted: #5f5866;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -79,6 +80,7 @@
   --color-brief-peacock: var(--color-brief-peacock);
   --color-brief-lilac: var(--color-brief-lilac);
   --color-brief-white: var(--color-brief-white);
+  --color-brief-muted: var(--color-brief-muted);
   --font-archivo: var(--font-archivo);
   --font-martian-mono: var(--font-martian-mono);
 }
@@ -205,7 +207,7 @@ body {
   --world-text: var(--color-brief-ink);
   --world-accent: var(--color-brief-peacock);
   --world-accent-text: var(--color-brief-paper);
-  --world-muted: #5f5866;
+  --world-muted: var(--color-brief-muted);
   --world-shadow: var(--color-brief-ink);
 }
 

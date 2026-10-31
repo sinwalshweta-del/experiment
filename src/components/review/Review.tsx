@@ -77,7 +77,7 @@ const mask = (e: string) => e.replace(/^(.)[^@]*(@.*)$/, "$1•••$2");
 
 const btn = "inline-flex min-h-[44px] items-center justify-center rounded border-2 border-brief-ink px-4 font-archivo text-[15px] font-bold shadow-[3px_3px_0_var(--color-brief-ink)] disabled:opacity-50";
 const h1 = "m-0 text-[44px] font-black leading-[0.94] [font-stretch:125%] sm:text-[56px]";
-const small = "m-0 text-[14px] leading-[20px] text-[#5F5866]";
+const small = "m-0 text-[14px] leading-[20px] text-brief-muted";
 
 type Panel = { row: Row; kind: "approved" | "not_used" };
 type Pending = { id: string; kind: "approved" | "not_used"; note: string; reason: string | null; prev: Status; token: string; timer: number; email: string };
@@ -247,7 +247,7 @@ export function Review() {
   return (
     <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-brief-paper font-archivo text-brief-ink">
       <SiteHeader />
-      <main className="relative mx-auto flex w-full max-w-[920px] flex-1 flex-col gap-6 px-4 pb-16 pt-10 sm:px-8 md:pt-14">{body}</main>
+      <div className="relative mx-auto flex w-full max-w-[920px] flex-1 flex-col gap-6 px-4 pb-16 pt-10 sm:px-8 md:pt-14">{body}</div>
       <SiteFooter />
       {panel && <DecisionPanel panel={panel} onClose={() => setPanel(null)} onConfirm={confirm} />}
       {toast && (
@@ -265,7 +265,7 @@ export function Review() {
 }
 
 function Stories({ rows, onPanel, onBack }: { rows: Row[]; onPanel: (p: Panel) => void; onBack: (id: string) => void }) {
-  if (rows.length === 0) return <p className="m-0 text-[17px] text-[#5F5866]">Nothing here right now.</p>;
+  if (rows.length === 0) return <p className="m-0 text-[17px] text-brief-muted">Nothing here right now.</p>;
   return (
     <div className="flex flex-col gap-6">
       {rows.map((r) => (
@@ -281,12 +281,12 @@ function Stories({ rows, onPanel, onBack }: { rows: Row[]; onPanel: (p: Panel) =
           </header>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px]">
-            <span className="text-[#5F5866]">From</span>
+            <span className="text-brief-muted">From</span>
             <b className="[overflow-wrap:anywhere]">{r.email}</b>
           </div>
 
           {r.status === "taken_down" ? (
-            <p className="m-0 text-[15px] text-[#5F5866]">
+            <p className="m-0 text-[15px] text-brief-muted">
               They took this story down{r.taken_down_at ? ` on ${when(r.taken_down_at)}` : ""}. What they wrote has been erased.
               {r.takedown_reason ? ` Reason: ${r.takedown_reason}.` : ""}
             </p>
@@ -300,14 +300,14 @@ function Stories({ rows, onPanel, onBack }: { rows: Row[]; onPanel: (p: Panel) =
                   .filter(([, v]) => v)
                   .map(([k, v]) => (
                     <div key={k} className="contents">
-                      <dt className="text-[#5F5866]">{k}</dt>
+                      <dt className="text-brief-muted">{k}</dt>
                       <dd className="m-0 font-semibold [overflow-wrap:anywhere]">{v}</dd>
                     </div>
                   ))}
               </dl>
               {r.answers.reflection && (
                 <p className="m-0 text-[15px] leading-[22px]">
-                  <span className="text-[#5F5866]">
+                  <span className="text-brief-muted">
                     What they&apos;ve realised ({isOngoing(r.answers) ? "still going" : "over"}):{" "}
                   </span>
                   <span className="whitespace-pre-wrap [overflow-wrap:anywhere]">{r.answers.reflection}</span>
@@ -413,13 +413,13 @@ function DecisionPanel({
         )}
 
         <label className="flex cursor-pointer items-center gap-2.5 text-[15px] font-semibold">
-          <input type="checkbox" checked={email} onChange={(e) => setEmail(e.target.checked)} className="h-5 w-5 accent-[#17121C]" />
+          <input type="checkbox" checked={email} onChange={(e) => setEmail(e.target.checked)} className="h-5 w-5 accent-brief-ink" />
           {approve ? "Email them that it’s approved" : "Email them"}
         </label>
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="dp-note" className="text-[15px] font-bold">
-            Add a personal note <span className="font-normal text-[#5F5866]">{!approve && reason === "other" ? "(used as the reason)" : "(optional)"}</span>
+            Add a personal note <span className="font-normal text-brief-muted">{!approve && reason === "other" ? "(used as the reason)" : "(optional)"}</span>
           </label>
           <textarea
             id="dp-note"
@@ -463,7 +463,7 @@ function DecisionPanel({
 }
 
 function FeedbackTab({ items }: { items: Feedback[] }) {
-  if (items.length === 0) return <p className="m-0 text-[17px] text-[#5F5866]">No feedback yet. It shows up here after people share.</p>;
+  if (items.length === 0) return <p className="m-0 text-[17px] text-brief-muted">No feedback yet. It shows up here after people share.</p>;
   const n = items.length;
   const avg = items.reduce((s, f) => s + f.feeling, 0) / n;
   const pct = (v: Feedback["friend"]) => Math.round((items.filter((f) => f.friend === v).length / n) * 100);

@@ -8,11 +8,11 @@ export function SiteFooter() {
       <span role="img" aria-label="GATHER" className="text-brief-paper">
         <Mark size={32} />
       </span>
-      <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
-        <Link href="/privacy" className="font-archivo text-[15px] underline underline-offset-[3px]">
+      <div className="flex flex-wrap items-center gap-x-7 gap-y-1">
+        <Link href="/privacy" className="inline-flex min-h-11 items-center font-archivo text-[15px] underline underline-offset-[3px]">
           Privacy
         </Link>
-        <Link href="/take-down" className="font-archivo text-[15px] underline underline-offset-[3px]">
+        <Link href="/take-down" className="inline-flex min-h-11 items-center font-archivo text-[15px] underline underline-offset-[3px]">
           Take my story down
         </Link>
         <span className="font-martian-mono text-xs font-semibold leading-[18px] tracking-[0.04em] text-[#B4ACBA]">

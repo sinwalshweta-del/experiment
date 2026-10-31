@@ -65,14 +65,14 @@ export function ResumeBar() {
         className="relative flex flex-col gap-3 border-y-2 border-brief-ink bg-brief-white py-4 pl-[26px] pr-4 before:absolute before:inset-y-0 before:left-0 before:w-2.5 before:bg-brief-rani sm:pl-[44px] sm:pr-8 lg:flex-row lg:items-center lg:gap-6 lg:pl-[92px] lg:pr-20"
       >
         <div className="flex flex-1 flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-4">
-          <span className="font-martian-mono text-xs font-semibold leading-[18px] tracking-[0.04em] text-[#5F5866]">
+          <span className="font-martian-mono text-xs font-semibold leading-[18px] tracking-[0.04em] text-brief-muted">
             YOUR STORY IS WAITING
           </span>
           <h2 id="resume-h" className="m-0 font-archivo text-[20px] font-extrabold leading-[1.2] [font-stretch:112%] sm:text-[22px]">
             Pick up where you left off.
           </h2>
         </div>
-        <span className="whitespace-nowrap font-archivo text-sm text-[#5F5866]">
+        <span className="whitespace-nowrap font-archivo text-sm text-brief-muted">
           {answered} of {total} answered · saved to your account
         </span>
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
