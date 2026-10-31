@@ -67,14 +67,14 @@ function Summary({ s, line, t }: { s: MyStory; line: string; t: T }) {
     </div>
   );
 }
-function Primary({ children, onClick, t, tone, rani = false, disabled = false }: { children: React.ReactNode; onClick: () => void; t: T; tone: Tone; rani?: boolean; disabled?: boolean }) {
-  const pink = rani || tone === "dark";
+// Main buttons are always rani pink, like everywhere else on the site.
+function Primary({ children, onClick, t, tone, disabled = false }: { children: React.ReactNode; onClick: () => void; t: T; tone: Tone; rani?: boolean; disabled?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${btn} ${t.line} disabled:opacity-50 ${pink ? "bg-brief-rani text-brief-ink" : "bg-brief-peacock text-brief-paper"} ${tone === "dark" ? "shadow-[4px_4px_0_var(--color-brief-paper)]" : "shadow-[4px_4px_0_var(--color-brief-ink)]"}`}
+      className={`${btn} ${t.line} disabled:opacity-50 bg-brief-rani text-brief-ink ${tone === "dark" ? "shadow-[4px_4px_0_var(--color-brief-paper)]" : "shadow-[4px_4px_0_var(--color-brief-ink)]"}`}
     >
       {children}
     </button>
@@ -332,7 +332,7 @@ export default function TakeDownPage() {
                     type="button"
                     aria-pressed={reason === r}
                     onClick={() => setReason(reason === r ? null : r)}
-                    className={`inline-flex min-h-[44px] items-center gap-2 rounded border-2 border-brief-ink pl-2.5 pr-3 font-archivo text-[15px] font-semibold shadow-[3px_3px_0_var(--color-brief-ink)] before:h-4 before:w-4 before:border-2 before:border-current ${reason === r ? "bg-brief-peacock text-brief-paper before:rounded-tl-full before:bg-current" : "bg-brief-white"}`}
+                    className={`inline-flex min-h-[44px] items-center gap-2 rounded border-2 border-brief-ink pl-2.5 pr-3 font-archivo text-[15px] font-semibold shadow-[3px_3px_0_var(--color-brief-ink)] before:h-4 before:w-4 before:border-2 before:border-current ${reason === r ? "bg-brief-rani text-brief-ink before:rounded-tl-full before:bg-current" : "bg-brief-white"}`}
                   >
                     {r}
                   </button>
