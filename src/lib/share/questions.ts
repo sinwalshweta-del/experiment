@@ -124,6 +124,8 @@ export const isCommitted = (a: Answers) => Boolean(a.type && COMMITTED.includes(
 export const statusOptions = (a: Answers) => (isCommitted(a) ? STATUS_COMMITTED : STATUS_EARLY);
 export const hasFaded = (a: Answers) => Boolean(a.status && FADED.includes(a.status));
 export const hasEnded = (a: Answers) => Boolean(a.status && ENDED.includes(a.status));
+/** Still going (or unclear): Q13 asks "so far" instead of "looking back" (board 18c). */
+export const isOngoing = (a: Answers) => Boolean(a.status && !ENDED.includes(a.status));
 
 export const SECTIONS = ["THE CONNECTION", "AT THE START", "YOUR STORY", "WHAT STOOD OUT", "HOW IT WENT", "LOOKING BACK"];
 
@@ -155,7 +157,8 @@ export function sectionLabel(a: Answers, id: StepId) {
   const me = steps.find((s) => s.id === id);
   if (!me) return "";
   const inSec = steps.filter((s) => s.section === me.section);
-  return `${SECTIONS[me.section - 1]} · ${inSec.indexOf(me) + 1}/${inSec.length}`;
+  const name = me.section === 6 && isOngoing(a) ? "SO FAR" : SECTIONS[me.section - 1];
+  return `${name} · ${inSec.indexOf(me) + 1}/${inSec.length}`;
 }
 
 /** Answered vs. total for the questions this person will see (for "8 of 13 answered"). */

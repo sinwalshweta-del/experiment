@@ -13,6 +13,7 @@ import {
   HOPE,
   HOW_LONG,
   hasFaded,
+  isOngoing,
   MET,
   MET_OTHER,
   NOT_SURE,
@@ -738,8 +739,10 @@ export function ShareFlow() {
         lead: (
           <>
             {eb("OPTIONAL")}
-            {H("Looking back, what do you understand now that you didn’t at the time?", "md:text-[34px] lg:text-[40px]")}
-            {hp("Only if something comes to mind. Not every story needs a lesson.")}
+            {isOngoing(a)
+              ? H("So far, what’s something you’ve figured out that you didn’t know at the start?", "md:text-[34px] lg:text-[40px]")
+              : H("Looking back, what do you understand now that you didn’t at the time?", "md:text-[34px] lg:text-[40px]")}
+            {hp(isOngoing(a) ? "Only if something comes to mind. It’s still being written." : "Only if something comes to mind. Not every story needs a lesson.")}
           </>
         ),
         body: (
@@ -796,7 +799,7 @@ export function ShareFlow() {
         ["At the start", join([a.hope && `Hoped: ${a.hope.toLowerCase()}`, a.thought && `Thought they wanted: ${a.thought.toLowerCase()}`]), "q5"],
         ["What stood out", join([withOther(a.good, a.goodOther).join(", ") || "Not answered", withOther(a.hard, a.hardOther).join(", ") || "Not answered"]), "q8"],
         ["How it went", join([a.status, a.slowed, withOther(a.reasons, a.reasonOther).join(", ")]), "q10"],
-        ["Looking back", a.reflection?.trim() ? "Added" : "Skipped", "q13"],
+        [isOngoing(a) ? "So far" : "Looking back", a.reflection?.trim() ? "Added" : "Skipped", "q13"],
         ["About you", join([a.age, a.gender, a.region]) || "Skipped", "about"],
       ];
       v = {

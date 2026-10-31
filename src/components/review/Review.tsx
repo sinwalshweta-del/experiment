@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SUPABASE_KEY, SUPABASE_URL, supabase } from "@/lib/supabase";
 import { useShareDraft } from "@/lib/share/draft";
-import { OTHER, MET_OTHER, type Answers } from "@/lib/share/questions";
+import { OTHER, MET_OTHER, isOngoing, type Answers } from "@/lib/share/questions";
 
 /**
  * Review page for the GATHER team (Claude Design boards 23 and 24). Only
@@ -307,7 +307,9 @@ function Stories({ rows, onPanel, onBack }: { rows: Row[]; onPanel: (p: Panel) =
               </dl>
               {r.answers.reflection && (
                 <p className="m-0 text-[15px] leading-[22px]">
-                  <span className="text-[#5F5866]">Looking back: </span>
+                  <span className="text-[#5F5866]">
+                    What they&apos;ve realised ({isOngoing(r.answers) ? "still going" : "over"}):{" "}
+                  </span>
                   <span className="whitespace-pre-wrap [overflow-wrap:anywhere]">{r.answers.reflection}</span>
                 </p>
               )}
