@@ -199,7 +199,7 @@ function Topics() {
       <div data-px="14" className="grid gap-6 px-4 sm:px-8 lg:grid-cols-12 lg:items-end lg:px-20">
         <h2 className={`${h2} max-sm:text-[clamp(34px,10.8vw,40px)] lg:col-span-7`}>It&apos;s complicated. Let&apos;s talk.</h2>
         <p className="font-archivo text-[18px] leading-[28px] lg:col-span-5 lg:col-start-8 lg:text-[19px] lg:leading-[29px]">
-          First dates, situationships, exes and everything in between. It&apos;s about how it went, not who they were.
+          First dates, situationships, exes and everything in between. Tell us how it went, and keep their name to yourself.
         </p>
       </div>
       <div data-px="46" className="flex -rotate-[1.5deg] flex-wrap gap-3.5 px-4 sm:px-8 lg:flex-nowrap lg:pl-20">

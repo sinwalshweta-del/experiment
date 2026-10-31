@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { draftSummary, useShareDraft } from "@/lib/share/draft";
+import { IconArrowRight } from "@/components/site/Icons";
 
 /**
  * Saved-draft resume bar (approved board "Saved draft · Option A"): a slim
@@ -12,9 +13,7 @@ import { draftSummary, useShareDraft } from "@/lib/share/draft";
  */
 function Arrow() {
   return (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-      <path d="M3 10h13M11 4l6 6-6 6" />
-    </svg>
+    <IconArrowRight />
   );
 }
 

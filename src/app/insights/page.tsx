@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { IconArrowRight } from "@/components/site/Icons";
 
 /**
  * Insights empty state (approved Claude Design board "Insights · empty
@@ -41,9 +42,7 @@ export default function InsightsPage() {
           </p>
           <Link href="/share" className="landing-btn min-h-[58px] w-full px-[30px] sm:w-auto sm:self-start">
             Spill yours{" "}
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-              <path d="M3 10h13M11 4l6 6-6 6" />
-            </svg>
+            <IconArrowRight />
           </Link>
         </div>
       </main>

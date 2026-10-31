@@ -40,6 +40,7 @@ import {
 } from "@/lib/share/questions";
 import { addStory, daysAgo } from "@/lib/share/stories";
 import { FeedbackCard } from "./FeedbackCard";
+import { IconArrowLeft, IconArrowRight } from "@/components/site/Icons";
 
 /**
  * Share flow v2, built from the agreed questionnaire (Claude Design boards
@@ -56,9 +57,7 @@ type Screen = "email" | "code" | "returning" | "intro" | "under18" | StepId | "r
 type Dir = "next" | "back";
 
 const ARROW = (
-  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-    <path d="M3 10h13M11 4l6 6-6 6" />
-  </svg>
+  <IconArrowRight />
 );
 const WRITING: Screen[] = ["q7", "q13"];
 const isStep = (s: Screen): s is StepId => STEPS.some((x) => x.id === s);
@@ -456,7 +455,7 @@ export function ShareFlow() {
           <div className="flex flex-col gap-4">
             {[
               ["ABOUT 5-7 MINUTES", "A few quick taps, then your story in your own words."],
-              ["NO NAMES, EVER", "Not theirs, not yours. Describe the experience, not the person."],
+              ["NO NAMES, EVER", "Leave out names, handles and anything that could point to someone."],
               ["A REAL PERSON READS IT", "Nothing is shared until our team has reviewed it."],
             ].map(([t, d]) => (
               <div key={t} className="sf-card">
@@ -496,7 +495,6 @@ export function ShareFlow() {
         noBack: true,
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("What kind of connection was it?")}
             <Kind>No label is the wrong one here. Whatever it was, it counts.</Kind>
           </>
@@ -515,7 +513,7 @@ export function ShareFlow() {
               }}
             />
             {a.type === OTHER && (
-              <OtherField id="type-other" label="How would you describe it?" value={a.typeOther ?? ""} onChange={(t) => setAnswers({ typeOther: t })} max={40} hint="Describe the connection, not the person. No names." />
+              <OtherField id="type-other" label="How would you describe it?" value={a.typeOther ?? ""} onChange={(t) => setAnswers({ typeOther: t })} max={40} hint="A few words is enough. No names." />
             )}
           </div>
         ),
@@ -527,7 +525,6 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("Who was this connection with?")}
             <Kind>Every kind of connection is welcome here.</Kind>
             {hp("This helps us compare experiences fairly later on. We’ll never show it in a way that could point to anyone.")}
@@ -542,7 +539,6 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("How did you meet?")}
           </>
         ),
@@ -560,7 +556,6 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("How long were they part of your life?")}
           </>
         ),
@@ -573,7 +568,6 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("At the start, what were you hoping it would become?")}
           </>
         ),
@@ -586,7 +580,6 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("And what did you think they wanted at the time?")}
             <div className="sf-safe">Your best guess back then. We know you can’t know for sure.</div>
             {a.hope && (
@@ -677,7 +670,6 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("Where do things stand now?")}
             <Kind>However it turned out, there’s no wrong answer.</Kind>
           </>
@@ -698,7 +690,6 @@ export function ShareFlow() {
       v = {
         lead: (
           <>
-            {eb("PICK ONE")}
             {H("Roughly when did you notice things slowing down?")}
             {hp("A rough guess is fine.")}
           </>
@@ -853,7 +844,6 @@ export function ShareFlow() {
         ),
         body: (
           <div className="flex flex-col gap-3.5">
-            {eb("CHOOSE ONE")}
             <div role="radiogroup" aria-label="How can we use your story?" className="flex flex-col gap-3">
               {[
                 [true, "Publish my story anonymously, after review.", "Share your story and selected answers so others can learn from it. Our team reads it first and takes out anything that could identify you or anyone else."],
@@ -982,9 +972,7 @@ export function ShareFlow() {
   const showBack = !v.noBack && screen !== "sent";
   const backBtn = showBack ? (
     <button type="button" aria-label="Back" onClick={back} className="flex h-11 w-11 flex-none items-center justify-center rounded border-2 border-[var(--soft)] bg-[var(--sf)]">
-      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-        <path d="M16 10H4M9 4l-6 6 6 6" />
-      </svg>
+      <IconArrowLeft />
     </button>
   ) : null;
   const nextBtn = v.next ? (

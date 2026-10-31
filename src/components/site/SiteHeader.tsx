@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Mark } from "./Mark";
+import { IconArrowRight, IconClose, IconMenu } from "@/components/site/Icons";
 
 /**
  * Header for the pages outside the landing (Insights, take-down), from the
@@ -20,9 +21,7 @@ const LINKS = [
 
 function Arrow() {
   return (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-      <path d="M3 10h13M11 4l6 6-6 6" />
-    </svg>
+    <IconArrowRight />
   );
 }
 
@@ -83,11 +82,9 @@ export function SiteHeader() {
           aria-expanded={open}
           aria-controls="site-menu"
           onClick={() => setOpen(true)}
-          className="flex h-[46px] w-[46px] flex-col items-center justify-center gap-[5px] rounded border-2 border-brief-ink bg-brief-paper"
+          className="flex h-[46px] w-[46px] items-center justify-center rounded border-2 border-brief-ink bg-brief-paper"
         >
-          <span className="block h-[2.5px] w-5 bg-brief-ink" />
-          <span className="block h-[2.5px] w-5 bg-brief-ink" />
-          <span className="block h-[2.5px] w-5 bg-brief-ink" />
+          <IconMenu />
         </button>
       </div>
 
@@ -108,9 +105,7 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="flex h-[46px] w-[46px] items-center justify-center rounded border-2 border-brief-paper"
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-                <path d="M4 4l12 12M16 4L4 16" />
-              </svg>
+              <IconClose />
             </button>
           </div>
           <nav aria-label="Main" className="flex flex-col gap-3 pt-12">

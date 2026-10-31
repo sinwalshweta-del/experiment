@@ -1,4 +1,5 @@
 import { COLLECTIBLES_DEFS } from "./collectiblesDefs";
+import { IconArrowRight } from "@/components/site/Icons";
 
 /**
  * GATHER Collectibles section, built from the approved Claude Design board.
@@ -141,18 +142,5 @@ export function Collectibles() {
 }
 
 export function ArrowIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="square"
-      aria-hidden
-    >
-      <path d="M3 10h13M11 4l6 6-6 6" />
-    </svg>
-  );
+  return <IconArrowRight size={size} />;
 }

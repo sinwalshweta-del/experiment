@@ -8,6 +8,7 @@ import { Mark } from "@/components/site/Mark";
 import { getMyStories, MyStory, shortDate, takeDown } from "@/lib/takedown";
 import { useShareDraft } from "@/lib/share/draft";
 import { supabase } from "@/lib/supabase";
+import { IconArrowLeft, IconArrowRight } from "@/components/site/Icons";
 
 /**
  * "Take my story down" (approved Claude Design board 11). Main flow:
@@ -42,9 +43,7 @@ const link = "min-h-[44px] p-2.5 text-center font-archivo text-[15px] font-semib
 
 function Arrow() {
   return (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-      <path d="M3 10h13M11 4l6 6-6 6" />
-    </svg>
+    <IconArrowRight />
   );
 }
 
@@ -411,9 +410,7 @@ export default function TakeDownPage() {
         <div className="min-h-[44px]">
           {canBack && (
             <button type="button" aria-label="Back" onClick={back} className={`flex h-11 w-11 items-center justify-center rounded border-2 shadow-[3px_3px_0_currentColor] ${t.line} ${t.surface}`}>
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-                <path d="M17 10H4M9 4l-6 6 6 6" />
-              </svg>
+              <IconArrowLeft />
             </button>
           )}
         </div>

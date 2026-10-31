@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { draftSummary, useShareDraft } from "@/lib/share/draft";
 import { storyTitle } from "@/lib/share/questions";
 import { daysAgo, getMyStories, type MyStory } from "@/lib/share/stories";
+import { IconArrowRight } from "@/components/site/Icons";
 
 /**
  * Account access (Claude Design board 19, S1/S2): email, then the same
@@ -21,9 +22,7 @@ type Step = "email" | "code" | "in";
 type Mode = "signin" | "signup";
 
 const ARROW = (
-  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden>
-    <path d="M3 10h13M11 4l6 6-6 6" />
-  </svg>
+  <IconArrowRight />
 );
 
 const h1 = "m-0 text-[44px] font-black leading-[0.94] tracking-[-0.02em] [font-stretch:125%] outline-none sm:text-[56px] lg:text-[72px]";
