@@ -9,6 +9,9 @@ export function SiteFooter() {
         <Mark size={32} />
       </span>
       <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
+        <Link href="/privacy" className="font-archivo text-[15px] underline underline-offset-[3px]">
+          Privacy
+        </Link>
         <Link href="/take-down" className="font-archivo text-[15px] underline underline-offset-[3px]">
           Take my story down
         </Link>

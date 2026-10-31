@@ -303,6 +303,13 @@ body {
 }
 
 @layer components {
+  /* privacy page prose */
+  .privacy p { margin: 0; }
+  .privacy ul { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .privacy li { position: relative; padding-left: 26px; }
+  .privacy li::before { content: ""; position: absolute; left: 0; top: 7px; width: 14px; height: 14px; border-top-left-radius: 100%; background: var(--color-brief-rani); border: 2px solid var(--color-brief-ink); }
+  .privacy a { text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+
 
 .landing-btn {
   display: inline-flex;

@@ -336,7 +336,12 @@ export function ShareFlow() {
             ) : sendError ? (
               <p className="sf-err" role="alert">{sendError}</p>
             ) : (
-              <p className="sf-sm">Next, we’ll send you a 6-digit code.</p>
+              <p className="sf-sm">
+                Next, we’ll send you a 6-digit code.{" "}
+                <Link href="/privacy" className="underline underline-offset-[3px]">
+                  How we handle your data
+                </Link>
+              </p>
             )}
           </div>
         ),
