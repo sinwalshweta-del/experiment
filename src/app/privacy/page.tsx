@@ -92,7 +92,7 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
       <ul>
         <li><b>Take a story down anytime</b> from <Link href="/take-down">Take my story down</Link>. No reason needed.</li>
         <li><b>See your stories</b> and where they are in review by <Link href="/sign-in">signing in</Link>.</li>
-        <li><b>Delete your account and everything with it,</b> get a copy of your data, or correct something: write to <a href="mailto:gatherpeopleinsights@gmail.com">gatherpeopleinsights@gmail.com</a> (or reply to any email from us) and we&apos;ll do it within 30 days.</li>
+        <li><b>Delete your account and everything with it,</b> get a copy of your data, or correct something: write to us (see <a href="#questions">Questions or concerns</a>, or reply to any email from us) and we&apos;ll do it within 30 days.</li>
       </ul>
     ),
   },
@@ -128,7 +128,7 @@ export default function PrivacyPage() {
           <p className="m-0 text-[15px] text-brief-muted">Last updated {UPDATED}</p>
         </div>
         {SECTIONS.map((s) => (
-          <section key={s.h} className="privacy flex flex-col gap-3 text-[17px] leading-[1.6]">
+          <section key={s.h} id={s.h === "Questions or concerns" ? "questions" : undefined} className="privacy flex flex-col gap-3 text-[17px] leading-[1.6]">
             <h2 className="m-0 text-[26px] font-black leading-tight [font-stretch:112%]">{s.h}</h2>
             {s.body}
           </section>
