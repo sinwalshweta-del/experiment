@@ -557,14 +557,16 @@ body {
   }
 
   /* hero collage: slow, out-of-sync float */
-  @keyframes landing-fl-a { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
-  @keyframes landing-fl-b { 0%, 100% { translate: 0 0; } 50% { translate: 3px -5px; } }
+  /* stronger float (approved GIF, 31/10): ~3x the bob plus a slight sway.
+     Sway uses transform so the cards keep their own tilt (the rotate property). */
+  @keyframes landing-fl-a { 0%, 100% { translate: 0 0; transform: rotate(0deg); } 50% { translate: 0 -20px; transform: rotate(-1.6deg); } }
+  @keyframes landing-fl-b { 0%, 100% { translate: 0 0; transform: rotate(0deg); } 50% { translate: 8px -16px; transform: rotate(1.8deg); } }
   .landing-hero-collage > *,
-  .landing-hero-collage > .lg\:contents > * { animation: landing-fl-a 9s ease-in-out infinite; }
-  .landing-hero-collage > *:nth-child(3) { animation: landing-fl-b 11s ease-in-out -3s infinite; }
-  .landing-hero-collage > .lg\:contents > *:nth-child(1) { animation: landing-fl-b 10s ease-in-out -6s infinite; }
-  .landing-hero-collage > .lg\:contents > *:nth-child(2) { animation: landing-fl-a 12.5s ease-in-out -4s infinite; }
-  .landing-hero-collage > .lg\:contents > *:nth-child(3) { animation: landing-fl-b 7.5s ease-in-out -1s infinite; }
+  .landing-hero-collage > .lg\:contents > * { animation: landing-fl-a 6s ease-in-out infinite; }
+  .landing-hero-collage > *:nth-child(3) { animation: landing-fl-b 7.5s ease-in-out -3s infinite; }
+  .landing-hero-collage > .lg\:contents > *:nth-child(1) { animation: landing-fl-b 7s ease-in-out -5s infinite; }
+  .landing-hero-collage > .lg\:contents > *:nth-child(2) { animation: landing-fl-a 8.5s ease-in-out -4s infinite; }
+  .landing-hero-collage > .lg\:contents > *:nth-child(3) { animation: landing-fl-b 5.5s ease-in-out -1s infinite; }
 
   /* header nav: underline-only active state (hot pink), faint ink on hover */
   .landing-navlink {
