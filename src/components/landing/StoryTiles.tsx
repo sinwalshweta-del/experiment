@@ -3,19 +3,23 @@
  * group into Gather Point-like marks. Deterministic (seeded), so the
  * server and client render the same pattern.
  *
- * Motion (approved on the Claude Design motion board): every tile moves on
- * its own 7–16s clock — a quarter turn, a half flip, a corner "bite" or a
- * small slide toward its corner — with a long rest between moves. Only the
- * tiles move; the grid frame, size and layout never do. Off under
- * prefers-reduced-motion (see globals.css).
+ * Motion v2.1 (Claude Design board 27): tiles only use brand shapes, the
+ * square and the quarter-circle, and move the way the ticked checkbox does.
+ * Each tile runs one of four moves on its own 4.5-8.5s clock: the curve
+ * walking to the next corner, a turn while it squares up, tucking into its
+ * corner and growing back, or jumping to the opposite corner. With
+ * "Reduce motion" on, tiles only ease from quarter to square and back,
+ * slowly, with no turning, sliding or scaling (see globals.css).
  */
 const COLORS = ["#FF3E9A", "#FFB627", "#006B5B", "#BDB2FF", "#F3EEE4"];
 const INNER = ["q2", "q3", "q1", "q0"];
 const OUTER = ["q0", "q1", "q3", "q2"];
-const KINDS = ["landing-gt-turn", "landing-gt-turnb", "landing-gt-flip", "landing-gt-chomp", "landing-gt-nudge"] as const;
+const KINDS = ["landing-gt-walk", "landing-gt-turn", "landing-gt-tuck", "landing-gt-jump"] as const;
+// border-radius of each quarter (the curve sits opposite the corner it grows from)
+const RADIUS: Record<string, string> = { q0: "0 0 100% 0", q1: "0 0 0 100%", q2: "100% 0 0 0", q3: "0 100% 0 0" };
+const NEXT: Record<string, string> = { q0: "q1", q1: "q2", q2: "q3", q3: "q0" };
 // the corner each quarter-disc grows from (its circle centre)
 const ORIGIN: Record<string, string> = { q0: "0% 0%", q1: "100% 0%", q2: "100% 100%", q3: "0% 100%" };
-const NUDGE: Record<string, [number, number]> = { q0: [-1, -1], q1: [1, -1], q2: [1, 1], q3: [-1, 1] };
 
 function rand(n: number) {
   const x = Math.sin(n * 12.9898) * 43758.5453;
@@ -47,19 +51,18 @@ const TILES: Tile[] = (() => {
       if (rand(x * 1.7 + y * 9.1) < 0.15) bg = "#17121C";
 
       const kind = KINDS[Math.floor(rnd() * KINDS.length)];
-      const dur = 7 + rnd() * 9;
+      const dur = 4.5 + rnd() * 4;
       const delay = -rnd() * dur;
-      const spins = kind === "landing-gt-turn" || kind === "landing-gt-turnb" || kind === "landing-gt-flip";
       const style: Record<string, string> = {
         background: bg,
         animation: `${kind} ${dur.toFixed(1)}s cubic-bezier(.45,0,.25,1) ${delay.toFixed(1)}s infinite`,
-        transformOrigin: spins ? "50% 50%" : ORIGIN[c],
+        transformOrigin: kind === "landing-gt-tuck" ? ORIGIN[c] : "50% 50%",
+        "--gt-b": RADIUS[c],
+        "--gt-n": RADIUS[NEXT[c]],
+        "--gt-o": RADIUS[NEXT[NEXT[c]]],
+        "--gt-rd": `${(dur * 1.8).toFixed(1)}s`,
+        "--gt-rdl": `${(delay * 1.8).toFixed(1)}s`,
       };
-      if (kind === "landing-gt-nudge") {
-        const [dx, dy] = NUDGE[c];
-        style["--nx"] = `${dx * 14}%`;
-        style["--ny"] = `${dy * 14}%`;
-      }
       out.push({ c, style: style as React.CSSProperties });
     }
   }

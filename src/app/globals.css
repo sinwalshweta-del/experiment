@@ -541,12 +541,20 @@ body {
 
 
   /* story tiles: each tile moves on its own clock (inline animation in StoryTiles) */
-  @keyframes landing-gt-turn { 0%, 18% { transform: rotate(0); } 34%, 62% { transform: rotate(90deg); } 78%, 100% { transform: rotate(0); } }
-  @keyframes landing-gt-turnb { 0%, 22% { transform: rotate(0); } 38%, 66% { transform: rotate(-90deg); } 82%, 100% { transform: rotate(0); } }
-  @keyframes landing-gt-flip { 0%, 25% { transform: rotate(0); } 45%, 65% { transform: rotate(180deg); } 85%, 100% { transform: rotate(360deg); } }
-  @keyframes landing-gt-chomp { 0%, 30%, 100% { transform: scale(1); } 45% { transform: scale(0.62); } 60% { transform: scale(1); } 72% { transform: scale(0.62); } 86% { transform: scale(1); } }
-  @keyframes landing-gt-nudge { 0%, 20%, 100% { transform: translate(0, 0); } 40%, 60% { transform: translate(var(--nx), var(--ny)); } }
+  /* motion v2.1 (board 27): square <-> quarter only, like the checkbox */
+  @keyframes landing-gt-walk { 0%, 8% { border-radius: var(--gt-b); } 22%, 30% { border-radius: 0; } 44%, 54% { border-radius: var(--gt-n); } 68%, 76% { border-radius: 0; } 90%, 100% { border-radius: var(--gt-b); } }
+  @keyframes landing-gt-turn { 0%, 10% { border-radius: var(--gt-b); transform: rotate(0); } 35%, 50% { border-radius: 0; transform: rotate(90deg); } 75%, 100% { border-radius: var(--gt-b); transform: rotate(180deg); } }
+  @keyframes landing-gt-tuck { 0%, 10% { border-radius: var(--gt-b); transform: scale(1); } 28%, 36% { border-radius: var(--gt-b); transform: scale(0.3); } 55%, 66% { border-radius: 0; transform: scale(1); } 86%, 100% { border-radius: var(--gt-b); transform: scale(1); } }
+  @keyframes landing-gt-jump { 0%, 8% { border-radius: var(--gt-b); transform: rotate(0); } 30%, 42% { border-radius: 0; transform: rotate(-90deg); } 64%, 76% { border-radius: var(--gt-o); transform: rotate(-90deg); } 100% { border-radius: var(--gt-b); transform: rotate(0); } }
+  @keyframes landing-gt-soft { 0%, 20% { border-radius: var(--gt-b); } 45%, 60% { border-radius: 0; } 85%, 100% { border-radius: var(--gt-b); } }
   .landing-tile { will-change: transform; }
+  @media (prefers-reduced-motion: reduce) {
+    .landing-tile {
+      animation: landing-gt-soft var(--gt-rd) ease-in-out var(--gt-rdl) infinite !important;
+      transform: none !important;
+      will-change: auto;
+    }
+  }
 
   /* hero collage: slow, out-of-sync float */
   @keyframes landing-fl-a { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
@@ -601,7 +609,6 @@ body {
     .landing-hero-in,
     .landing-mark-build,
     .landing-collectible svg,
-    .landing-tile,
     .landing-hero-collage > *,
     .landing-hero-collage > .lg\:contents > * {
       animation: none !important;
