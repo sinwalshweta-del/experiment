@@ -44,14 +44,45 @@ const noteBlock = (note?: string) =>
     : "";
 const changed = p(`<span style="font-size:15px">Changed your mind? You can take it down anytime from your account.</span>`);
 
-function build(kind: string, publish: boolean, note?: string, reason?: string) {
+// One-tap feeling (board 32). The story id only proves the email was real; it is never saved with the answer.
+const FEEL = ["ugh", "meh", "it was okay", "felt good", "lowkey healing"];
+const feedback = (storyId: string) =>
+  `<div style="border-top:1px dashed #D9CCB8;margin:22px 0 0;padding-top:18px">` +
+  `<p style="margin:0 0 12px;font-weight:bold;font-size:16px">One tiny favour: how did sharing your story feel?</p><p style="margin:0">` +
+  FEEL.map((f, i) =>
+    `<a href="${SITE}/feedback?s=${storyId}&f=${i + 1}" style="display:inline-block;margin:0 6px 8px 0;border:2px solid #17121C;border-radius:999px;padding:7px 13px;font-weight:bold;font-size:13px;color:#17121C;text-decoration:none;background:${i === 4 ? "#FF3E9A" : "#FFFFFF"}">${f}</a>`,
+  ).join("") +
+  `</p><p style="margin:4px 0 0;font-size:12px;color:#8A7A88">One tap is enough. It helps us make GATHER better for the next person.</p></div>`;
+
+// Personalised sticker pack (boards 31 and 32): a sealed envelope image and a Download & stick button.
+const packBlock = (token: string, title: string) =>
+  `<div style="background:#FBF3E6;border:2px solid #17121C;border-radius:14px;padding:18px 18px 22px;margin:18px 0;text-align:center">` +
+  `<img src="${SITE}/packs/${token}/email-gift.png" width="420" alt="A free sticker pack, made from your story: ${esc(title)}" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto 10px;border:0"/>` +
+  `<p style="margin:0 0 18px;font-size:15px;line-height:1.5;color:#3d3a40">Download it now and take back what’s yours: your peace, your standards, your playlist. It’s time to let go of what no longer serves you. Let the glow-up begin.</p>` +
+  `<a href="${SITE}/pack/${token}" style="display:inline-block;background:#FF3E9A;border:2.5px solid #17121C;border-radius:999px;padding:13px 26px;font-weight:bold;font-size:18px;color:#17121C;text-decoration:none">&#8594;&nbsp; Download &amp; stick</a>` +
+  `<p style="margin:14px 0 0;font-size:13px;color:#5F5866">3 stickers and a little note inside. No peeking till you open it.</p></div>`;
+
+function build(kind: string, publish: boolean, storyId: string, note?: string, reason?: string, pack?: { token: string; title: string }) {
+  if (kind === "approved" && pack) {
+    const counted = publish
+      ? "Your story made it through review. You chose to publish it, so it’ll be shared on GATHER once stories go live, with anything that could point to anyone taken out. It already counts in the insights."
+      : "Your story made it through review. Like you asked, it won’t be published, but your answers now count in the insights and help the next person spot the pattern a little sooner.";
+    return {
+      subject: "your story’s in. we made you something",
+      html: shell(
+        p(counted) +
+          (note?.trim() ? p(`${esc(note.trim())} While we were reading your story, we made you something.`) : p("While we were reading your story, we made you something.")) +
+          packBlock(pack.token, pack.title) + feedback(storyId),
+      ),
+    };
+  }
   if (kind === "approved" && publish) {
     return {
       subject: "your story made the cut",
       html: shell(
         p("Good news: your story made it through review.") +
           p("You chose to publish it, so it’ll be shared on GATHER once stories go live, with anything that could point to anyone taken out. It already counts in the insights, helping someone else spot the pattern.") +
-          noteBlock(note) + button("See your story", `${SITE}/sign-in`) + changed,
+          noteBlock(note) + button("See your story", `${SITE}/sign-in`) + changed + feedback(storyId),
       ),
     };
   }
@@ -61,7 +92,7 @@ function build(kind: string, publish: boolean, note?: string, reason?: string) {
       html: shell(
         p("Good news: your story made it through review.") +
           p("Like you asked, it won’t be published. Your answers now count in the insights, so someone going through the same thing feels a little less alone.") +
-          noteBlock(note) + button("See your story", `${SITE}/sign-in`) + changed,
+          noteBlock(note) + button("See your story", `${SITE}/sign-in`) + changed + feedback(storyId),
       ),
     };
   }
@@ -100,7 +131,7 @@ Deno.serve(async (req) => {
   const { data: me } = await asCaller.auth.getUser();
   if (!me.user) return json(401, { error: "sign in first" });
 
-  let body: { story_id?: string; kind?: string; note?: string; reason?: string };
+  let body: { story_id?: string; kind?: string; note?: string; reason?: string; pack_token?: string; pack_title?: string };
   try {
     body = await req.json();
   } catch {
@@ -110,6 +141,10 @@ Deno.serve(async (req) => {
   const note = body.note?.slice(0, 1000);
   const reason = body.reason && body.reason in REASONS ? body.reason : body.reason === "other" ? "other" : undefined;
   if (!story_id || !["approved", "not_used", "taken_down"].includes(kind ?? "")) return json(400, { error: "bad request" });
+  const pack =
+    kind === "approved" && body.pack_token && /^[A-Za-z0-9]{16,40}$/.test(body.pack_token)
+      ? { token: body.pack_token, title: (body.pack_title ?? "your sticker pack").slice(0, 80) }
+      : undefined;
 
   const { data: story } = await admin.from("stories").select("id, user_id, status, publish").eq("id", story_id).maybeSingle();
   if (!story) return json(404, { error: "story not found" });
@@ -130,7 +165,7 @@ Deno.serve(async (req) => {
   const pass = Deno.env.get("GMAIL_APP_PASSWORD");
   if (!user || !pass) return json(500, { error: "email isn’t set up yet" });
 
-  const { subject, html } = build(kind!, story.publish, note, reason);
+  const { subject, html } = build(kind!, story.publish, story.id, note, reason, pack);
   try {
     const t = nodemailer.createTransport({ host: "smtp.gmail.com", port: 465, secure: true, auth: { user, pass } });
     await t.sendMail({ from: `GATHER <${user}>`, to, subject, html });

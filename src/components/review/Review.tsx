@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SUPABASE_KEY, SUPABASE_URL, supabase } from "@/lib/supabase";
+import { packForStory, type Pack } from "@/lib/packs";
 import { useShareDraft } from "@/lib/share/draft";
 import { OTHER, MET_OTHER, isOngoing, type Answers } from "@/lib/share/questions";
 
@@ -32,7 +33,7 @@ type Row = {
   review_note: string | null;
   notused_reason: string | null;
 };
-type Feedback = { id: string; created_at: string; feeling: number; friend: "nah" | "maybe" | "yes"; comment: string | null };
+type Feedback = { id: string; created_at: string; feeling: number; friend: "nah" | "maybe" | "yes" | null; comment: string | null };
 
 const TABS: { id: string; label: string; match: (s: Status) => boolean }[] = [
   { id: "waiting", label: "Waiting", match: (s) => s === "received" || s === "in_review" },
@@ -80,14 +81,14 @@ const h1 = "m-0 text-[44px] font-black leading-[0.94] [font-stretch:125%] sm:tex
 const small = "m-0 text-[14px] leading-[20px] text-brief-muted";
 
 type Panel = { row: Row; kind: "approved" | "not_used" };
-type Pending = { id: string; kind: "approved" | "not_used"; note: string; reason: string | null; prev: Status; token: string; timer: number; email: string };
+type Pending = { id: string; kind: "approved" | "not_used"; note: string; reason: string | null; prev: Status; token: string; timer: number; email: string; pack: Pack | null };
 
-async function sendEmail(p: { id: string; kind: string; note: string; reason: string | null; token: string }, keepalive = false) {
+async function sendEmail(p: { id: string; kind: string; note: string; reason: string | null; token: string; pack: Pack | null }, keepalive = false) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-story-email`, {
     method: "POST",
     keepalive,
     headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${p.token}` },
-    body: JSON.stringify({ story_id: p.id, kind: p.kind, note: p.note, reason: p.reason ?? undefined }),
+    body: JSON.stringify({ story_id: p.id, kind: p.kind, note: p.note, reason: p.reason ?? undefined, pack_token: p.pack?.token, pack_title: p.pack?.title }),
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
@@ -141,7 +142,7 @@ export function Review() {
     if (e) throw e;
   };
 
-  const confirm = async (row: Row, kind: "approved" | "not_used", email: boolean, note: string, reason: string | null) => {
+  const confirm = async (row: Row, kind: "approved" | "not_used", email: boolean, note: string, reason: string | null, pack: Pack | null) => {
     setError(null);
     try {
       await setStatus(row.id, kind);
@@ -159,7 +160,7 @@ export function Review() {
     }
     const { data } = await supabase().auth.getSession();
     const token = data.session?.access_token ?? "";
-    const p: Pending = { id: row.id, kind, note, reason, prev: row.status, token, email: row.email, timer: 0 };
+    const p: Pending = { id: row.id, kind, note, reason, prev: row.status, token, email: row.email, timer: 0, pack };
     p.timer = window.setTimeout(async () => {
       if (pending.current !== p) return;
       pending.current = null;
@@ -352,7 +353,7 @@ function DecisionPanel({
 }: {
   panel: Panel;
   onClose: () => void;
-  onConfirm: (row: Row, kind: "approved" | "not_used", email: boolean, note: string, reason: string | null) => Promise<void>;
+  onConfirm: (row: Row, kind: "approved" | "not_used", email: boolean, note: string, reason: string | null, pack: Pack | null) => Promise<void>;
 }) {
   const { row, kind } = panel;
   const approve = kind === "approved";
@@ -360,6 +361,8 @@ function DecisionPanel({
   const [note, setNote] = useState("");
   const [reason, setReason] = useState<string | null>(approve ? null : "names");
   const [busy, setBusy] = useState(false);
+  const pack = approve ? packForStory(row.id) ?? null : null;
+  const [sendPack, setSendPack] = useState(true);
   const ref = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -370,7 +373,8 @@ function DecisionPanel({
   }, [onClose]);
 
   const needsNote = !approve && email && reason === "other" && !note.trim();
-  const subject = approve ? (row.publish ? "your story made the cut" : "your story is officially counted") : "about your GATHER story";
+  const withPack = Boolean(pack && sendPack && email);
+  const subject = withPack ? "your story’s in. we made you something" : approve ? (row.publish ? "your story made the cut" : "your story is officially counted") : "about your GATHER story";
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-[rgba(23,18,28,0.55)] p-4 sm:items-center" onClick={onClose}>
@@ -417,6 +421,16 @@ function DecisionPanel({
           {approve ? "Email them that it’s approved" : "Email them"}
         </label>
 
+        {pack && email && (
+          <label className="flex cursor-pointer items-start gap-2.5 rounded border-2 border-brief-ink bg-[#FFF3F8] px-3.5 py-3 text-[15px] font-semibold shadow-[3px_3px_0_var(--color-brief-rani)]">
+            <input type="checkbox" checked={sendPack} onChange={(e) => setSendPack(e.target.checked)} className="mt-0.5 h-5 w-5 flex-none accent-brief-ink" />
+            <span>
+              Send their sticker pack: <b>{pack.title}</b>
+              <span className="mt-0.5 block text-[13px] font-normal text-brief-muted">The email shows a sealed envelope and a Download &amp; stick button.</span>
+            </span>
+          </label>
+        )}
+
         <div className="flex flex-col gap-1.5">
           <label htmlFor="dp-note" className="text-[15px] font-bold">
             Add a personal note <span className="font-normal text-brief-muted">{!approve && reason === "other" ? "(used as the reason)" : "(optional)"}</span>
@@ -446,7 +460,7 @@ function DecisionPanel({
             aria-busy={busy}
             onClick={async () => {
               setBusy(true);
-              await onConfirm(row, kind, email, note.trim(), approve ? null : reason);
+              await onConfirm(row, kind, email, note.trim(), approve ? null : reason, withPack ? pack : null);
               setBusy(false);
             }}
             className={`${btn} bg-brief-rani`}
@@ -510,7 +524,7 @@ function FeedbackTab({ items }: { items: Feedback[] }) {
           {comments.map((f) => (
             <div key={f.id} className="flex flex-col gap-2 rounded border-2 border-brief-ink bg-brief-white px-4 py-3.5">
               <span className="self-start rounded border-2 border-brief-ink bg-brief-marigold px-2 py-0.5 font-martian-mono text-[11px] font-semibold uppercase">
-                {FEEL[f.feeling - 1]} · {FRIEND[f.friend]}
+                {FEEL[f.feeling - 1]}{f.friend ? ` · ${FRIEND[f.friend]}` : ""}
               </span>
               <p className="m-0 whitespace-pre-wrap text-[16px] leading-[1.5] [overflow-wrap:anywhere]">{f.comment}</p>
               <span className={small}>{when(f.created_at)}</span>
