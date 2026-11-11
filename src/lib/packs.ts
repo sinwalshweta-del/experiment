@@ -13,6 +13,10 @@ export type Pack = {
   tagline: string;
   letter: { greeting: string; paragraphs: string[]; sign: string };
   stickers: { file: string; name: string }[];
+  /** File name of the "download everything" zip in the pack folder. */
+  zip: string;
+  /** The line under the envelope in the approval email. */
+  emailBlurb: string;
 };
 
 export const PACKS: Pack[] = [
@@ -37,6 +41,35 @@ export const PACKS: Pack[] = [
       { file: "sticker-2.png", name: "Mixed signals? Better playlist now" },
       { file: "sticker-3.png", name: "Main character pass" },
     ],
+    zip: "things-you-took-back.zip",
+    emailBlurb:
+      "Download it now and take back what’s yours: your peace, your standards, your playlist. It’s time to let go of what no longer serves you. Let the glow-up begin.",
+  },
+  {
+    token: "KLAe1s8hGqpERfEuvZ4OTv",
+    // Bhavik's story (Claude Design boards 36 + 37)
+    storyIds: ["296524e8-3d84-44cb-b3f3-bd7593a35ffd"],
+    title: "Better Chemistry",
+    kicker: "Next up:",
+    tagline: "Same vibe. Better match. Zero static.",
+    letter: {
+      greeting: "Hey you,",
+      paragraphs: [
+        "A few dates, a lot of mixed signals, and zero explanation. Not exactly the soundtrack anyone orders.",
+        "So we’re calling it: next round, better chemistry. Clearer vibes, more fun, less decoding, more enjoying.",
+        "And for the record, saying what you want out loud is the sexiest move on any dating app. Keep doing that.",
+        "Stay honest. Keep the good tracks coming.",
+      ],
+      sign: "With love,\nGATHER",
+    },
+    stickers: [
+      { file: "sticker-1.png", name: "Chemistry, please" },
+      { file: "sticker-2.png", name: "Say what you’re after. That’s hot." },
+      { file: "sticker-3.png", name: "Mixed signals? Change the track" },
+    ],
+    zip: "better-chemistry.zip",
+    emailBlurb:
+      "Download it now: a little manifesting, a better track, and a reminder that saying what you’re after is hot. Next up: better chemistry.",
   },
 ];
 

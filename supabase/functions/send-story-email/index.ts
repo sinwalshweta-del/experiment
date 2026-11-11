@@ -55,14 +55,16 @@ const feedback = (storyId: string) =>
   `</p><p style="margin:4px 0 0;font-size:12px;color:#8A7A88">One tap is enough. It helps us make GATHER better for the next person.</p></div>`;
 
 // Personalised sticker pack (boards 31 and 32): a sealed envelope image and a Download & stick button.
-const packBlock = (token: string, title: string) =>
+const DEFAULT_BLURB =
+  "Download it now and take back what’s yours: your peace, your standards, your playlist. It’s time to let go of what no longer serves you. Let the glow-up begin.";
+const packBlock = (token: string, title: string, blurb?: string) =>
   `<div style="background:#FBF3E6;border:2px solid #17121C;border-radius:14px;padding:18px 18px 22px;margin:18px 0;text-align:center">` +
   `<img src="${SITE}/packs/${token}/email-gift.png" width="420" alt="A free sticker pack, made from your story: ${esc(title)}" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto 10px;border:0"/>` +
-  `<p style="margin:0 0 18px;font-size:15px;line-height:1.5;color:#3d3a40">Download it now and take back what’s yours: your peace, your standards, your playlist. It’s time to let go of what no longer serves you. Let the glow-up begin.</p>` +
+  `<p style="margin:0 0 18px;font-size:15px;line-height:1.5;color:#3d3a40">${esc(blurb?.trim() || DEFAULT_BLURB)}</p>` +
   `<a href="${SITE}/pack/${token}" style="display:inline-block;background:#FF3E9A;border:2.5px solid #17121C;border-radius:999px;padding:13px 26px;font-weight:bold;font-size:18px;color:#17121C;text-decoration:none">&#8594;&nbsp; Download &amp; stick</a>` +
   `<p style="margin:14px 0 0;font-size:13px;color:#5F5866">3 stickers and a little note inside. No peeking till you open it.</p></div>`;
 
-function build(kind: string, publish: boolean, storyId: string, note?: string, reason?: string, pack?: { token: string; title: string }) {
+function build(kind: string, publish: boolean, storyId: string, note?: string, reason?: string, pack?: { token: string; title: string; blurb?: string }) {
   if (kind === "approved" && pack) {
     const counted = publish
       ? "Your story made it through review. You chose to publish it, so it’ll be shared on GATHER once stories go live, with anything that could point to anyone taken out. It already counts in the insights."
@@ -72,7 +74,7 @@ function build(kind: string, publish: boolean, storyId: string, note?: string, r
       html: shell(
         p(counted) +
           (note?.trim() ? p(`${esc(note.trim())} While we were reading your story, we made you something.`) : p("While we were reading your story, we made you something.")) +
-          packBlock(pack.token, pack.title) + feedback(storyId),
+          packBlock(pack.token, pack.title, pack.blurb) + feedback(storyId),
       ),
     };
   }
@@ -131,7 +133,7 @@ Deno.serve(async (req) => {
   const { data: me } = await asCaller.auth.getUser();
   if (!me.user) return json(401, { error: "sign in first" });
 
-  let body: { story_id?: string; kind?: string; note?: string; reason?: string; pack_token?: string; pack_title?: string };
+  let body: { story_id?: string; kind?: string; note?: string; reason?: string; pack_token?: string; pack_title?: string; pack_blurb?: string };
   try {
     body = await req.json();
   } catch {
@@ -143,7 +145,7 @@ Deno.serve(async (req) => {
   if (!story_id || !["approved", "not_used", "taken_down"].includes(kind ?? "")) return json(400, { error: "bad request" });
   const pack =
     kind === "approved" && body.pack_token && /^[A-Za-z0-9]{16,40}$/.test(body.pack_token)
-      ? { token: body.pack_token, title: (body.pack_title ?? "your sticker pack").slice(0, 80) }
+      ? { token: body.pack_token, title: (body.pack_title ?? "your sticker pack").slice(0, 80), blurb: body.pack_blurb?.slice(0, 300) }
       : undefined;
 
   const { data: story } = await admin.from("stories").select("id, user_id, status, publish").eq("id", story_id).maybeSingle();

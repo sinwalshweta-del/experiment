@@ -88,7 +88,7 @@ async function sendEmail(p: { id: string; kind: string; note: string; reason: st
     method: "POST",
     keepalive,
     headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${p.token}` },
-    body: JSON.stringify({ story_id: p.id, kind: p.kind, note: p.note, reason: p.reason ?? undefined, pack_token: p.pack?.token, pack_title: p.pack?.title }),
+    body: JSON.stringify({ story_id: p.id, kind: p.kind, note: p.note, reason: p.reason ?? undefined, pack_token: p.pack?.token, pack_title: p.pack?.title, pack_blurb: p.pack?.emailBlurb }),
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { error?: string };

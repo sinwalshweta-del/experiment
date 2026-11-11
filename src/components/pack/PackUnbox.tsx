@@ -160,11 +160,11 @@ export function PackUnbox({ pack }: { pack: Pack }) {
             alt={`${pack.title} sticker sheet with three stickers: ${pack.stickers.map((s) => s.name).join(", ")}`}
             className="pk-in w-full max-w-[720px] rounded-[22px] shadow-[0_24px_50px_rgba(60,35,45,.22)]"
           />
-          <a href={`${base}/things-you-took-back.zip`} download className={`${dl} bg-[#FF3E9A] px-7 text-[18px]`}>
+          <a href={`${base}/${pack.zip}`} download className={`${dl} bg-[#FF3E9A] px-7 text-[18px]`}>
             &#8595; Download everything
           </a>
           <div className="grid w-full max-w-[720px] grid-cols-1 gap-4 sm:grid-cols-2">
-            <a href={`${base}/sticker-sheet.png`} download="things-you-took-back-sticker-sheet.png" className={`${dl} bg-white`}>
+            <a href={`${base}/sticker-sheet.png`} download={`${pack.zip.replace(/\.zip$/, "")}-sticker-sheet.png`} className={`${dl} bg-white`}>
               &#8595; Sticker sheet (to print)
             </a>
             <a href={`${base}/note.png`} download="a-note-from-gather.png" className={`${dl} bg-white`}>
