@@ -23,6 +23,8 @@ const REASONS: Record<string, string> = {
   names: "It had names or details that could point to someone, and we keep everyone on GATHER anonymous.",
   topic: "It wasn’t about a dating or relationship experience, which is what GATHER is for.",
   duplicate: "It looked like a repeat of a story you’d already shared, so we kept just one.",
+  unclear:
+    "We couldn’t quite follow this one. It read more like a test or a few random keys than a real experience, and since every story counts in the insights, we only keep the ones that describe what actually happened.",
 };
 
 const esc = (s: string) =>
@@ -36,8 +38,9 @@ ${inner}
 </div>`;
 }
 const p = (t: string) => `<p style="margin:0 0 14px">${t}</p>`;
+const ARROW = `&nbsp;<span style="font-size:1.35em;line-height:0;vertical-align:-1px">&#8594;</span>`;
 const button = (label: string, href: string) =>
-  `<p style="margin:6px 0 16px"><a href="${href}" style="display:inline-block;background:#FF3E9A;color:#17121C;border:2px solid #17121C;border-radius:4px;padding:11px 20px;font-weight:bold;font-size:15px;text-decoration:none">${label}</a></p>`;
+  `<p style="margin:6px 0 16px"><a href="${href}" style="display:inline-block;background:#FF3E9A;color:#17121C;border:2px solid #17121C;border-radius:4px;padding:11px 20px;font-weight:bold;font-size:15px;text-decoration:none">${label}${ARROW}</a></p>`;
 const noteBlock = (note?: string) =>
   note?.trim()
     ? `<div style="border-left:4px solid #FF3E9A;background:#FFF3F8;padding:12px 14px;font-size:15px;margin:0 0 14px"><div style="font-size:12px;letter-spacing:.06em;color:#5F5866;margin-bottom:4px"><b>A NOTE FROM THE TEAM</b></div>${esc(note.trim())}</div>`
@@ -54,6 +57,39 @@ const feedback = (storyId: string) =>
   ).join("") +
   `</p><p style="margin:4px 0 0;font-size:12px;color:#8A7A88">One tap is enough. It helps us make GATHER better for the next person.</p></div>`;
 
+// Their own story, folded at the bottom of the email (board 38). Only ever sent to the person who wrote it.
+type Answers = Record<string, unknown>;
+const ROWS: [string, string][] = [
+  ["withGender", "Who it was with"], ["met", "How you met"], ["hope", "What you hoped for"], ["thought", "What you thought they wanted"],
+  ["good", "What felt good"], ["hard", "What made it hard"], ["status", "Where it ended up"], ["slowed", "When it slowed down"], ["reasons", "Why it slowed down"],
+];
+const val = (a: Answers, k: string) => {
+  const v = a[k];
+  const other = typeof a[`${k}Other`] === "string" ? (a[`${k}Other`] as string).trim() : "";
+  const fix = (x: string) => (other && /^other/i.test(x) ? `${x}: ${other}` : x);
+  if (Array.isArray(v)) return v.filter((x) => typeof x === "string" && x).map((x) => fix(x as string)).join(", ");
+  return typeof v === "string" ? fix(v) : "";
+};
+const sub = (h: string) => `<div style="font-size:11px;letter-spacing:.1em;color:#5F5866;font-weight:bold;margin:10px 0 4px">${h}</div>`;
+const quote = (t: string) => `<div style="border-left:3px solid #FF3E9A;padding:2px 0 2px 10px;font-size:15px;color:#3d3a40;white-space:pre-wrap;word-break:break-word">${esc(t)}</div>`;
+function storyCard(label: string, title: string, a: Answers, sharedAt: string) {
+  const date = new Date(sharedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const rows = ROWS.map(([k, q]) => [q, val(a, k)]).filter(([, v]) => v)
+    .map(([q, v]) => `<tr><td style="padding:5px 12px 5px 0;color:#5F5866;vertical-align:top;width:44%;border-top:1px solid #EEE7DC">${q}</td><td style="padding:5px 0;font-weight:bold;vertical-align:top;border-top:1px solid #EEE7DC">${esc(v)}</td></tr>`).join("");
+  const story = typeof a.story === "string" ? a.story.trim() : "";
+  const refl = typeof a.reflection === "string" ? a.reflection.trim() : "";
+  return `<details style="border:2px solid #17121C;border-radius:12px;background:#FFFDF8;margin:22px 0 0">` +
+    `<summary style="cursor:pointer;font-size:15px;font-weight:bold;padding:12px 16px">${label} · shared ${date} <span style="font-weight:normal;color:#5F5866">· tap to read</span></summary>` +
+    `<div style="padding:0 16px 14px"><div style="font-size:17px;font-weight:bold;margin-bottom:8px">${esc(title)}</div>` +
+    (rows ? `<table style="border-collapse:collapse;width:100%;font-size:14px;line-height:1.4">${rows}</table>` : "") +
+    (story ? sub("WHAT YOU WROTE") + quote(story) : "") + (refl ? sub("LOOKING BACK") + quote(refl) : "") + `</div></details>`;
+}
+const standing = (publish: boolean) =>
+  p("Your story is approved, and it already counts in the insights.") +
+  p(publish
+    ? "It isn’t public yet. You said yes to publishing, so it’ll go up on GATHER when we open stories to everyone. Before it does, we’ll remove anything that could identify you or the other person, like names or places."
+    : "It will never be public on GATHER, because you asked us not to publish it.");
+
 // Personalised sticker pack (boards 31 and 32): a sealed envelope image and a Download & stick button.
 const DEFAULT_BLURB =
   "Download it now and take back what’s yours: your peace, your standards, your playlist. It’s time to let go of what no longer serves you. Let the glow-up begin.";
@@ -61,41 +97,27 @@ const packBlock = (token: string, title: string, blurb?: string) =>
   `<div style="background:#FBF3E6;border:2px solid #17121C;border-radius:14px;padding:18px 18px 22px;margin:18px 0;text-align:center">` +
   `<img src="${SITE}/packs/${token}/email-gift.png" width="420" alt="A free sticker pack, made from your story: ${esc(title)}" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto 10px;border:0"/>` +
   `<p style="margin:0 0 18px;font-size:15px;line-height:1.5;color:#3d3a40">${esc(blurb?.trim() || DEFAULT_BLURB)}</p>` +
-  `<a href="${SITE}/pack/${token}" style="display:inline-block;background:#FF3E9A;border:2.5px solid #17121C;border-radius:999px;padding:13px 26px;font-weight:bold;font-size:18px;color:#17121C;text-decoration:none">&#8594;&nbsp; Download &amp; stick</a>` +
+  `<a href="${SITE}/pack/${token}" style="display:inline-block;background:#FF3E9A;border:2.5px solid #17121C;border-radius:999px;padding:13px 26px;font-weight:bold;font-size:18px;color:#17121C;text-decoration:none">Download &amp; stick${ARROW}</a>` +
   `<p style="margin:14px 0 0;font-size:13px;color:#5F5866">3 stickers and a little note inside. No peeking till you open it.</p></div>`;
 
-function build(kind: string, publish: boolean, storyId: string, note?: string, reason?: string, pack?: { token: string; title: string; blurb?: string }) {
+type Story = { id: string; publish: boolean; title: string | null; answers: Answers | null; created_at: string };
+function build(kind: string, st: Story, note?: string, reason?: string, pack?: { token: string; title: string; blurb?: string }) {
+  const publish = st.publish, storyId = st.id;
+  const card = (label: string) => storyCard(label, st.title ?? "Your story", st.answers ?? {}, st.created_at);
   if (kind === "approved" && pack) {
-    const counted = publish
-      ? "Your story made it through review. You chose to publish it, so it’ll be shared on GATHER once stories go live, with anything that could point to anyone taken out. It already counts in the insights."
-      : "Your story made it through review. Like you asked, it won’t be published, but your answers now count in the insights and help the next person spot the pattern a little sooner.";
     return {
       subject: "your story’s in. we made you something",
       html: shell(
-        p(counted) +
+        standing(publish) +
           (note?.trim() ? p(`${esc(note.trim())} While we were reading your story, we made you something.`) : p("While we were reading your story, we made you something.")) +
-          packBlock(pack.token, pack.title, pack.blurb) + feedback(storyId),
-      ),
-    };
-  }
-  if (kind === "approved" && publish) {
-    return {
-      subject: "your story made the cut",
-      html: shell(
-        p("Good news: your story made it through review.") +
-          p("You chose to publish it, so it’ll be shared on GATHER once stories go live, with anything that could point to anyone taken out. It already counts in the insights, helping someone else spot the pattern.") +
-          noteBlock(note) + button("See your story", `${SITE}/sign-in`) + changed + feedback(storyId),
+          packBlock(pack.token, pack.title, pack.blurb) + card("Your story") + feedback(storyId),
       ),
     };
   }
   if (kind === "approved") {
     return {
-      subject: "your story is officially counted",
-      html: shell(
-        p("Good news: your story made it through review.") +
-          p("Like you asked, it won’t be published. Your answers now count in the insights, so someone going through the same thing feels a little less alone.") +
-          noteBlock(note) + button("See your story", `${SITE}/sign-in`) + changed + feedback(storyId),
-      ),
+      subject: publish ? "your story made the cut" : "your story is officially counted",
+      html: shell(standing(publish) + noteBlock(note) + button("See your story", `${SITE}/sign-in`) + changed + card("Your story") + feedback(storyId)),
     };
   }
   if (kind === "not_used") {
@@ -106,8 +128,10 @@ function build(kind: string, publish: boolean, storyId: string, note?: string, r
         p("Thanks for sharing your story with us. We read every single one, and this time we couldn’t use it.") +
           (why ? `<div style="background:#F3EEE4;border-radius:4px;padding:12px 14px;font-size:15px;margin:0 0 14px">${why}</div>` : "") +
           (reason && REASONS[reason] ? noteBlock(note) : "") +
-          p("Nothing from it is shown or counted. You’re always welcome to share again, just leave out names, places and handles.") +
-          button("Share again", `${SITE}/share`),
+          (reason === "unclear"
+            ? p("Nothing from it is shown or counted. If there’s a real story behind it, we’d love to hear it.") + button("Share it again", `${SITE}/share`)
+            : p("Nothing from it is shown or counted. You’re always welcome to share again, just leave out names, places and handles.") + button("Share again", `${SITE}/share`)) +
+          card("What we received"),
       ),
     };
   }
@@ -148,7 +172,7 @@ Deno.serve(async (req) => {
       ? { token: body.pack_token, title: (body.pack_title ?? "your sticker pack").slice(0, 80), blurb: body.pack_blurb?.slice(0, 300) }
       : undefined;
 
-  const { data: story } = await admin.from("stories").select("id, user_id, status, publish").eq("id", story_id).maybeSingle();
+  const { data: story } = await admin.from("stories").select("id, user_id, status, publish, title, answers, created_at").eq("id", story_id).maybeSingle();
   if (!story) return json(404, { error: "story not found" });
 
   if (kind === "taken_down") {
@@ -167,7 +191,7 @@ Deno.serve(async (req) => {
   const pass = Deno.env.get("GMAIL_APP_PASSWORD");
   if (!user || !pass) return json(500, { error: "email isn’t set up yet" });
 
-  const { subject, html } = build(kind!, story.publish, story.id, note, reason, pack);
+  const { subject, html } = build(kind!, story as Story, note, reason, pack);
   try {
     const t = nodemailer.createTransport({ host: "smtp.gmail.com", port: 465, secure: true, auth: { user, pass } });
     await t.sendMail({ from: `GATHER <${user}>`, to, subject, html });

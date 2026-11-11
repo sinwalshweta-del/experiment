@@ -144,7 +144,7 @@ export function PackUnbox({ pack }: { pack: Pack }) {
           {stage === "letter" && (
             <div className="mt-10 flex justify-center">
               <button type="button" onClick={reveal} className={`${dl} bg-[#FFB627] text-[17px]`}>
-                See your stickers &#8595;
+                See your stickers &#8594;
               </button>
             </div>
           )}
@@ -161,18 +161,18 @@ export function PackUnbox({ pack }: { pack: Pack }) {
             className="pk-in w-full max-w-[720px] rounded-[22px] shadow-[0_24px_50px_rgba(60,35,45,.22)]"
           />
           <a href={`${base}/${pack.zip}`} download className={`${dl} bg-[#FF3E9A] px-7 text-[18px]`}>
-            &#8595; Download everything
+            Download everything &#8594;
           </a>
           <div className="grid w-full max-w-[720px] grid-cols-1 gap-4 sm:grid-cols-2">
             <a href={`${base}/sticker-sheet.png`} download={`${pack.zip.replace(/\.zip$/, "")}-sticker-sheet.png`} className={`${dl} bg-white`}>
-              &#8595; Sticker sheet (to print)
+              Sticker sheet (to print) &#8594;
             </a>
             <a href={`${base}/note.png`} download="a-note-from-gather.png" className={`${dl} bg-white`}>
-              &#8595; The letter
+              The letter &#8594;
             </a>
             {pack.stickers.map((s, i) => (
               <a key={s.file} href={`${base}/${s.file}`} download={`sticker-${i + 1}.png`} className={`${dl} bg-white`}>
-                &#8595; {s.name}
+                {s.name} &#8594;
               </a>
             ))}
           </div>

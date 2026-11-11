@@ -47,6 +47,7 @@ const REASONS: { id: string; label: string }[] = [
   { id: "names", label: "Has names or identifying details" },
   { id: "topic", label: "Not about dating or relationships" },
   { id: "duplicate", label: "Shared more than once" },
+  { id: "unclear", label: "Didn’t read as a real story" },
   { id: "other", label: "Something else" },
 ];
 const UNDO_MS = 10_000;

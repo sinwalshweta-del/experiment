@@ -47,8 +47,8 @@ export const PACKS: Pack[] = [
   },
   {
     token: "KLAe1s8hGqpERfEuvZ4OTv",
-    // Bhavik's story (Claude Design boards 36 + 37), plus Shweta's own test story for a dry run of the email
-    storyIds: ["296524e8-3d84-44cb-b3f3-bd7593a35ffd", "c773f0f0-bb02-44b6-a1f6-64cc5680cf9c"],
+    // Bhavik's story (Claude Design boards 36 + 37)
+    storyIds: ["296524e8-3d84-44cb-b3f3-bd7593a35ffd"],
     title: "Better Chemistry",
     kicker: "Next up:",
     tagline: "Same vibe. Better match. Zero static.",
