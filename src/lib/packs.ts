@@ -22,8 +22,8 @@ export type Pack = {
 export const PACKS: Pack[] = [
   {
     token: "DZWs3ifDJJT243XbpHNLaq",
-    // Kirti's story, plus Shweta's own test story for a dry run of the email
-    storyIds: ["0e23f1c1-f394-4d63-9c03-f58836b07c65", "c773f0f0-bb02-44b6-a1f6-64cc5680cf9c"],
+    // Kirti's story
+    storyIds: ["0e23f1c1-f394-4d63-9c03-f58836b07c65"],
     title: "Things You Took Back",
     kicker: "Things You",
     tagline: "Your peace. Your standards. Your playlist.",
@@ -47,8 +47,8 @@ export const PACKS: Pack[] = [
   },
   {
     token: "KLAe1s8hGqpERfEuvZ4OTv",
-    // Bhavik's story (Claude Design boards 36 + 37)
-    storyIds: ["296524e8-3d84-44cb-b3f3-bd7593a35ffd"],
+    // Bhavik's story (Claude Design boards 36 + 37), plus Shweta's own test story for a dry run of the email
+    storyIds: ["296524e8-3d84-44cb-b3f3-bd7593a35ffd", "c773f0f0-bb02-44b6-a1f6-64cc5680cf9c"],
     title: "Better Chemistry",
     kicker: "Next up:",
     tagline: "Same vibe. Better match. Zero static.",
