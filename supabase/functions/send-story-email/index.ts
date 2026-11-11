@@ -43,7 +43,7 @@ const button = (label: string, href: string) =>
   `<p style="margin:6px 0 16px"><a href="${href}" style="display:inline-block;background:#FF3E9A;color:#17121C;border:2px solid #17121C;border-radius:4px;padding:11px 20px;font-weight:bold;font-size:15px;text-decoration:none">${label}${ARROW}</a></p>`;
 const noteBlock = (note?: string) =>
   note?.trim()
-    ? `<div style="border-left:4px solid #FF3E9A;background:#FFF3F8;padding:12px 14px;font-size:15px;margin:0 0 14px"><div style="font-size:12px;letter-spacing:.06em;color:#5F5866;margin-bottom:4px"><b>A NOTE FROM THE TEAM</b></div>${esc(note.trim())}</div>`
+    ? `<div style="border-left:4px solid #FF3E9A;background:#FFF3F8;padding:12px 14px;font-size:15px;margin:0 0 14px"><div style="font-size:12px;letter-spacing:.06em;color:#5F5866;margin-bottom:4px"><b>A NOTE FROM GATHER</b></div>${esc(note.trim())}</div>`
     : "";
 const changed = p(`<span style="font-size:15px">Changed your mind? You can take it down anytime from your account.</span>`);
 
@@ -78,11 +78,13 @@ function storyCard(label: string, title: string, a: Answers, sharedAt: string) {
     .map(([q, v]) => `<tr><td style="padding:5px 12px 5px 0;color:#5F5866;vertical-align:top;width:44%;border-top:1px solid #EEE7DC">${q}</td><td style="padding:5px 0;font-weight:bold;vertical-align:top;border-top:1px solid #EEE7DC">${esc(v)}</td></tr>`).join("");
   const story = typeof a.story === "string" ? a.story.trim() : "";
   const refl = typeof a.reflection === "string" ? a.reflection.trim() : "";
-  return `<details style="border:2px solid #17121C;border-radius:12px;background:#FFFDF8;margin:22px 0 0">` +
-    `<summary style="cursor:pointer;font-size:15px;font-weight:bold;padding:12px 16px">${label} · shared ${date} <span style="font-weight:normal;color:#5F5866">· tap to read</span></summary>` +
-    `<div style="padding:0 16px 14px"><div style="font-size:17px;font-weight:bold;margin-bottom:8px">${esc(title)}</div>` +
-    (rows ? `<table style="border-collapse:collapse;width:100%;font-size:14px;line-height:1.4">${rows}</table>` : "") +
-    (story ? sub("WHAT YOU WROTE") + quote(story) : "") + (refl ? sub("LOOKING BACK") + quote(refl) : "") + `</div></details>`;
+  // The card is a plain div so Gmail (which drops <details>) still shows it boxed and evenly aligned;
+  // Apple Mail and iPhone Mail fold it behind the summary line.
+  return `<div style="border:2px solid #17121C;border-radius:12px;background:#FFFDF8;margin:22px 0 0;padding:14px 16px">` +
+    `<details><summary style="cursor:pointer;font-size:15px;font-weight:bold;margin:0;padding:0">${label} · shared ${date}</summary>` +
+    `<div style="margin:0;padding:10px 0 0"><div style="font-size:17px;font-weight:bold;margin:0 0 8px">${esc(title)}</div>` +
+    (rows ? `<table style="border-collapse:collapse;width:100%;font-size:14px;line-height:1.4;margin:0">${rows}</table>` : "") +
+    (story ? sub("WHAT YOU WROTE") + quote(story) : "") + (refl ? sub("LOOKING BACK") + quote(refl) : "") + `</div></details></div>`;
 }
 const standing = (publish: boolean) =>
   p("Your story is approved, and it already counts in the insights.") +
